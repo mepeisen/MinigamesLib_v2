@@ -55,6 +55,7 @@ import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.arena.ArenaMatchImpl;
+import de.minigameslib.mgapi.impl.arena.ArenaPlayerImpl;
 
 /**
  * Test case for {@link ArenaMatchImpl}
@@ -187,7 +188,7 @@ public class ArenaMatchImplTest
     @Test
     public void testGetTeam() throws McException
     {
-        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(null, true);
+        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(mock(ArenaInterface.class), true);
         teamMatch.getOrCreate(CommonTeams.Aqua);
         teamMatch.getOrCreate(CommonTeams.Black);
         
@@ -225,7 +226,7 @@ public class ArenaMatchImplTest
     @Test
     public void testGetPreferredTeam() throws McException
     {
-        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(null, true);
+        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(mock(ArenaInterface.class), true);
         teamMatch.getOrCreate(CommonTeams.Aqua);
         teamMatch.getOrCreate(CommonTeams.Black);
         
@@ -265,7 +266,7 @@ public class ArenaMatchImplTest
     @Test
     public void testGetTeamMembers() throws McException
     {
-        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(null, true);
+        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(mock(ArenaInterface.class), true);
         teamMatch.getOrCreate(CommonTeams.Aqua);
         teamMatch.getOrCreate(CommonTeams.Black);
         assertEquals(0, teamMatch.getTeamMembers(CommonTeams.Aqua).size());
@@ -315,7 +316,7 @@ public class ArenaMatchImplTest
     @Test
     public void testSpectate() throws McException
     {
-        final ArenaMatchImpl spmatch = new ArenaMatchImpl(null, false);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         spmatch.start();
         sleep(50);
         
@@ -352,7 +353,7 @@ public class ArenaMatchImplTest
     @Test
     public void testWinningAndLosing() throws McException
     {
-        final ArenaMatchImpl spmatch = new ArenaMatchImpl(null, false);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         spmatch.start();
         final ArenaPlayerInterface winner1 = this.createPlayer();
         final ArenaPlayerInterface winner2a = this.createPlayer();
@@ -457,7 +458,7 @@ public class ArenaMatchImplTest
     @Test
     public void testTeamWinningAndLosing() throws McException
     {
-        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(null, true);
+        final ArenaMatchImpl teamMatch = new ArenaMatchImpl(mock(ArenaInterface.class), true);
         teamMatch.start();
         final ArenaPlayerInterface winner1 = this.createPlayer();
         final ArenaPlayerInterface winner2a = this.createPlayer();
@@ -632,7 +633,7 @@ public class ArenaMatchImplTest
     @Test
     public void testStatistics() throws McException
     {
-        final ArenaMatchImpl spmatch = new ArenaMatchImpl(null, false);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         spmatch.start();
         final ArenaPlayerInterface player1 = this.createPlayer();
         final ArenaPlayerInterface player2 = this.createPlayer();
@@ -707,7 +708,8 @@ public class ArenaMatchImplTest
     @Test
     public void testGetPlayTime() throws McException
     {
-        final ArenaMatchImpl spmatch = new ArenaMatchImpl(null, false);
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
         final ArenaPlayerInterface player1 = this.createPlayer(); // joined before start
         final ArenaPlayerInterface player2 = this.createPlayer(); // joined after start
         final ArenaPlayerInterface player3 = this.createPlayer(); // spectator
@@ -715,6 +717,7 @@ public class ArenaMatchImplTest
         final ArenaPlayerInterface player5 = this.createPlayer(); // joined and left before start
         spmatch.join(player1, CommonTeams.Unknown);
         spmatch.join(player5, CommonTeams.Unknown);
+        when(player5.getArena()).thenReturn(arena);
         sleep(20);
         spmatch.leave(player5);
         sleep(30);
@@ -766,7 +769,7 @@ public class ArenaMatchImplTest
     @Test
     public void testKillerTracking() throws McException
     {
-        final ArenaMatchImpl spmatch = new ArenaMatchImpl(null, false);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         final ArenaPlayerInterface player1 = this.createPlayer();
         final ArenaPlayerInterface player2 = this.createPlayer();
         final ArenaPlayerInterface player3 = this.createPlayer();
@@ -1489,7 +1492,7 @@ public class ArenaMatchImplTest
      */
     private ArenaPlayerInterface createPlayer()
     {
-        final ArenaPlayerInterface result = mock(ArenaPlayerInterface.class);
+        final ArenaPlayerInterface result = mock(ArenaPlayerImpl.class);
         when(result.getPlayerUUID()).thenReturn(UUID.randomUUID());
         return result;
     }

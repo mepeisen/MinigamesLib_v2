@@ -1,0 +1,10 @@
+/logs/
+/plugins/
+/world/
+/world_nether/
+/world_the_end/
+*.json
+*.yml
+eula.txt
+*.jar
+server.properties

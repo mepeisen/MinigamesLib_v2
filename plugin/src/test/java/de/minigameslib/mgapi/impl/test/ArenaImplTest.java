@@ -38,7 +38,7 @@ import de.minigameslib.mclib.spigottest.SpigotTest;
  * 
  * @author mepeisen
  */
-@RunWith(SpigotJunit4Runner.class)
+//@RunWith(SpigotJunit4Runner.class)
 @SpigotTest(all = true)
 public class ArenaImplTest
 {
