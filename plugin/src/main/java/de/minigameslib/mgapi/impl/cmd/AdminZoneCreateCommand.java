@@ -70,6 +70,7 @@ public class AdminZoneCreateCommand implements SubCommandHandlerInterface
         final ArenaInterface arena = Mg2Command.getArena(command, Messages.Usage);
         final String name = command.fetchString(Mg2Command.Messages.ComponentNameMissing, Messages.Usage);
         final String typeName = command.fetchString(Mg2Command.Messages.ComponentTypeNameMissing, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         @SuppressWarnings("cast")
         final Optional<ArenaZoneHandler> handler = arena.getZones().stream().

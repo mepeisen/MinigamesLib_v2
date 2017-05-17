@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.impl.cmd.gui;
 import java.io.Serializable;
 import java.util.List;
 
+import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
@@ -40,6 +41,7 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 
 /**
  * Page with arena options
@@ -115,9 +117,11 @@ public class ArenasPage extends AbstractPage<ArenaInterface>
      * @param session
      * @param gui
      * @param arena
+     * @throws McException 
      */
-    private void onArena(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ArenaInterface arena)
+    private void onArena(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ArenaInterface arena) throws McException
     {
+        Mg2Command.checkAdmin(arena, player);
         session.setNewPage(new ArenaEdit(arena, this));
     }
     
@@ -131,6 +135,9 @@ public class ArenasPage extends AbstractPage<ArenaInterface>
     {
         session.setNewPage(new ArenaCreateChooseMinigame((type, name) -> {
                 final ArenaInterface arena = MinigamesLibInterface.instance().create(name, type);
+                arena.setAdminsEnabled(true);
+                arena.getAdmins().add(player.getPlayerUUID());
+                arena.saveData();
                 player.openClickGui(new Main(new ArenaEdit(arena, this)));
             },this));
     }

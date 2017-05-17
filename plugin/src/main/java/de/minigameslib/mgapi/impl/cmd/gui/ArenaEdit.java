@@ -121,8 +121,22 @@ public class ArenaEdit implements ClickGuiPageInterface
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Wrench), Messages.IconZones, this::onZones), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Wrench), Messages.IconSigns, this::onSigns), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Wrench), Messages.IconEntities, this::onEntities), 
+                null,
+                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Key), Messages.IconSecurity, this::onSecurity),
             }
         }, 6);
+    }
+    
+    /**
+     * entites
+     * @param player
+     * @param session
+     * @param gui
+     */
+    private void onSecurity(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
+    {
+        // TODO gui edit entities
+        player.sendMessage(Main.Messages.NotAvailable);
     }
     
     /**
@@ -687,6 +701,13 @@ public class ArenaEdit implements ClickGuiPageInterface
         @LocalizedMessage(defaultMessage = "Entities")
         @MessageComment({"entities"})
         IconEntities,
+        
+        /**
+         * security
+         */
+        @LocalizedMessage(defaultMessage = "Security")
+        @MessageComment({"security"})
+        IconSecurity,
         
         /**
          * teams

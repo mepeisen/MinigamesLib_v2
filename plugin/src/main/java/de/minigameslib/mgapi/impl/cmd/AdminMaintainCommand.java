@@ -60,6 +60,7 @@ public class AdminMaintainCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminMaintain, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.setMaintenance(false); // TODO support force argument
         command.send(Messages.ArenaUnderMaintenance, arena.getInternalName());

@@ -63,6 +63,7 @@ public class AdminCheckCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminCheck, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         // TODO maybe async?
         final Collection<CheckFailure> checks = arena.check();

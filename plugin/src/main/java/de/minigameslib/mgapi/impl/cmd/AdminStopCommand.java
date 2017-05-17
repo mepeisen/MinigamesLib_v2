@@ -60,6 +60,7 @@ public class AdminStopCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminStop, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.start();
         command.send(Messages.ArenaStopped, arena.getInternalName());

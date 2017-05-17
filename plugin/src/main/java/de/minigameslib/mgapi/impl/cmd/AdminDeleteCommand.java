@@ -61,6 +61,7 @@ public class AdminDeleteCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminDelete, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.delete();
         command.send(Messages.ArenaDeleted, arena.getDisplayName());

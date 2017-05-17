@@ -60,6 +60,7 @@ public class AdminDisableCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminDisable, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.setDisabledState(false); // TODO support force argument
         command.send(Messages.ArenaDisabled, arena.getDisplayName());

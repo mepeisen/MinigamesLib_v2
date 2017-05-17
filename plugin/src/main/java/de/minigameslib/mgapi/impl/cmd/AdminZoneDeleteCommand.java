@@ -65,6 +65,7 @@ public class AdminZoneDeleteCommand implements SubCommandHandlerInterface
         
         final ArenaInterface arena = Mg2Command.getArena(command, Messages.Usage);
         final ZoneInterface zone = Mg2Command.getZone(arena, command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         zone.delete();
     }
     

@@ -68,6 +68,7 @@ public class AdminSignCreateCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminSign, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArena(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         final String name = command.fetchString(Mg2Command.Messages.ComponentNameMissing, Messages.Usage);
         final String typeName = command.fetchString(Mg2Command.Messages.ComponentTypeNameMissing, Messages.Usage);
         

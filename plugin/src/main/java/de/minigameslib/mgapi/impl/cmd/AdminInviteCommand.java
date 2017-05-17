@@ -65,6 +65,7 @@ public class AdminInviteCommand implements SubCommandHandlerInterface
         final ArenaPlayerInterface player = command.fetch(Mg2Command::getPlayer).get();
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.join(player);
         command.send(Messages.PlayerInvited, arena.getInternalName());

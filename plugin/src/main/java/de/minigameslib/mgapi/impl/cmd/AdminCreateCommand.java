@@ -72,6 +72,14 @@ public class AdminCreateCommand implements SubCommandHandlerInterface
         
         final ArenaInterface arena = MinigamesLibInterface.instance().create(arenaName, type);
         command.send(Messages.ArenaCreated, arena.getInternalName());
+        
+        if (command.isOnline())
+        {
+            arena.setAdminsEnabled(true);
+            arena.addAdmin(command.getPlayer().getPlayerUUID());
+            arena.saveData();
+        }
+        
         // TODO Start creation guide.
     }
     

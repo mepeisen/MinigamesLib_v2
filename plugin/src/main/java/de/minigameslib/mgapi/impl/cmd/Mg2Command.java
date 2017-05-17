@@ -87,7 +87,7 @@ public class Mg2Command extends AbstractCompositeCommandHandler
         // allowed from everywhere
         return true;
     }
-
+    
     @Override
     protected void sendUsage(CommandInterface cmd)
     {
@@ -96,10 +96,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena interface; returns players arena if no argument was given
+     * 
      * @param command
-     * @param usage 
+     * @param usage
      * @return arena instance
-     * @throws McException thrown if arena was not found
+     * @throws McException
+     *             thrown if arena was not found
      */
     public static ArenaInterface getArenaFromPlayer(CommandInterface command, LocalizedMessageInterface usage) throws McException
     {
@@ -121,20 +123,19 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to sign interface
+     * 
      * @param arena
      * @param command
-     * @param usage 
+     * @param usage
      * @return sign instance
-     * @throws McException thrown if sign was not found
+     * @throws McException
+     *             thrown if sign was not found
      */
     public static SignInterface getSign(ArenaInterface arena, CommandInterface command, LocalizedMessageInterface usage) throws McException
     {
         final String name = command.fetchString(Messages.ComponentNameMissing, usage);
         @SuppressWarnings("cast")
-        final Optional<ArenaSignHandler> handler = arena.getSigns().stream().
-                map(s -> (ArenaSignHandler) arena.getHandler(s)).
-                filter(s -> name.equals(s.getName())).
-                findFirst();
+        final Optional<ArenaSignHandler> handler = arena.getSigns().stream().map(s -> (ArenaSignHandler) arena.getHandler(s)).filter(s -> name.equals(s.getName())).findFirst();
         if (handler.isPresent())
         {
             return handler.get().getSign();
@@ -144,20 +145,19 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to zone interface
+     * 
      * @param arena
      * @param command
-     * @param usage 
+     * @param usage
      * @return sign instance
-     * @throws McException thrown if zone was not found
+     * @throws McException
+     *             thrown if zone was not found
      */
     public static ZoneInterface getZone(ArenaInterface arena, CommandInterface command, LocalizedMessageInterface usage) throws McException
     {
         final String name = command.fetchString(Messages.ComponentNameMissing, usage);
         @SuppressWarnings("cast")
-        final Optional<ArenaZoneHandler> handler = arena.getZones().stream().
-                map(s -> (ArenaZoneHandler) arena.getHandler(s)).
-                filter(s -> name.equals(s.getName())).
-                findFirst();
+        final Optional<ArenaZoneHandler> handler = arena.getZones().stream().map(s -> (ArenaZoneHandler) arena.getHandler(s)).filter(s -> name.equals(s.getName())).findFirst();
         if (handler.isPresent())
         {
             return handler.get().getZone();
@@ -167,20 +167,19 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to component interface
+     * 
      * @param arena
      * @param command
-     * @param usage 
+     * @param usage
      * @return sign instance
-     * @throws McException thrown if zone was not found
+     * @throws McException
+     *             thrown if zone was not found
      */
     public static ComponentInterface getComponent(ArenaInterface arena, CommandInterface command, LocalizedMessageInterface usage) throws McException
     {
         final String name = command.fetchString(Messages.ComponentNameMissing, usage);
         @SuppressWarnings("cast")
-        final Optional<ArenaComponentHandler> handler = arena.getComponents().stream().
-                map(s -> (ArenaComponentHandler) arena.getHandler(s)).
-                filter(s -> name.equals(s.getName())).
-                findFirst();
+        final Optional<ArenaComponentHandler> handler = arena.getComponents().stream().map(s -> (ArenaComponentHandler) arena.getHandler(s)).filter(s -> name.equals(s.getName())).findFirst();
         if (handler.isPresent())
         {
             return handler.get().getComponent();
@@ -190,10 +189,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena interface
+     * 
      * @param command
      * @param usage
      * @return arena instance
-     * @throws McException thrown if arena was not found
+     * @throws McException
+     *             thrown if arena was not found
      */
     public static ArenaInterface getArena(CommandInterface command, LocalizedMessageInterface usage) throws McException
     {
@@ -202,13 +203,15 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena interface
+     * 
      * @param command
      * @param usage
      * @return arena instance
      */
     public static ArenaInterface getArenaOptional(CommandInterface command, LocalizedMessageInterface usage)
     {
-        if (command.getArgs().length == 0) return null;
+        if (command.getArgs().length == 0)
+            return null;
         try
         {
             return getArenaOptional(command, command.fetchString(Messages.ArenaNameMissing, usage));
@@ -222,10 +225,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena interface
+     * 
      * @param command
      * @param arenaName
      * @return arena instance
-     * @throws McException thrown if arena was not found
+     * @throws McException
+     *             thrown if arena was not found
      */
     public static ArenaInterface getArena(CommandInterface command, String arenaName) throws McException
     {
@@ -239,6 +244,7 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena interface
+     * 
      * @param command
      * @param arenaName
      * @return arena instance or {@code null} if it was not found
@@ -252,10 +258,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to minigame interface
+     * 
      * @param command
      * @param minigameName
      * @return minigame instance
-     * @throws McException thrown if minigame was not found
+     * @throws McException
+     *             thrown if minigame was not found
      */
     public static MinigameInterface getMinigame(CommandInterface command, String minigameName) throws McException
     {
@@ -269,6 +277,7 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to minigame interface
+     * 
      * @param command
      * @param minigameName
      * @return minigame instance or {@code null} if it was not found
@@ -282,11 +291,13 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to unique enum value
+     * 
      * @param command
      * @param clazz
      * @param typeName
      * @return type enum
-     * @throws McException thrown if type enum was not found
+     * @throws McException
+     *             thrown if type enum was not found
      */
     public static <T extends UniqueEnumerationValue> T getEnum(CommandInterface command, Class<T> clazz, String typeName) throws McException
     {
@@ -305,11 +316,13 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena type interface
+     * 
      * @param command
      * @param typeName
      * @param minigame
      * @return type instance
-     * @throws McException thrown if type was not found
+     * @throws McException
+     *             thrown if type was not found
      */
     public static ArenaTypeInterface getType(CommandInterface command, String typeName, MinigameInterface minigame) throws McException
     {
@@ -323,9 +336,10 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to arena type interface
+     * 
      * @param command
      * @param typeName
-     * @param minigame 
+     * @param minigame
      * @return type instance or {@code null} if it was not found
      */
     public static ArenaTypeInterface getTypeOptional(CommandInterface command, String typeName, MinigameInterface minigame)
@@ -336,10 +350,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to extension interface
+     * 
      * @param command
      * @param extensionName
      * @return extension instance
-     * @throws McException thrown if extension was not found
+     * @throws McException
+     *             thrown if extension was not found
      */
     public static ExtensionInterface getExtension(CommandInterface command, String extensionName) throws McException
     {
@@ -353,6 +369,7 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to extension interface
+     * 
      * @param command
      * @param extensionName
      * @return extension instance or {@code null} if it was not found
@@ -366,10 +383,12 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to player interface
+     * 
      * @param command
      * @param playerName
      * @return player instance
-     * @throws McException thrown if player was not found
+     * @throws McException
+     *             thrown if player was not found
      */
     public static ArenaPlayerInterface getPlayer(CommandInterface command, String playerName) throws McException
     {
@@ -383,6 +402,7 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     
     /**
      * Maps argument to player interface
+     * 
      * @param command
      * @param playerName
      * @return player instance or {@code null} if it was not found
@@ -401,6 +421,42 @@ public class Mg2Command extends AbstractCompositeCommandHandler
     }
     
     /**
+     * Checks for admin permission.
+     * 
+     * @param arena
+     *            arena interface
+     * @param command
+     *            command interface
+     * @throws McException
+     *             thrown on problems
+     */
+    public static void checkAdmin(ArenaInterface arena, CommandInterface command) throws McException
+    {
+        if (arena.adminsEnabled() && command.isOnline() && !arena.getAdmins().contains(command.getPlayer().getPlayerUUID()))
+        {
+            throw new McException(Messages.NoAdmin, arena.getInternalName());
+        }
+    }
+    
+    /**
+     * Checks for admin permission.
+     * 
+     * @param arena
+     *            arena interface
+     * @param player
+     *            target player
+     * @throws McException
+     *             thrown on problems
+     */
+    public static void checkAdmin(ArenaInterface arena, McPlayerInterface player) throws McException
+    {
+        if (arena.adminsEnabled() && !arena.getAdmins().contains(player.getPlayerUUID()))
+        {
+            throw new McException(Messages.NoAdmin, arena.getInternalName());
+        }
+    }
+    
+    /**
      * The /mg2 messages.
      * 
      * @author mepeisen
@@ -413,113 +469,120 @@ public class Mg2Command extends AbstractCompositeCommandHandler
          * Usage for command /mg2
          */
         @LocalizedMessage(defaultMessage = "Enter " + LocalizedMessage.CODE_COLOR + "/mg2 help" + LocalizedMessage.INFORMATION_COLOR + " for detailed help")
-        @MessageComment({"Usage for command /mg2"})
+        @MessageComment({ "Usage for command /mg2" })
         Usage,
         
         /**
          * Arena was not found
          */
         @LocalizedMessage(defaultMessage = "Arena " + LocalizedMessage.CODE_COLOR + "%1$s" + LocalizedMessage.ERROR_COLOR + " not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"arena was not found"}, args = @Argument("arena name"))
+        @MessageComment(value = { "arena was not found" }, args = @Argument("arena name"))
         ArenaNotFound,
         
         /**
          * Player was not found
          */
         @LocalizedMessage(defaultMessage = "Player " + LocalizedMessage.CODE_COLOR + "%1$s" + LocalizedMessage.ERROR_COLOR + " not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"player was not found"}, args = @Argument("player name"))
+        @MessageComment(value = { "player was not found" }, args = @Argument("player name"))
         PlayerNotFound,
         
         /**
          * Minigame was not found
          */
         @LocalizedMessage(defaultMessage = "Minigame " + LocalizedMessage.CODE_COLOR + "%1$s" + LocalizedMessage.ERROR_COLOR + " not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"minigame was not found"}, args = @Argument("minigame name"))
+        @MessageComment(value = { "minigame was not found" }, args = @Argument("minigame name"))
         MinigameNotFound,
         
         /**
          * Arena type was not found
          */
         @LocalizedMessage(defaultMessage = "Arena type " + LocalizedMessage.CODE_COLOR + "%1$s" + LocalizedMessage.ERROR_COLOR + " not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"arena type was not found"}, args = @Argument("type name"))
+        @MessageComment(value = { "arena type was not found" }, args = @Argument("type name"))
         TypeNotFound,
         
         /**
          * Extension was not found
          */
         @LocalizedMessage(defaultMessage = "Extension " + LocalizedMessage.CODE_COLOR + "%1$s" + LocalizedMessage.ERROR_COLOR + " not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"extension was not found"}, args = @Argument("extension name"))
+        @MessageComment(value = { "extension was not found" }, args = @Argument("extension name"))
         ExtensionNotFound,
         
         /**
          * Name argument is missing
          */
-        @LocalizedMessageList(value = {"Missing player name", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Name argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing player name", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Name argument is missing" }, args = @Argument("command usage"))
         PlayerNameMissing,
         
         /**
          * Component argument is missing
          */
-        @LocalizedMessageList(value = {"Missing component name", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Component argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing component name", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Component argument is missing" }, args = @Argument("command usage"))
         ComponentNameMissing,
         
         /**
          * Component already exists
          */
         @LocalizedMessage(defaultMessage = "Component " + LocalizedMessage.CODE_COLOR + "%1$s " + LocalizedMessage.ERROR_COLOR + "already exists", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Component already exists"}, args = @Argument("component name"))
+        @MessageComment(value = { "Component already exists" }, args = @Argument("component name"))
         ComponentAlreadyExists,
         
         /**
          * Component not found
          */
         @LocalizedMessage(defaultMessage = "Component " + LocalizedMessage.CODE_COLOR + "%1$s " + LocalizedMessage.ERROR_COLOR + "not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Component not found"}, args = @Argument("component name"))
+        @MessageComment(value = { "Component not found" }, args = @Argument("component name"))
         ComponentNotFound,
         
         /**
          * Component type argument is missing
          */
-        @LocalizedMessageList(value = {"Missing component type name", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Component type argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing component type name", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Component type argument is missing" }, args = @Argument("command usage"))
         ComponentTypeNameMissing,
         
         /**
          * Component type not found
          */
         @LocalizedMessage(defaultMessage = "Component type " + LocalizedMessage.CODE_COLOR + "%1$s " + LocalizedMessage.ERROR_COLOR + "not found", severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Component type not found"}, args = @Argument("component type name"))
+        @MessageComment(value = { "Component type not found" }, args = @Argument("component type name"))
         ComponentTypeNotFound,
         
         /**
          * Name argument is missing
          */
-        @LocalizedMessageList(value = {"Missing arena name", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Name argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing arena name", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Name argument is missing" }, args = @Argument("command usage"))
         ArenaNameMissing,
         
         /**
          * Name argument is missing
          */
-        @LocalizedMessageList(value = {"Missing minigame name", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Name argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing minigame name", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Name argument is missing" }, args = @Argument("command usage"))
         MinigameNameMissing,
         
         /**
          * Name argument is missing
          */
         @LocalizedMessage(defaultMessage = "Missing extension name", severity = MessageSeverityType.Error)
-        @MessageComment({"Name argument is missing"})
+        @MessageComment({ "Name argument is missing" })
         ExtensionNameMissing,
         
         /**
          * Name argument is missing
          */
-        @LocalizedMessageList(value = {"Missing arena type", "%1$s"}, severity = MessageSeverityType.Error)
-        @MessageComment(value = {"Name argument is missing"}, args = @Argument("command usage"))
+        @LocalizedMessageList(value = { "Missing arena type", "%1$s" }, severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Name argument is missing" }, args = @Argument("command usage"))
         TypeNameMissing,
+        
+        /**
+         * Permission denied (no admin)
+         */
+        @LocalizedMessage(defaultMessage = "no admin permission for arena %1$s", severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Permission denied (no admin)" }, args = @Argument("arena internal name"))
+        NoAdmin,
         
     }
     

@@ -65,6 +65,7 @@ public class AdminComponentDeleteCommand implements SubCommandHandlerInterface
         
         final ArenaInterface arena = Mg2Command.getArena(command, Messages.Usage);
         final ComponentInterface comp = Mg2Command.getComponent(arena, command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         comp.delete();
     }
     

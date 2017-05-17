@@ -1772,5 +1772,38 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         CannotRejoin,
         
     }
+
+    @Override
+    public boolean adminsEnabled()
+    {
+        return this.arenaData.isAdminsEnabled();
+    }
+
+    @Override
+    public Set<UUID> getAdmins()
+    {
+        return Collections.unmodifiableSet(this.arenaData.getAdmins());
+    }
+
+    @Override
+    public void addAdmin(UUID admin) throws McException
+    {
+        checkModifications();
+        this.arenaData.getAdmins().add(admin);
+    }
+
+    @Override
+    public void removeAdmin(UUID admin) throws McException
+    {
+        checkModifications();
+        this.arenaData.getAdmins().remove(admin);
+    }
+
+    @Override
+    public void setAdminsEnabled(boolean adminsEnabled) throws McException
+    {
+        checkModifications();
+        this.arenaData.setAdminsEnabled(adminsEnabled);
+    }
     
 }

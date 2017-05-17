@@ -60,6 +60,7 @@ public class AdminEnableCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminEnable, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.setEnabledState();
         command.send(Messages.ArenaEnabled, arena.getDisplayName());

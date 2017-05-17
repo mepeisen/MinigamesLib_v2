@@ -61,6 +61,7 @@ public class AdminStartCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminStart, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.start();
         command.send(Messages.ArenaStarted, arena.getInternalName());

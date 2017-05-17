@@ -26,6 +26,7 @@ package de.minigameslib.mgapi.impl.arena;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
@@ -98,6 +99,18 @@ public class ArenaData extends AnnotatedDataFragment
      */
     @PersistentField
     private boolean matchPending;
+    
+    /**
+     * True to let only registered admins change the arena.
+     */
+    @PersistentField
+    private boolean adminsEnabled;
+    
+    /**
+     * the registered administrators.
+     */
+    @PersistentField
+    private Set<UUID> admins = new HashSet<>();
     
     /**
      * fixed rule set types.
@@ -341,6 +354,30 @@ public class ArenaData extends AnnotatedDataFragment
         return this.teams;
     }
     
+    /**
+     * @return the adminsEnabled
+     */
+    public boolean isAdminsEnabled()
+    {
+        return this.adminsEnabled;
+    }
+
+    /**
+     * @param adminsEnabled the adminsEnabled to set
+     */
+    public void setAdminsEnabled(boolean adminsEnabled)
+    {
+        this.adminsEnabled = adminsEnabled;
+    }
+
+    /**
+     * @return the admins
+     */
+    public Set<UUID> getAdmins()
+    {
+        return this.admins;
+    }
+
     /**
      * Team data.
      */

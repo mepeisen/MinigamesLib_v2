@@ -67,6 +67,7 @@ public class AdminSignDeleteCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminSign, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArena(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         final SignInterface sign = Mg2Command.getSign(arena, command, Messages.Usage);
         final Block block = sign.getBukkitSign().getBlock();
         sign.delete();

@@ -61,6 +61,7 @@ public class AdminTestCommand implements SubCommandHandlerInterface
         command.permOpThrowException(MglibPerms.CommandAdminTest, command.getCommandPath());
         
         final ArenaInterface arena = Mg2Command.getArenaFromPlayer(command, Messages.Usage);
+        Mg2Command.checkAdmin(arena, command);
         
         arena.setTestState();
         command.send(Messages.ArenaTestStarted, arena.getInternalName());
