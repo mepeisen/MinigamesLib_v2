@@ -414,7 +414,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "cmd.rules.BasicMatchTimer")
+    @LocalizedMessages(value = "rules.BasicMatchTimer")
     public enum Messages implements LocalizedMessageInterface
     {
         

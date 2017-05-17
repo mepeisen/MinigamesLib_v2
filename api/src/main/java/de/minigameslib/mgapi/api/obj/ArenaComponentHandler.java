@@ -24,8 +24,11 @@
 
 package de.minigameslib.mgapi.api.obj;
 
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.objects.ComponentHandlerInterface;
 import de.minigameslib.mclib.api.objects.ComponentInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 
@@ -42,5 +45,12 @@ public interface ArenaComponentHandler extends ComponentHandlerInterface, BaseAr
      * @return component
      */
     ComponentInterface getComponent();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.obj;
+package de.minigameslib.mgapi.api.obj;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -24,111 +24,19 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
-import java.io.File;
+import org.bukkit.plugin.Plugin;
 
-import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mclib.api.McLibInterface;
-import de.minigameslib.mclib.api.objects.Cuboid;
-import de.minigameslib.mclib.api.objects.ZoneInterface;
-import de.minigameslib.mclib.api.util.function.McRunnable;
-import de.minigameslib.mclib.api.util.function.McSupplier;
-import de.minigameslib.mclib.shared.api.com.DataSection;
-import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
+import de.minigameslib.mgapi.api.obj.AbstractArenaZoneHandler;
 import de.minigameslib.mgapi.api.obj.EmptyZoneHandler;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class EmptyZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetType, ZoneRuleSetInterface, EmptyZoneData> implements EmptyZoneHandler
+public class EmptyZone extends AbstractArenaZoneHandler<EmptyZoneData> implements EmptyZoneHandler
 {
     
-    /** the underlying Zone. */
-    protected ZoneInterface zone;
-
-    @Override
-    public void initArena(ArenaInterface a) throws McException
-    {
-        super.initArena(a);
-        this.dataFile = new File(MinigamesPlugin.instance().getDataFolder(), "arenas/" + this.arena.getInternalName() + '/' + this.zone.getZoneId() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (this.dataFile.exists())
-        {
-            this.loadData();
-        }
-        else
-        {
-            this.saveData();
-        }
-    }
-
-    @Override
-    public void onCreate(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onResume(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onPause(ZoneInterface c)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void canDelete() throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onDelete()
-    {
-        if (this.dataFile.exists())
-        {
-            this.dataFile.delete();
-        }
-    }
-
-    @Override
-    public void canChangeCuboid(Cuboid newValue) throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onCuboidChange(Cuboid newValue)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void read(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public void write(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public boolean test(DataSection section)
-    {
-        // no additional data in mclib files
-        return true;
-    }
-
     @Override
     protected Class<EmptyZoneData> getDataClass()
     {
@@ -142,103 +50,9 @@ public class EmptyZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetType, Z
     }
 
     @Override
-    protected void applyListeners(ZoneRuleSetInterface listeners)
+    protected Plugin getPlugin()
     {
-        this.zone.registerHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
+        return MinigamesPlugin.instance().getPlugin();
     }
 
-    @Override
-    protected void removeListeners(ZoneRuleSetInterface listeners)
-    {
-        this.zone.unregisterHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
-    }
-
-    @Override
-    protected ZoneRuleSetInterface create(ZoneRuleSetType ruleset) throws McException
-    {
-        return calculateInCopiedContext(() -> {
-            return MinigamesPlugin.instance().creator(ruleset).apply(ruleset, this);
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInNewContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInCopiedContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInNewContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-    
-    /**
-     * Runs the code but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInCopiedContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-
-    @Override
-    public ZoneInterface getZone()
-    {
-        return this.zone;
-    }
-    
 }

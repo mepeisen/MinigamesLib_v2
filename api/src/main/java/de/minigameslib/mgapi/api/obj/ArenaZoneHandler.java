@@ -24,8 +24,11 @@
 
 package de.minigameslib.mgapi.api.obj;
 
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.objects.ZoneHandlerInterface;
 import de.minigameslib.mclib.api.objects.ZoneInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
@@ -42,5 +45,12 @@ public interface ArenaZoneHandler extends ZoneHandlerInterface, BaseArenaObjectH
      * @return zone
      */
     ZoneInterface getZone();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

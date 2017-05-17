@@ -46,9 +46,9 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 
@@ -170,7 +170,7 @@ public class ZonesPage extends AbstractPage<ArenaZoneHandler>
         }
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         AdminToolHelper.onCreateZone(player, this.arena, name, type, z -> player.openClickGui(new Main(new ZoneEdit(this.arena, z, this))));

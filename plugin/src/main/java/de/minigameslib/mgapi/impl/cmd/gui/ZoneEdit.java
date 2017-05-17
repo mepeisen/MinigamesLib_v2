@@ -43,10 +43,10 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorInterface;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
@@ -173,7 +173,7 @@ public class ZoneEdit implements ClickGuiPageInterface
         }
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         this.zone.setName(name);
@@ -210,7 +210,7 @@ public class ZoneEdit implements ClickGuiPageInterface
     {
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         session.close();
         AdminToolHelper.onRelocateZoneLower(player, this.zone, z -> {
@@ -240,7 +240,7 @@ public class ZoneEdit implements ClickGuiPageInterface
     {
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         session.close();
         AdminToolHelper.onRelocateZoneHigher(player, this.zone, z -> {
@@ -311,7 +311,7 @@ public class ZoneEdit implements ClickGuiPageInterface
     {
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         this.zone.getZone().delete();
         session.setNewPage(this.prevPage);

@@ -22,48 +22,61 @@
 
 */
 
-package de.minigameslib.mgapi.impl.obj;
+package de.minigameslib.mgapi.api.obj;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+
+import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.CommonMessages;
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mclib.shared.api.com.DataSection;
 import de.minigameslib.mclib.shared.api.com.MemoryDataSection;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
-import de.minigameslib.mgapi.api.obj.BaseArenaObjectHandler;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.rules.AbstractRuleSetContainer;
 import de.minigameslib.mgapi.api.rules.RuleSetInterface;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl.Messages;
-import de.minigameslib.mgapi.impl.rules.AbstractRuleSetContainer;
 
 /**
  * base implementation of arena objects
  * 
  * @author mepeisen
- * @param <T> rule set type
- * @param <Q> rule set interface
- * @param <D> rule set data type
+ * @param <T>
+ *            rule set type
+ * @param <Q>
+ *            rule set interface
+ * @param <D>
+ *            rule set data type
  */
-public abstract class AbstractBaseArenaObjectHandler<
-    T extends RuleSetType,
-    Q extends RuleSetInterface<T>,
-    D extends AbstractObjectData<T>> extends AbstractRuleSetContainer<T, Q> implements BaseArenaObjectHandler<T, Q>
+public abstract class AbstractBaseArenaObjectHandler<T extends RuleSetType, Q extends RuleSetInterface<T>, D extends AbstractObjectData<T>> extends AbstractRuleSetContainer<T, Q>
+        implements BaseArenaObjectHandler<T, Q>
 {
     
     /**
+     * Returns the plugin owning the object type.
+     * 
+     * @return java plugin
+     */
+    protected abstract Plugin getPlugin();
+    
+    /**
      * Returns the data class to be used for persistent data.
+     * 
      * @return data class
      */
     protected abstract Class<D> getDataClass();
     
     /**
      * Creates a new empty data value.
+     * 
      * @return data value.
      */
     protected abstract D createData();
@@ -71,12 +84,12 @@ public abstract class AbstractBaseArenaObjectHandler<
     /**
      * persistent data
      */
-    protected D data;
+    protected D              data;
     
     /**
      * the data file to store persistent data
      */
-    protected File dataFile;
+    protected File           dataFile;
     
     /**
      * the associated arena.
@@ -85,6 +98,7 @@ public abstract class AbstractBaseArenaObjectHandler<
     
     /**
      * Saves persistent object data
+     * 
      * @throws McException
      */
     public void saveData() throws McException
@@ -103,6 +117,7 @@ public abstract class AbstractBaseArenaObjectHandler<
     
     /**
      * Loads persistent data
+     * 
      * @throws McException
      */
     public void loadData() throws McException
@@ -126,6 +141,7 @@ public abstract class AbstractBaseArenaObjectHandler<
     
     /**
      * Resumes the rule sets after loading the config
+     * 
      * @throws McException
      */
     private void resumeRuleSets() throws McException
@@ -139,21 +155,21 @@ public abstract class AbstractBaseArenaObjectHandler<
             this.applyOptionalRuleSet(ruleset);
         }
     }
-
+    
     @Override
     public Collection<T> getAvailableRuleSetTypes()
     {
         // TODO implement available rule sets
         return Collections.emptyList();
     }
-
+    
     @Override
     public boolean isAvailable(T ruleset)
     {
         // TODO implement available rule sets
         return false;
     }
-
+    
     @Override
     public void reconfigureRuleSets(@SuppressWarnings("unchecked") T... rulesets) throws McException
     {
@@ -162,13 +178,13 @@ public abstract class AbstractBaseArenaObjectHandler<
             this.reapplyRuleSet(t);
         }
     }
-
+    
     @Override
     public void reconfigureRuleSet(T t) throws McException
     {
         this.reapplyRuleSet(t);
     }
-
+    
     @Override
     public void applyRuleSets(@SuppressWarnings("unchecked") T... rulesets) throws McException
     {
@@ -182,7 +198,7 @@ public abstract class AbstractBaseArenaObjectHandler<
             }
         }
     }
-
+    
     @Override
     public void applyRuleSet(T t) throws McException
     {
@@ -193,7 +209,7 @@ public abstract class AbstractBaseArenaObjectHandler<
             this.saveData();
         }
     }
-
+    
     @Override
     public void removeRuleSets(@SuppressWarnings("unchecked") T... rulesets) throws McException
     {
@@ -207,7 +223,7 @@ public abstract class AbstractBaseArenaObjectHandler<
             }
         }
     }
-
+    
     @Override
     public void removeRuleSet(T t) throws McException
     {
@@ -218,13 +234,13 @@ public abstract class AbstractBaseArenaObjectHandler<
             this.saveData();
         }
     }
-
+    
     @Override
     public String getName()
     {
         return this.data.getName();
     }
-
+    
     @Override
     public void setName(String newName) throws McException
     {
@@ -232,27 +248,37 @@ public abstract class AbstractBaseArenaObjectHandler<
         this.data.setName(newName);
         this.saveData();
     }
-
+    
     @Override
     public ArenaInterface getArena()
     {
         return this.arena;
     }
-
+    
     @Override
     public void initArena(ArenaInterface a) throws McException
     {
         this.arena = a;
         this.data = this.createData();
     }
-
+    
     @Override
     protected void checkModifications() throws McException
     {
         if (this.arena != null && this.arena.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
+    }
+    
+    /**
+     * check for errors.
+     * 
+     * @return check result.
+     */
+    public Collection<CheckFailure> check()
+    {
+        return new ArrayList<>();
     }
     
 }

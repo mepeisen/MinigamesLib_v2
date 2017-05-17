@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.rules;
+package de.minigameslib.mgapi.api.rules;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,8 +34,6 @@ import java.util.Set;
 
 import de.minigameslib.mclib.api.CommonMessages;
 import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mgapi.api.rules.RuleSetInterface;
-import de.minigameslib.mgapi.api.rules.RuleSetType;
 
 /**
  * Abstract base class for rule set container

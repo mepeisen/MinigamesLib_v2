@@ -24,11 +24,16 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.util.function.McRunnable;
 import de.minigameslib.mclib.api.util.function.McSupplier;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 
 /**
@@ -149,6 +154,18 @@ public abstract class AbstractComponentRule implements ComponentRuleSetInterface
             McLibInterface.instance().setContext(ComponentRuleSetInterface.class, this);
             return runnable.get();
         });
+    }
+    
+    @Override
+    public ComponentInterface getComponent()
+    {
+        return this.component.getComponent();
+    }
+    
+    @Override
+    public Collection<CheckFailure> check()
+    {
+        return new ArrayList<>();
     }
     
 }

@@ -48,9 +48,9 @@ public enum BasicComponentTypes implements ComponentTypeId
     
     /**
      * A generic spawn block used for join phase.
-     * @see JoinSpawnComponentHandler
+     * @see LobbySpawnComponentHandler
      */
-    JoinSpawn,
+    LobbySpawn,
     
     /**
      * A generic spawn block used after match.

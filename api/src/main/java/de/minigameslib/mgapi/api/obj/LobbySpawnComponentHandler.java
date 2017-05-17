@@ -22,16 +22,16 @@
 
 */
 
-package de.minigameslib.mgapi.impl.obj;
-
-import de.minigameslib.mgapi.api.obj.AbstractObjectData;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
+package de.minigameslib.mgapi.api.obj;
 
 /**
+ * A spawn component handler used for players joining an arena.
+ * 
  * @author mepeisen
- *
  */
-public class SpectatorZoneData extends AbstractObjectData<ZoneRuleSetType>
+public interface LobbySpawnComponentHandler extends ArenaComponentHandler
 {
-    // empty
+    
+    // marker interface
+    
 }

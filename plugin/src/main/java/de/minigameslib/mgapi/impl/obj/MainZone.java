@@ -24,110 +24,34 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
-import java.io.File;
+import java.io.Serializable;
+import java.util.Collection;
 
-import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mclib.api.McLibInterface;
+import org.bukkit.plugin.Plugin;
+
+import de.minigameslib.mclib.api.locale.LocalizedMessage;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
+import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageComment.Argument;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mclib.api.objects.Cuboid;
-import de.minigameslib.mclib.api.objects.ZoneInterface;
-import de.minigameslib.mclib.api.util.function.McRunnable;
-import de.minigameslib.mclib.api.util.function.McSupplier;
-import de.minigameslib.mclib.shared.api.com.DataSection;
-import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface.CuboidMode;
+import de.minigameslib.mclib.api.objects.ZoneIdInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.arena.CheckSeverity;
+import de.minigameslib.mgapi.api.obj.AbstractArenaZoneHandler;
+import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
 import de.minigameslib.mgapi.api.obj.MainZoneHandler;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class MainZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetType, ZoneRuleSetInterface, MainZoneData> implements MainZoneHandler
+public class MainZone extends AbstractArenaZoneHandler<MainZoneData> implements MainZoneHandler
 {
-    
-    /** the underlying Zone. */
-    protected ZoneInterface zone;
-
-    @Override
-    public void initArena(ArenaInterface a) throws McException
-    {
-        super.initArena(a);
-        this.dataFile = new File(MinigamesPlugin.instance().getDataFolder(), "arenas/" + this.arena.getInternalName() + '/' + this.zone.getZoneId() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (this.dataFile.exists())
-        {
-            this.loadData();
-        }
-        else
-        {
-            this.saveData();
-        }
-    }
-
-    @Override
-    public void onCreate(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onResume(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onPause(ZoneInterface c)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void canDelete() throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onDelete()
-    {
-        if (this.dataFile.exists())
-        {
-            this.dataFile.delete();
-        }
-    }
-
-    @Override
-    public void canChangeCuboid(Cuboid newValue) throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onCuboidChange(Cuboid newValue)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void read(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public void write(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public boolean test(DataSection section)
-    {
-        // no additional data in mclib files
-        return true;
-    }
 
     @Override
     protected Class<MainZoneData> getDataClass()
@@ -142,103 +66,61 @@ public class MainZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetType, Zo
     }
 
     @Override
-    protected void applyListeners(ZoneRuleSetInterface listeners)
+    protected Plugin getPlugin()
     {
-        this.zone.registerHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
+        return MinigamesPlugin.instance().getPlugin();
     }
-
+    
     @Override
-    protected void removeListeners(ZoneRuleSetInterface listeners)
+    public Collection<CheckFailure> check()
     {
-        this.zone.unregisterHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
-    }
-
-    @Override
-    protected ZoneRuleSetInterface create(ZoneRuleSetType ruleset) throws McException
-    {
-        return calculateInCopiedContext(() -> {
-            return MinigamesPlugin.instance().creator(ruleset).apply(ruleset, this);
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInNewContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
+        final Collection<CheckFailure> result = super.check();
+        
+        final Cuboid cuboid = this.getZone().getCuboid();
+        
+        final Collection<ZoneIdInterface> myMainZones = this.getArena().getZones(cuboid, CuboidMode.FindShared, BasicZoneTypes.Main);
+        
+        for (final ZoneIdInterface id : myMainZones)
+        {
+            if (!id.equals(this.getZone().getZoneId()))
+            {
+                result.add(new CheckFailure(
+                        CheckSeverity.Warning,
+                        Messages.OverlappingMainZone,
+                        new Serializable[]{this.getName(), this.getArena().getHandler(id).getName()},
+                        Messages.OverlappingMainZone_Description));
+            }
+        }
+        
+        return result;
     }
     
     /**
-     * Runs the code in new context but copies all context variables before; changes made inside the runnable will be undone.
+     * The common messages.
      * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
+     * @author mepeisen
      */
-    void runInCopiedContext(McRunnable runnable) throws McException
+    @LocalizedMessages(value = "zones.Main")
+    public enum Messages implements LocalizedMessageInterface
     {
-        McLibInterface.instance().runInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInNewContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-    
-    /**
-     * Runs the code but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInCopiedContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-
-    @Override
-    public ZoneInterface getZone()
-    {
-        return this.zone;
+        
+        /**
+         * overlapping main zone.
+         */
+        @LocalizedMessage(defaultMessage = "zone '%1$s' overlaps main zone '%2$s'!", severity = MessageSeverityType.Warning)
+        @MessageComment(value = "overlapping main zone", args = {@Argument("this zone name"), @Argument("other zone name")})
+        OverlappingMainZone,
+        
+        /**
+         * overlapping main zone.
+         */
+        @LocalizedMessageList({
+            "Your zone is overlapping another main zone.",
+            "The arena will work but if you decide to export or relocate your arena this may result in broken arenas.",
+            "After importing the arena it may be broken."})
+        @MessageComment("overlapping main zone")
+        OverlappingMainZone_Description,
+        
     }
     
 }

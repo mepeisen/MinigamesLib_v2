@@ -24,6 +24,7 @@
 
 package de.minigameslib.mgapi.api.arena;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -42,6 +43,7 @@ import de.minigameslib.mclib.api.objects.EntityIdInterface;
 import de.minigameslib.mclib.api.objects.EntityTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectInterface;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface.CuboidMode;
 import de.minigameslib.mclib.api.objects.SignIdInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.objects.ZoneIdInterface;
@@ -66,6 +68,13 @@ import de.minigameslib.mgapi.api.team.TeamIdType;
  */
 public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetType, ArenaRuleSetInterface>
 {
+    
+    /**
+     * Returns a data folder uses to store custom data.
+     * 
+     * @return data folder.
+     */
+    File getDataFolder();
     
     /**
      * Returns the arena name.
@@ -419,11 +428,49 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     Collection<ComponentIdInterface> getComponents();
     
     /**
+     * Returns the components used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getComponents(Location location);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getComponents(Cuboid cuboid);
+    
+    /**
      * Returns the zones used in this arena
      * 
      * @return Zones of this arena.
      */
     Collection<ZoneIdInterface> getZones();
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getZones(Location location);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param mode
+     *            cuboid selection mode
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getZones(Cuboid cuboid, CuboidMode mode);
     
     /**
      * Returns the signs used in this arena
@@ -433,11 +480,47 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     Collection<SignIdInterface> getSigns();
     
     /**
+     * Returns the signs used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getSigns(Location location);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getSigns(Cuboid cuboid);
+    
+    /**
      * Returns the entities used in this arena
      * 
      * @return entities of this arena.
      */
     Collection<EntityIdInterface> getEntities();
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getEntities(Location location);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getEntities(Cuboid cuboid);
     
     /**
      * Returns the components used in this arena
@@ -449,6 +532,28 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     Collection<ComponentIdInterface> getComponents(ComponentTypeId... types);
     
     /**
+     * Returns the components used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            component types for filtering
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getComponents(Location location, ComponentTypeId... types);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            component types for filtering
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getComponents(Cuboid cuboid, ComponentTypeId... types);
+    
+    /**
      * Returns the zones used in this arena
      * 
      * @param types
@@ -456,6 +561,30 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
      * @return Zones of this arena.
      */
     Collection<ZoneIdInterface> getZones(ZoneTypeId... types);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            zone types for filtering
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getZones(Location location, ZoneTypeId... types);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param mode
+     *            cuboid selection mode
+     * @param types
+     *            zone types for filtering
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types);
     
     /**
      * Returns the signs used in this arena
@@ -467,6 +596,28 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     Collection<SignIdInterface> getSigns(SignTypeId... types);
     
     /**
+     * Returns the signs used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            sign types for filtering
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getSigns(Location location, SignTypeId... types);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            sign types for filtering
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getSigns(Cuboid cuboid, SignTypeId... types);
+    
+    /**
      * Returns the entities used in this arena
      * 
      * @param types
@@ -474,6 +625,192 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
      * @return entities of this arena.
      */
     Collection<EntityIdInterface> getEntities(EntityTypeId... types);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            entity types for filtering
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getEntities(Location location, EntityTypeId... types);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            entity types for filtering
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getEntities(Cuboid cuboid, EntityTypeId... types);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getForeignComponents(Location location);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getForeignComponents(Cuboid cuboid);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getForeignZones(Location location);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param mode
+     *            cuboid selection mode
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getForeignZones(Cuboid cuboid, CuboidMode mode);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getForeignSigns(Location location);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getForeignSigns(Cuboid cuboid);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getForeignEntities(Location location);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getForeignEntities(Cuboid cuboid);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            component types for filtering
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getForeignComponents(Location location, ComponentTypeId... types);
+    
+    /**
+     * Returns the components used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            component types for filtering
+     * @return Components of this arena.
+     */
+    Collection<ComponentIdInterface> getForeignComponents(Cuboid cuboid, ComponentTypeId... types);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            zone types for filtering
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getForeignZones(Location location, ZoneTypeId... types);
+    
+    /**
+     * Returns the zones used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param mode
+     *            cuboid selection mode
+     * @param types
+     *            zone types for filtering
+     * @return Zones of this arena.
+     */
+    Collection<ZoneIdInterface> getForeignZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            sign types for filtering
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getForeignSigns(Location location, SignTypeId... types);
+    
+    /**
+     * Returns the signs used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            sign types for filtering
+     * @return Signs of this arena.
+     */
+    Collection<SignIdInterface> getForeignSigns(Cuboid cuboid, SignTypeId... types);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param location
+     *            location filter
+     * @param types
+     *            entity types for filtering
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getForeignEntities(Location location, EntityTypeId... types);
+    
+    /**
+     * Returns the entities used in this arena
+     * 
+     * @param cuboid
+     *            location filter
+     * @param types
+     *            entity types for filtering
+     * @return entities of this arena.
+     */
+    Collection<EntityIdInterface> getForeignEntities(Cuboid cuboid, EntityTypeId... types);
     
     /**
      * Returns handler for given id.

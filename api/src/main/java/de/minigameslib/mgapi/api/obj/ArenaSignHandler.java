@@ -24,8 +24,11 @@
 
 package de.minigameslib.mgapi.api.obj;
 
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.objects.SignHandlerInterface;
 import de.minigameslib.mclib.api.objects.SignInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 
@@ -42,5 +45,12 @@ public interface ArenaSignHandler extends SignHandlerInterface, BaseArenaObjectH
      * @return sign
      */
     SignInterface getSign();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

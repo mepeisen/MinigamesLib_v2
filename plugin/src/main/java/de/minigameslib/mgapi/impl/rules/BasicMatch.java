@@ -24,6 +24,7 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.Collection;
 import java.util.logging.Level;
 
 import org.bukkit.scheduler.BukkitTask;
@@ -33,17 +34,22 @@ import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.arena.CheckSeverity;
 import de.minigameslib.mgapi.api.events.ArenaForceStartRequestedEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerLeftEvent;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
+import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
+import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
@@ -116,7 +122,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         {
             throw new McException(Messages.InvalidConfigLobbyCountdown, this.lobbyCountdown);
         }
-        if (this.lobbyCountdown > 60) // TODO Query from global config (maybe someone likes more than 60 seconds)
+        if (this.lobbyCountdown > 600) // TODO Query from global config (maybe someone likes more than 60 seconds)
         {
             throw new McException(Messages.InvalidConfigLobbyCountdown, this.lobbyCountdown);
         }
@@ -316,12 +322,54 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         this.arena.reconfigureRuleSets(this.type);
     }
     
+    @Override
+    public Collection<CheckFailure> check()
+    {
+        final Collection<CheckFailure> result = super.check();
+        
+        // at least one lobby zone
+        if (this.getArena().getZones(BasicZoneTypes.Lobby).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NoLobby, Messages.NoLobby_Description));
+        }
+        // check for lobby spawn
+        if (this.getArena().getComponents(BasicComponentTypes.LobbySpawn).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NoLobbySpawn, Messages.NoLobbySpawn_Description));
+        }
+        
+        // at least one battle zone
+        if (this.getArena().getZones(BasicZoneTypes.Battle).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NoBattleZone, Messages.NoBattleZone_Description));
+        }
+        
+        // check for spectator zones
+        if (this.getArena().getZones(BasicZoneTypes.Spectator).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NoSpectatorZone, Messages.NoSpectatorZone_Description));
+        }
+        // check for spectator spawns
+        if (this.getArena().getComponents(BasicComponentTypes.SpectatorSpawn).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NoSpectatorSpawn, Messages.NoSpectatorSpawn_Description));
+        }
+        
+        // check for main lobby
+        if (this.getArena().getComponents(BasicComponentTypes.MainLobbySpawn).isEmpty())
+        {
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NoMainLobbySpawn, Messages.NoMainLobbySpawn_Description));
+        }
+        
+        return result;
+    }
+    
     /**
      * The common messages.
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "cmd.rules.BasicMatch")
+    @LocalizedMessages(value = "rules.BasicMatch")
     public enum Messages implements LocalizedMessageInterface
     {
         
@@ -379,7 +427,106 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
          */
         @LocalizedMessage(defaultMessage = "Invalid config value (lobby countdown): " + LocalizedMessage.CODE_COLOR + "%1$d", severity = MessageSeverityType.Information)
         @MessageComment(value = { "Invalid config value (lobby countdown)" }, args = { @Argument(type = "Numeric", value = "lobby countdown config value") })
-        InvalidConfigLobbyCountdown
+        InvalidConfigLobbyCountdown,
+        
+        /**
+         * no lobby found.
+         */
+        @LocalizedMessage(defaultMessage = "No lobby found!", severity = MessageSeverityType.Error)
+        @MessageComment("no lobby found")
+        NoLobby,
+        
+        /**
+         * no lobby found.
+         */
+        @LocalizedMessageList({
+            "You did not create any lobby zone.",
+            "The game needs at least one lobby zone.",
+            "The lobby is the area where players are ported if they wait for a match to start."})
+        @MessageComment("no lobby found")
+        NoLobby_Description,
+        
+        /**
+         * no lobby found.
+         */
+        @LocalizedMessage(defaultMessage = "No lobby spawn found!", severity = MessageSeverityType.Error)
+        @MessageComment("no lobby spawn found")
+        NoLobbySpawn,
+        
+        /**
+         * no lobby found.
+         */
+        @LocalizedMessageList({
+            "You did not create any lobby spawn.",
+            "The game needs at least one lobby spawn.",
+            "The lobby is the area where players are ported if they wait for a match to start."})
+        @MessageComment("no lobby found")
+        NoLobbySpawn_Description,
+        
+        /**
+         * no battle zone found.
+         */
+        @LocalizedMessage(defaultMessage = "No battle zone found!", severity = MessageSeverityType.Error)
+        @MessageComment("no battle zone found")
+        NoBattleZone,
+        
+        /**
+         * no battle zone found.
+         */
+        @LocalizedMessageList({
+            "You did not create any battle zone.",
+            "The game needs at least one battle zone.",
+            "The battle zone is the arena wheere all the action goes on and where the players will fight."})
+        @MessageComment("no battle zone found")
+        NoBattleZone_Description,
+        
+        /**
+         * no spectator zone found.
+         */
+        @LocalizedMessage(defaultMessage = "No spectator zone found!", severity = MessageSeverityType.Warning)
+        @MessageComment("no spectator zone found")
+        NoSpectatorZone,
+        
+        /**
+         * no spectator zone found.
+         */
+        @LocalizedMessageList({
+            "You did not create any spectator zone.",
+            "The arena will work but it will be impossible to watch the game."})
+        @MessageComment("no spectator zone found")
+        NoSpectatorZone_Description,
+        
+        /**
+         * no spectator spawn found.
+         */
+        @LocalizedMessage(defaultMessage = "No spectator spawn found!", severity = MessageSeverityType.Warning)
+        @MessageComment("no spectator spawn found")
+        NoSpectatorSpawn,
+        
+        /**
+         * no spectator spawn found.
+         */
+        @LocalizedMessageList({
+            "You did not create any spectator spawn.",
+            "The arena will work but it will be impossible to watch the game."})
+        @MessageComment("no spectator spawn found")
+        NoSpectatorSpawn_Description,
+        
+        /**
+         * no main lobby spawn found.
+         */
+        @LocalizedMessage(defaultMessage = "No main lobby spawn found!", severity = MessageSeverityType.Error)
+        @MessageComment("no main lobby spawn found")
+        NoMainLobbySpawn,
+        
+        /**
+         * no main lobby spawn found.
+         */
+        @LocalizedMessageList({
+            "You did not create any main lobby spawn.",
+            "After leaving a match the players cannot be ported to any location without main lobby spawns."})
+        @MessageComment("no main lobby spawn found")
+        NoMainLobbySpawn_Description,
         
     }
     

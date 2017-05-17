@@ -127,7 +127,7 @@ import de.minigameslib.mgapi.impl.obj.GenericComponent;
 import de.minigameslib.mgapi.impl.obj.GenericSign;
 import de.minigameslib.mgapi.impl.obj.GenericZone;
 import de.minigameslib.mgapi.impl.obj.JoinSign;
-import de.minigameslib.mgapi.impl.obj.JoinSpawnComponent;
+import de.minigameslib.mgapi.impl.obj.LobbySpawnComponent;
 import de.minigameslib.mgapi.impl.obj.JoinZone;
 import de.minigameslib.mgapi.impl.obj.LeaveSign;
 import de.minigameslib.mgapi.impl.obj.LeaveZone;
@@ -323,7 +323,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
             this.registerArenaComponent(this, BasicComponentTypes.Empty, EmptyComponent::new, EmptyComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.Generic, GenericComponent::new, GenericComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.Spawn, SpawnComponent::new, SpawnComponent.class);
-            this.registerArenaComponent(this, BasicComponentTypes.JoinSpawn, JoinSpawnComponent::new, JoinSpawnComponent.class);
+            this.registerArenaComponent(this, BasicComponentTypes.LobbySpawn, LobbySpawnComponent::new, LobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.MainLobbySpawn, MainLobbySpawnComponent::new, MainLobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.SpectatorSpawn, SpectatorSpawnComponent::new, SpectatorSpawnComponent.class);
             this.registerArenaSign(this, BasicSignTypes.Empty, EmptySign::new, EmptySign.class);

@@ -538,4 +538,40 @@ public interface MinigamesLibInterface
      */
     ArenaPlayerInterface getPlayer(UUID uuid);
     
+    // the following methods should be used with care.
+    // instead invoking them directly you should reuse our abstract arena handler classes.
+    // they support rule management and creation in a clean way.
+    
+    /**
+     * Returns the create function for given rule set type
+     * 
+     * @param type
+     * @return creator function
+     */
+    McBiFunction<ArenaRuleSetType, ArenaInterface, ArenaRuleSetInterface> creator(ArenaRuleSetType type);
+    
+    /**
+     * Returns the create function for given rule set type
+     * 
+     * @param type
+     * @return creator function
+     */
+    McBiFunction<ComponentRuleSetType, ArenaComponentHandler, ComponentRuleSetInterface> creator(ComponentRuleSetType type);
+    
+    /**
+     * Returns the create function for given rule set type
+     * 
+     * @param type
+     * @return creator function
+     */
+    McBiFunction<SignRuleSetType, ArenaSignHandler, SignRuleSetInterface> creator(SignRuleSetType type);
+    
+    /**
+     * Returns the create function for given rule set type
+     * 
+     * @param type
+     * @return creator function
+     */
+    McBiFunction<ZoneRuleSetType, ArenaZoneHandler, ZoneRuleSetInterface> creator(ZoneRuleSetType type);
+    
 }

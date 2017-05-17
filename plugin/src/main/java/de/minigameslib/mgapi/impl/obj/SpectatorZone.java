@@ -24,110 +24,37 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
-import java.io.File;
+import java.io.Serializable;
+import java.util.Collection;
 
-import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mclib.api.McLibInterface;
+import org.bukkit.plugin.Plugin;
+
+import de.minigameslib.mclib.api.locale.LocalizedMessage;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
+import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageComment.Argument;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
+import de.minigameslib.mclib.api.objects.ComponentIdInterface;
 import de.minigameslib.mclib.api.objects.Cuboid;
-import de.minigameslib.mclib.api.objects.ZoneInterface;
-import de.minigameslib.mclib.api.util.function.McRunnable;
-import de.minigameslib.mclib.api.util.function.McSupplier;
-import de.minigameslib.mclib.shared.api.com.DataSection;
-import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface.CuboidMode;
+import de.minigameslib.mclib.api.objects.ZoneIdInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.arena.CheckSeverity;
+import de.minigameslib.mgapi.api.obj.AbstractArenaZoneHandler;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
+import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
+import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
 import de.minigameslib.mgapi.api.obj.SpectatorZoneHandler;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class SpectatorZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetType, ZoneRuleSetInterface, SpectatorZoneData> implements SpectatorZoneHandler
+public class SpectatorZone extends AbstractArenaZoneHandler<SpectatorZoneData> implements SpectatorZoneHandler
 {
-    
-    /** the underlying Zone. */
-    protected ZoneInterface zone;
-
-    @Override
-    public void initArena(ArenaInterface a) throws McException
-    {
-        super.initArena(a);
-        this.dataFile = new File(MinigamesPlugin.instance().getDataFolder(), "arenas/" + this.arena.getInternalName() + '/' + this.zone.getZoneId() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (this.dataFile.exists())
-        {
-            this.loadData();
-        }
-        else
-        {
-            this.saveData();
-        }
-    }
-
-    @Override
-    public void onCreate(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onResume(ZoneInterface c) throws McException
-    {
-        this.zone = c;
-    }
-
-    @Override
-    public void onPause(ZoneInterface c)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void canDelete() throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onDelete()
-    {
-        if (this.dataFile.exists())
-        {
-            this.dataFile.delete();
-        }
-    }
-
-    @Override
-    public void canChangeCuboid(Cuboid newValue) throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onCuboidChange(Cuboid newValue)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void read(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public void write(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public boolean test(DataSection section)
-    {
-        // no additional data in mclib files
-        return true;
-    }
 
     @Override
     protected Class<SpectatorZoneData> getDataClass()
@@ -142,103 +69,80 @@ public class SpectatorZone extends AbstractBaseArenaObjectHandler<ZoneRuleSetTyp
     }
 
     @Override
-    protected void applyListeners(ZoneRuleSetInterface listeners)
+    protected Plugin getPlugin()
     {
-        this.zone.registerHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
+        return MinigamesPlugin.instance().getPlugin();
     }
-
+    
     @Override
-    protected void removeListeners(ZoneRuleSetInterface listeners)
+    public Collection<CheckFailure> check()
     {
-        this.zone.unregisterHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
-    }
+        final Collection<CheckFailure> result = super.check();
+        
+        final Cuboid cuboid = this.getZone().getCuboid();
+        
+        final Collection<ZoneIdInterface> myBattleZones = this.getArena().getZones(cuboid, CuboidMode.FindShared, BasicZoneTypes.Battle);
+        final Collection<ComponentIdInterface> mySpectatorSpawns = this.getArena().getComponents(cuboid, BasicComponentTypes.SpectatorSpawn);
 
-    @Override
-    protected ZoneRuleSetInterface create(ZoneRuleSetType ruleset) throws McException
-    {
-        return calculateInCopiedContext(() -> {
-            return MinigamesPlugin.instance().creator(ruleset).apply(ruleset, this);
-        });
+        for (final ZoneIdInterface id : myBattleZones)
+        {
+            final ArenaZoneHandler handler = this.getArena().getHandler(id);
+            result.add(new CheckFailure(
+                    CheckSeverity.Error,
+                    Messages.OverlapsBattleZone,
+                    new Serializable[]{this.getName(), handler.getName()},
+                    Messages.OverlapsBattleZone_Description));
+        }
+        if (mySpectatorSpawns.size() == 0)
+        {
+            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NoSpawns, new Serializable[]{this.getName()}, Messages.NoSpawns_Description));
+        }
+        
+        return result;
     }
     
     /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
+     * The common messages.
      * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
+     * @author mepeisen
      */
-    void runInNewContext(McRunnable runnable) throws McException
+    @LocalizedMessages(value = "zones.Spectator")
+    public enum Messages implements LocalizedMessageInterface
     {
-        McLibInterface.instance().runInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInCopiedContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInNewContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-    
-    /**
-     * Runs the code but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInCopiedContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this);
-            return runnable.get();
-        });
-    }
-
-    @Override
-    public ZoneInterface getZone()
-    {
-        return this.zone;
+        
+        /**
+         * overlaps with battle zone.
+         */
+        @LocalizedMessage(defaultMessage = "zone '%1$s' overlaps battle zone '%2$s'!", severity = MessageSeverityType.Warning)
+        @MessageComment(value = "overlaps with battle zone", args = {@Argument("this zone name"), @Argument("battle zone name")})
+        OverlapsBattleZone,
+        
+        /**
+         * overlaps with battle zone.
+         */
+        @LocalizedMessageList({
+            "Your spectator zone is overlapping a battle zone.",
+            "The arena will work but there may be some conflicting rules influencing the battle or the spectators."})
+        @MessageComment("overlaps with battle zone")
+        OverlapsBattleZone_Description,
+        
+        /**
+         * no spawns.
+         */
+        @LocalizedMessage(defaultMessage = "zone '%1$s' does not have spawns!", severity = MessageSeverityType.Warning)
+        @MessageComment(value = "no spawns", args = {@Argument("this zone name")})
+        NoSpawns,
+        
+        /**
+         * no spawns.
+         */
+        @LocalizedMessageList({
+            "Your spectator zone does not contain spectator spawns.",
+            "The arena will work but spectators may not reach your spectator zone.",
+            "Is it really what you want?"})
+        @MessageComment("no spawns")
+        NoSpawns_Description,
+        
     }
     
 }

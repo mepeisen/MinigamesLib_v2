@@ -24,8 +24,9 @@
 
 package de.minigameslib.mgapi.api.arena;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +59,14 @@ public abstract class ClassicSinglePlayerArena implements ArenaTypeProvider
     public Set<ArenaRuleSetType> getOptionalArenaRules()
     {
         // TODO optional rules for classic simple player arena
-        return Collections.emptySet();
+        return new HashSet<>();
+    }
+    
+    @Override
+    public Collection<CheckFailure> check(ArenaInterface arena)
+    {
+        // no checkup in standard single player arena
+        return new ArrayList<>();
     }
 
     @Override

@@ -31,6 +31,10 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
+import de.minigameslib.mgapi.api.MinigameMessages;
+import de.minigameslib.mgapi.api.obj.AbstractArenaComponentHandler;
+import de.minigameslib.mgapi.api.obj.AbstractArenaSignHandler;
+import de.minigameslib.mgapi.api.obj.AbstractArenaZoneHandler;
 import de.minigameslib.mgapi.impl.MglibMessages.MglibCoreErrors;
 import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.AdminCheckCommand;
@@ -75,8 +79,22 @@ import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 import de.minigameslib.mgapi.impl.cmd.SpectateCommand;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorProvider;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
+import de.minigameslib.mgapi.impl.obj.BattleZone;
+import de.minigameslib.mgapi.impl.obj.EmptyComponent;
+import de.minigameslib.mgapi.impl.obj.EmptySign;
+import de.minigameslib.mgapi.impl.obj.GenericSign;
+import de.minigameslib.mgapi.impl.obj.JoinSign;
+import de.minigameslib.mgapi.impl.obj.LeaveSign;
+import de.minigameslib.mgapi.impl.obj.LobbySpawnComponent;
+import de.minigameslib.mgapi.impl.obj.LobbyZone;
+import de.minigameslib.mgapi.impl.obj.MainLobbySpawnComponent;
+import de.minigameslib.mgapi.impl.obj.MainZone;
+import de.minigameslib.mgapi.impl.obj.SpawnComponent;
+import de.minigameslib.mgapi.impl.obj.SpectatorSpawnComponent;
+import de.minigameslib.mgapi.impl.obj.SpectatorZone;
 import de.minigameslib.mgapi.impl.rules.BasicMatch;
 import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
+import de.minigameslib.mgapi.impl.rules.BasicSpawns;
 
 /**
  * The common messages.
@@ -87,6 +105,7 @@ import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
 @ChildEnum({
     // core
     MglibCoreErrors.class,
+    MinigameMessages.class,
     ArenaImpl.Messages.class,
     MarkerColorProvider.Messages.class,
     // commands
@@ -136,9 +155,29 @@ import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
     AdminComponentTpCommand.Messages.class,
     // admin tools
     AdminToolHelper.Messages.class,
+    
     // rules
+    BasicSpawns.Messages.class,
     BasicMatch.Messages.class,
     BasicMatchTimer.Messages.class,
+    
+    // components etc.
+    AbstractArenaZoneHandler.Messages.class,
+    AbstractArenaSignHandler.Messages.class,
+    AbstractArenaComponentHandler.Messages.class,
+    MainLobbySpawnComponent.Messages.class,
+    SpawnComponent.Messages.class,
+    LobbySpawnComponent.Messages.class,
+    SpectatorSpawnComponent.Messages.class,
+    LeaveSign.Messages.class,
+    JoinSign.Messages.class,
+    GenericSign.Messages.class,
+    EmptySign.Messages.class,
+    EmptyComponent.Messages.class,
+    BattleZone.Messages.class,
+    LobbyZone.Messages.class,
+    SpectatorZone.Messages.class,
+    MainZone.Messages.class,
 })
 public enum MglibMessages implements LocalizedMessageInterface
 {

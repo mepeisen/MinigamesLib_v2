@@ -24,11 +24,16 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
+import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.util.function.McRunnable;
 import de.minigameslib.mclib.api.util.function.McSupplier;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 
 /**
@@ -149,6 +154,18 @@ public abstract class AbstractSignRule implements SignRuleSetInterface
             McLibInterface.instance().setContext(SignRuleSetInterface.class, this);
             return runnable.get();
         });
+    }
+    
+    @Override
+    public SignInterface getSign()
+    {
+        return this.sign.getSign();
+    }
+    
+    @Override
+    public Collection<CheckFailure> check()
+    {
+        return new ArrayList<>();
     }
     
 }

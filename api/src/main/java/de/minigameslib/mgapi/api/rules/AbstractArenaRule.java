@@ -24,11 +24,15 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mclib.api.util.function.McRunnable;
 import de.minigameslib.mclib.api.util.function.McSupplier;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 
 /**
  * Abstract base class for rule sets
@@ -144,6 +148,12 @@ public abstract class AbstractArenaRule implements ArenaRuleSetInterface
             McLibInterface.instance().setContext(ArenaRuleSetInterface.class, this);
             return runnable.get();
         });
+    }
+    
+    @Override
+    public Collection<CheckFailure> check()
+    {
+        return new ArrayList<>();
     }
     
 }
