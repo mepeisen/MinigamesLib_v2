@@ -28,6 +28,8 @@ import de.minigameslib.mclib.api.config.ConfigComment;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
+import de.minigameslib.mclib.api.config.ValidateLMax;
+import de.minigameslib.mclib.api.config.ValidateLMin;
 
 /**
  * Basic match configurations
@@ -45,20 +47,26 @@ public enum BasicMatchConfig implements ConfigurationValueInterface
      */
     @ConfigurationInt(defaultValue = 2)
     @ConfigComment({"The minimum players to start a match"})
-    MinPlayers,
+    @ValidateLMin(2)
+    @ValidateLMax(100)
+    MinPlayers, // TODO validate min <= max
     
     /**
      * The maximum players inside an arena
      */
     @ConfigurationInt(defaultValue = 10)
     @ConfigComment({"The maximum players allowed per match"})
-    MaxPlayers,
+    @ValidateLMin(2)
+    @ValidateLMax(100)
+    MaxPlayers, // TODO validate min <= max
     
     /**
      * The seconds for lobby count down before match starts
      */
     @ConfigurationInt(defaultValue = 30)
     @ConfigComment({"The seconds for lobby count down before match starts"})
+    @ValidateLMin(5)
+    @ValidateLMax(600)
     LobbyCountdown
     
 }

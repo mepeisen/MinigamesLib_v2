@@ -28,6 +28,8 @@ import de.minigameslib.mclib.api.config.ConfigComment;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
+import de.minigameslib.mclib.api.config.ValidateLMax;
+import de.minigameslib.mclib.api.config.ValidateLMin;
 
 /**
  * Basic match timer configurations
@@ -44,6 +46,8 @@ public enum BasicMatchTimerConfig implements ConfigurationValueInterface
      */
     @ConfigurationInt(defaultValue = 120)
     @ConfigComment({"The maximum match time in seconds"})
+    @ValidateLMin(0)
+    @ValidateLMax(60*60*24)
     MaxSeconds
     
 }

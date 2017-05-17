@@ -45,9 +45,9 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 
@@ -169,7 +169,7 @@ public class SignsPage extends AbstractPage<ArenaSignHandler>
         }
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         AdminToolHelper.onCreateSign(player, this.arena, name, type, s -> player.openClickGui(new Main(new SignEdit(this.arena, s, this))));

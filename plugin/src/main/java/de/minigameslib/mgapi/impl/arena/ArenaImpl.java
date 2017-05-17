@@ -27,9 +27,11 @@ package de.minigameslib.mgapi.impl.arena;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -65,6 +67,7 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectHandlerInterface;
 import de.minigameslib.mclib.api.objects.ObjectInterface;
 import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface.CuboidMode;
 import de.minigameslib.mclib.api.objects.SignIdInterface;
 import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
@@ -76,6 +79,7 @@ import de.minigameslib.mclib.api.util.function.McSupplier;
 import de.minigameslib.mclib.shared.api.com.DataSection;
 import de.minigameslib.mclib.shared.api.com.MemoryDataSection;
 import de.minigameslib.mgapi.api.MinigameInterface;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
@@ -94,15 +98,18 @@ import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
 import de.minigameslib.mgapi.api.obj.SpectatorSpawnComponentHandler;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
+import de.minigameslib.mgapi.api.rules.AbstractRuleSetContainer;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
+import de.minigameslib.mgapi.api.rules.SignRuleSetType;
+import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 import de.minigameslib.mgapi.api.team.ArenaTeamInterface;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.MglibObjectTypes;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 import de.minigameslib.mgapi.impl.arena.ArenaData.TeamData;
 import de.minigameslib.mgapi.impl.internal.TaskManager;
-import de.minigameslib.mgapi.impl.rules.AbstractRuleSetContainer;
 import de.minigameslib.mgapi.impl.tasks.AsyncArenaRestartTask;
 import de.minigameslib.mgapi.impl.tasks.AsyncArenaStartTask;
 
@@ -152,7 +159,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         {
             if (ArenaImpl.this.getState() != ArenaState.Maintenance && ArenaImpl.this.getState() != ArenaState.Booting)
             {
-                throw new McException(Messages.ModificationWrongState);
+                throw new McException(MinigameMessages.ModificationWrongState);
             }
         }
 
@@ -172,7 +179,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         protected ArenaRuleSetInterface create(ArenaRuleSetType ruleset) throws McException
         {
             return ArenaImpl.this.calculateInCopiedContext(() -> {
-                return MinigamesPlugin.instance().creator(ruleset).apply(ruleset, ArenaImpl.this);
+                return MinigamesLibInterface.instance().creator(ruleset).apply(ruleset, ArenaImpl.this);
             });
         }
     };
@@ -226,7 +233,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
     }
     
@@ -570,7 +577,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.match.join(player);
         player.getMcPlayer().sendMessage(Messages.JoinedArena, this.getDisplayName());
         // port to main lobby
-        this.teleportRandom(player, this.getComponents(BasicComponentTypes.JoinSpawn));
+        this.teleportRandom(player, this.getComponents(BasicComponentTypes.LobbySpawn));
     }
 
     @Override
@@ -970,8 +977,58 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     @Override
     public Collection<CheckFailure> check()
     {
-        // TODO implement checkup
-        return Collections.emptyList();
+        final List<CheckFailure> list = new ArrayList<>();
+        try
+        {
+            list.addAll(this.type.safeCreateProvider().check(this));
+            for (final ArenaRuleSetType ruleset : this.getAppliedRuleSetTypes())
+            {
+                list.addAll(this.getRuleSet(ruleset).check());
+            }
+            final ObjectServiceInterface osi = ObjectServiceInterface.instance();
+            for (final ComponentIdInterface id : this.getComponents())
+            {
+                final ArenaComponentHandler handler = (ArenaComponentHandler) osi.findComponent(id).getHandler();
+                list.addAll(handler.check());
+                for (final ComponentRuleSetType ruleset : handler.getAppliedRuleSetTypes())
+                {
+                    list.addAll(handler.getRuleSet(ruleset).check());
+                }
+            }
+            for (final ZoneIdInterface id : this.getZones())
+            {
+                final ArenaZoneHandler handler = (ArenaZoneHandler) osi.findZone(id).getHandler();
+                list.addAll(handler.check());
+                for (final ZoneRuleSetType ruleset : handler.getAppliedRuleSetTypes())
+                {
+                    list.addAll(handler.getRuleSet(ruleset).check());
+                }
+            }
+            for (final SignIdInterface id : this.getSigns())
+            {
+                final ArenaSignHandler handler = (ArenaSignHandler) osi.findSign(id).getHandler();
+                list.addAll(handler.check());
+                for (final SignRuleSetType ruleset : handler.getAppliedRuleSetTypes())
+                {
+                    list.addAll(handler.getRuleSet(ruleset).check());
+                }
+            }
+            // TODO entity support
+//            for (final EntityIdInterface id : this.getEntities())
+//            {
+//                final ArenaEntityHandler handler = (ArenaEntityHandler) osi.findEntity(id).getHandler();
+//                list.addAll(handler.check());
+//                for (final EntityRuleSetType ruleset : handler.getAppliedRuleSetTypes())
+//                {
+//                    list.addAll(handler.getRuleSet(ruleset).check());
+//                }
+//            }
+        }
+        catch (McException ex)
+        {
+            list.add(new CheckFailure(CheckSeverity.Error, ex.getErrorMessage(), ex.getArgs(), null));
+        }
+        return list;
     }
 
     /**
@@ -1123,7 +1180,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (ArenaImpl.this.getState() != ArenaState.Maintenance && ArenaImpl.this.getState() != ArenaState.Booting)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final ArenaDeleteEvent deleteEvent = new ArenaDeleteEvent(this);
@@ -1370,7 +1427,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         final ArenaComponentHandler handler = MinigamesPlugin.instance().creator(t).get();
         final ComponentInterface component = ObjectServiceInterface.instance().createComponent(t, location, handler, true);
@@ -1386,7 +1443,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         final ArenaSignHandler handler = MinigamesPlugin.instance().creator(t).get();
         final SignInterface mcsign = ObjectServiceInterface.instance().createSign(t, sign, handler, true);
@@ -1402,7 +1459,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         final ArenaZoneHandler handler = MinigamesPlugin.instance().creator(t).get();
         final ZoneInterface zone = ObjectServiceInterface.instance().createZone(t, cuboid, handler, true);
@@ -1423,7 +1480,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         this.arenaData.getTeams().clear();
         this.saveData();
@@ -1434,7 +1491,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         if (team.isSpecial())
         {
@@ -1450,7 +1507,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (this.getState() != ArenaState.Maintenance)
         {
-            throw new McException(Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         this.arenaData.getTeams().removeIf(t -> t.getId() == team);
         this.saveData();
@@ -1543,7 +1600,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             {
                 if (ArenaImpl.this.getState() != ArenaState.Maintenance)
                 {
-                    throw new McException(Messages.ModificationWrongState);
+                    throw new McException(MinigameMessages.ModificationWrongState);
                 }
                 if (team.isSpecial())
                 {
@@ -1651,13 +1708,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         @LocalizedMessage(defaultMessage = "Cannot start test match because arena ist not in maintenance.", severity = MessageSeverityType.Error)
         @MessageComment({"Cannot start test match because arena is not in maintenance mode"})
         TestWrongState,
-        
-        /**
-         * Cannot modify arena because of wrong state
-         */
-        @LocalizedMessage(defaultMessage = "Cannot modify arena because of wrong state.", severity = MessageSeverityType.Error)
-        @MessageComment({"Cannot modify arena because of wrong state"})
-        ModificationWrongState,
         
         /**
          * Cannot start match because arena is not in join mode
@@ -1771,6 +1821,320 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         @MessageComment(value = {"Cannot rejoin same match"}, args = @Argument("arena display name"))
         CannotRejoin,
         
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getComponents(Location location)
+    {
+        return ObjectServiceInterface.instance().findComponents(location).stream()
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getComponents(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findComponents(cuboid).stream()
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getZones(Location location)
+    {
+        return ObjectServiceInterface.instance().findZones(location).stream()
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getZones(Cuboid cuboid, CuboidMode mode)
+    {
+        return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getSigns(Location location)
+    {
+        return ObjectServiceInterface.instance().findSigns(location).stream()
+                .map(SignInterface::getSignId)
+                .filter(o -> this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getSigns(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findSigns(cuboid).stream()
+                .map(SignInterface::getSignId)
+                .filter(o -> this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getEntities(Location location)
+    {
+        // TODO rework in mclib: find entities for location
+        return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
+                .map(EntityInterface::getEntityId)
+                .filter(o -> this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getEntities(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findEntities(cuboid).stream()
+                .map(EntityInterface::getEntityId)
+                .filter(o -> this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getComponents(Location location, ComponentTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findComponents(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getComponents(Cuboid cuboid, ComponentTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findComponents(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getZones(Location location, ZoneTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findZones(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getSigns(Location location, SignTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findSigns(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(SignInterface::getSignId)
+                .filter(o -> this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getSigns(Cuboid cuboid, SignTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findSigns(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(SignInterface::getSignId)
+                .filter(o -> this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getEntities(Location location, EntityTypeId... types)
+    {
+        // TODO rework in mclib: find entitiers for location
+        return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(EntityInterface::getEntityId)
+                .filter(o -> this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getEntities(Cuboid cuboid, EntityTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findEntities(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(EntityInterface::getEntityId)
+                .filter(o -> this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getForeignComponents(Location location)
+    {
+        return ObjectServiceInterface.instance().findComponents(location).stream()
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> !this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getForeignComponents(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findComponents(cuboid).stream()
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> !this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getForeignZones(Location location)
+    {
+        return ObjectServiceInterface.instance().findZones(location).stream()
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> !this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getForeignZones(Cuboid cuboid, CuboidMode mode)
+    {
+        return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> !this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getForeignSigns(Location location)
+    {
+        return ObjectServiceInterface.instance().findSigns(location).stream()
+                .map(SignInterface::getSignId)
+                .filter(o -> !this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getForeignSigns(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findSigns(cuboid).stream()
+                .map(SignInterface::getSignId)
+                .filter(o -> !this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getForeignEntities(Location location)
+    {
+        // TODO rework in mclib: find entities for location
+        return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
+                .map(EntityInterface::getEntityId)
+                .filter(o -> !this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getForeignEntities(Cuboid cuboid)
+    {
+        return ObjectServiceInterface.instance().findEntities(cuboid).stream()
+                .map(EntityInterface::getEntityId)
+                .filter(o -> !this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getForeignComponents(Location location, ComponentTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findComponents(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> !this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ComponentIdInterface> getForeignComponents(Cuboid cuboid, ComponentTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findComponents(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ComponentInterface::getComponentId)
+                .filter(o -> !this.arenaData.getComponents().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getForeignZones(Location location, ZoneTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findZones(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> !this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<ZoneIdInterface> getForeignZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(ZoneInterface::getZoneId)
+                .filter(o -> !this.arenaData.getZones().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getForeignSigns(Location location, SignTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findSigns(location).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(SignInterface::getSignId)
+                .filter(o -> !this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<SignIdInterface> getForeignSigns(Cuboid cuboid, SignTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findSigns(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(SignInterface::getSignId)
+                .filter(o -> !this.arenaData.getSigns().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getForeignEntities(Location location, EntityTypeId... types)
+    {
+        // TODO rework in mclib: find entitiers for location
+        return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(EntityInterface::getEntityId)
+                .filter(o -> !this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<EntityIdInterface> getForeignEntities(Cuboid cuboid, EntityTypeId... types)
+    {
+        return ObjectServiceInterface.instance().findEntities(cuboid).stream()
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .map(EntityInterface::getEntityId)
+                .filter(o -> !this.arenaData.getEntities().contains(o))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public File getDataFolder()
+    {
+        return new File(MinigamesPlugin.instance().getDataFolder(), "arenas/" + this.getInternalName()); //$NON-NLS-1$
     }
     
 }

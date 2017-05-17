@@ -43,10 +43,10 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
 
 /**
@@ -166,7 +166,7 @@ public class SignEdit implements ClickGuiPageInterface
         }
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         this.sign.setName(name);
@@ -231,7 +231,7 @@ public class SignEdit implements ClickGuiPageInterface
     {
         if (!this.arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         this.sign.getSign().delete();
         session.setNewPage(this.prevPage);

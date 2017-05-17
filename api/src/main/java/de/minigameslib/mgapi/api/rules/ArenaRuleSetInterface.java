@@ -24,7 +24,10 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.Collection;
+
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 
 /**
  * Interface for arena rule sets.
@@ -39,5 +42,12 @@ public interface ArenaRuleSetInterface extends RuleSetInterface<ArenaRuleSetType
      * @return arena
      */
     ArenaInterface getArena();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

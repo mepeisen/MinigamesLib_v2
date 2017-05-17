@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.impl.obj;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
@@ -36,32 +37,31 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
-import de.minigameslib.mclib.api.objects.ComponentIdInterface;
-import de.minigameslib.mclib.api.objects.Cuboid;
+import de.minigameslib.mclib.api.objects.ZoneIdInterface;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
-import de.minigameslib.mgapi.api.obj.AbstractArenaZoneHandler;
-import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
-import de.minigameslib.mgapi.api.obj.BattleZoneHandler;
+import de.minigameslib.mgapi.api.obj.AbstractArenaComponentHandler;
+import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
+import de.minigameslib.mgapi.api.obj.LobbySpawnComponentHandler;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class BattleZone extends AbstractArenaZoneHandler<BattleZoneData> implements BattleZoneHandler
+public class LobbySpawnComponent extends AbstractArenaComponentHandler<LobbySpawnComponentData> implements LobbySpawnComponentHandler
 {
 
     @Override
-    protected Class<BattleZoneData> getDataClass()
+    protected Class<LobbySpawnComponentData> getDataClass()
     {
-        return BattleZoneData.class;
+        return LobbySpawnComponentData.class;
     }
 
     @Override
-    protected BattleZoneData createData()
+    protected LobbySpawnComponentData createData()
     {
-        return new BattleZoneData();
+        return new LobbySpawnComponentData();
     }
 
     @Override
@@ -75,15 +75,14 @@ public class BattleZone extends AbstractArenaZoneHandler<BattleZoneData> impleme
     {
         final Collection<CheckFailure> result = super.check();
         
-        final Cuboid cuboid = this.getZone().getCuboid();
+        final Location loc = this.getComponent().getLocation();
         
-        final Collection<ComponentIdInterface> mySpawns = this.getArena().getComponents(cuboid, BasicComponentTypes.Spawn);
-
-        if (mySpawns.size() == 0)
+        final Collection<ZoneIdInterface> myZones = this.arena.getZones(loc, BasicZoneTypes.Lobby);
+        if (myZones.size() == 0)
         {
-            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NoSpawns, new Serializable[]{this.getName()}, Messages.NoSpawns_Description));
+            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NotWithinLobbyZone, new Serializable[]{this.getName()}, Messages.NotWithinLobbyZone_Description));
         }
-        
+    
         return result;
     }
     
@@ -92,26 +91,25 @@ public class BattleZone extends AbstractArenaZoneHandler<BattleZoneData> impleme
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "zones.Battle")
+    @LocalizedMessages(value = "components.LobbySpawn")
     public enum Messages implements LocalizedMessageInterface
     {
         
         /**
-         * no spawns.
+         * not within lobby zone.
          */
-        @LocalizedMessage(defaultMessage = "zone '%1$s' does not have spawns!", severity = MessageSeverityType.Warning)
-        @MessageComment(value = "no spawns", args = {@Argument("this zone name")})
-        NoSpawns,
+        @LocalizedMessage(defaultMessage = "spawn '%1$s' not within lobby zone!", severity = MessageSeverityType.Error)
+        @MessageComment(value = "not within lobby zone", args = {@Argument("component name")})
+        NotWithinLobbyZone,
         
         /**
-         * no spawns.
+         * not within battle zone.
          */
         @LocalizedMessageList({
-            "Your battle zone does not contain spawns.",
-            "The arena will work but no player will be ported to your battle zone.",
-            "Is it really what you want?"})
-        @MessageComment("no spawns")
-        NoSpawns_Description,
+            "Your spawn is not within a lobby zone.",
+            "Only spawning inside lobby zones will work."})
+        @MessageComment("not within lobby zone")
+        NotWithinLobbyZone_Description,
         
     }
     

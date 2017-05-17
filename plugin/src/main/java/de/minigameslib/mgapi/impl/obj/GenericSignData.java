@@ -24,6 +24,7 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
+import de.minigameslib.mgapi.api.obj.AbstractObjectData;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 
 /**

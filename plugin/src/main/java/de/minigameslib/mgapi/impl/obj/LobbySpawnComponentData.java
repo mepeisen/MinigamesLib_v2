@@ -24,13 +24,14 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
+import de.minigameslib.mgapi.api.obj.AbstractObjectData;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 
 /**
  * @author mepeisen
  *
  */
-public class JoinSpawnComponentData extends AbstractObjectData<ComponentRuleSetType>
+public class LobbySpawnComponentData extends AbstractObjectData<ComponentRuleSetType>
 {
     
     // marker only

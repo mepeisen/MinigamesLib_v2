@@ -40,12 +40,12 @@ import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.objects.SignTypeId;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.impl.MglibPerms;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 
 /**
@@ -82,7 +82,7 @@ public class AdminSignCreateCommand implements SubCommandHandlerInterface
         }
         if (!arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         final SignTypeId type = Mg2Command.getEnum(command, SignTypeId.class, typeName);
         

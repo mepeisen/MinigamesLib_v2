@@ -25,6 +25,7 @@
 package de.minigameslib.mgapi.impl.obj;
 
 import de.minigameslib.mclib.shared.api.com.PersistentField;
+import de.minigameslib.mgapi.api.obj.AbstractObjectData;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 

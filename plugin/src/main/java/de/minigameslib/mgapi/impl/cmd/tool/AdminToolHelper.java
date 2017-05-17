@@ -48,12 +48,12 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
 import de.minigameslib.mclib.api.util.function.McConsumer;
+import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.impl.MglibPerms;
-import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 
 /**
  * Admin tooling helper.
@@ -101,7 +101,7 @@ public class AdminToolHelper
         }
         if (!arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final Location loc = evt.getBukkitEvent().getClickedBlock().getLocation();
@@ -167,7 +167,7 @@ public class AdminToolHelper
         }
         if (!zone.getArena().isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final Location loc = evt.getBukkitEvent().getClickedBlock().getLocation();
@@ -197,7 +197,7 @@ public class AdminToolHelper
         }
         if (!zone.getArena().isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final Location loc = evt.getBukkitEvent().getClickedBlock().getLocation();
@@ -248,7 +248,7 @@ public class AdminToolHelper
         }
         if (!arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final Location lower = evt.getBukkitEvent().getClickedBlock().getLocation();
@@ -282,7 +282,7 @@ public class AdminToolHelper
         }
         if (!arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         final Location higher = evt.getBukkitEvent().getClickedBlock().getLocation();
@@ -336,7 +336,7 @@ public class AdminToolHelper
         }
         if (!arena.isMaintenance())
         {
-            throw new McException(ArenaImpl.Messages.ModificationWrongState);
+            throw new McException(MinigameMessages.ModificationWrongState);
         }
         
         Block target = null;

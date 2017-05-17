@@ -22,16 +22,28 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api;
+
+import de.minigameslib.mclib.api.locale.LocalizedMessage;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
 
 /**
- * A spawn component handler used for players joining an arena.
+ * Some messages for minigames api.
  * 
  * @author mepeisen
  */
-public interface JoinSpawnComponentHandler extends ArenaComponentHandler
+@LocalizedMessages(value = "core")
+public enum MinigameMessages implements LocalizedMessageInterface
 {
     
-    // marker interface
+    /**
+     * Cannot modify arena because of wrong state
+     */
+    @LocalizedMessage(defaultMessage = "Cannot modify arena because of wrong state.", severity = MessageSeverityType.Error)
+    @MessageComment({"Cannot modify arena because of wrong state"})
+    ModificationWrongState
     
 }

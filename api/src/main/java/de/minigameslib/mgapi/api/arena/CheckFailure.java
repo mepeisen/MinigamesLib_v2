@@ -57,6 +57,20 @@ public class CheckFailure
         this.title = title.toArg(titleArgs);
         this.details = details.toArg(detailArgs);
     }
+    
+    /**
+     * Consturctor
+     * @param severity 
+     * @param title 
+     * @param details 
+     * @param detailArgs 
+     */
+    public CheckFailure(CheckSeverity severity, LocalizedMessageInterface title, LocalizedMessageInterface details, Serializable... detailArgs)
+    {
+        this.severity = severity;
+        this.title = title.toArg();
+        this.details = details.toArg(detailArgs);
+    }
 
     /**
      * @return the severity

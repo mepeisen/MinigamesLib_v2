@@ -24,6 +24,11 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.Collection;
+
+import de.minigameslib.mclib.api.objects.SignInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+
 /**
  * Interface for sign rule sets.
  * 
@@ -32,6 +37,17 @@ package de.minigameslib.mgapi.api.rules;
 public interface SignRuleSetInterface extends RuleSetInterface<SignRuleSetType>
 {
     
-    // TODO api for SignRuleSetInterface
+    /**
+     * Returns the underlying sign.
+     * @return sign
+     */
+    SignInterface getSign();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

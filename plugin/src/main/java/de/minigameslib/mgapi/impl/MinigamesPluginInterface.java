@@ -32,20 +32,10 @@ import org.bukkit.plugin.Plugin;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
-import de.minigameslib.mclib.api.util.function.McBiFunction;
 import de.minigameslib.mclib.api.util.function.McSupplier;
-import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
-import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
-import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
-import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.SignRuleSetType;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
 /**
  * An internal plugin interface
@@ -54,38 +44,6 @@ import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
  */
 public interface MinigamesPluginInterface
 {
-    
-    /**
-     * Returns the create function for given rule set type
-     * 
-     * @param type
-     * @return creator function
-     */
-    McBiFunction<ArenaRuleSetType, ArenaInterface, ArenaRuleSetInterface> creator(ArenaRuleSetType type);
-    
-    /**
-     * Returns the create function for given rule set type
-     * 
-     * @param type
-     * @return creator function
-     */
-    McBiFunction<ComponentRuleSetType, ArenaComponentHandler, ComponentRuleSetInterface> creator(ComponentRuleSetType type);
-    
-    /**
-     * Returns the create function for given rule set type
-     * 
-     * @param type
-     * @return creator function
-     */
-    McBiFunction<SignRuleSetType, ArenaSignHandler, SignRuleSetInterface> creator(SignRuleSetType type);
-    
-    /**
-     * Returns the create function for given rule set type
-     * 
-     * @param type
-     * @return creator function
-     */
-    McBiFunction<ZoneRuleSetType, ArenaZoneHandler, ZoneRuleSetInterface> creator(ZoneRuleSetType type);
     
     /**
      * Returns the create function for given type

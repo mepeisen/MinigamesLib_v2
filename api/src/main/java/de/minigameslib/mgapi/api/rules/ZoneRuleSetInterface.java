@@ -24,6 +24,11 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import java.util.Collection;
+
+import de.minigameslib.mclib.api.objects.ZoneInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+
 /**
  * Interface for zone rule sets.
  * 
@@ -32,6 +37,17 @@ package de.minigameslib.mgapi.api.rules;
 public interface ZoneRuleSetInterface extends RuleSetInterface<ZoneRuleSetType>
 {
     
-    // TODO api for ZoneRuleSetInterface
+    /**
+     * Returns the underlying zone.
+     * @return zone
+     */
+    ZoneInterface getZone();
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

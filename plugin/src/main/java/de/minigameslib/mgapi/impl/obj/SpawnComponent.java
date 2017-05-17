@@ -24,21 +24,26 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
-import java.io.File;
+import java.io.Serializable;
+import java.util.Collection;
 
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mclib.api.McLibInterface;
-import de.minigameslib.mclib.api.objects.ComponentInterface;
-import de.minigameslib.mclib.api.util.function.McRunnable;
-import de.minigameslib.mclib.api.util.function.McSupplier;
-import de.minigameslib.mclib.shared.api.com.DataSection;
-import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
+import de.minigameslib.mclib.api.locale.LocalizedMessage;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
+import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageComment.Argument;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
+import de.minigameslib.mclib.api.objects.ZoneIdInterface;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.arena.CheckSeverity;
+import de.minigameslib.mgapi.api.obj.AbstractArenaComponentHandler;
+import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
 import de.minigameslib.mgapi.api.obj.SpawnComponentHandler;
-import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
-import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
@@ -46,90 +51,8 @@ import de.minigameslib.mgapi.impl.MinigamesPlugin;
  * @author mepeisen
  *
  */
-public class SpawnComponent extends AbstractBaseArenaObjectHandler<ComponentRuleSetType, ComponentRuleSetInterface, SpawnComponentData> implements SpawnComponentHandler
+public class SpawnComponent extends AbstractArenaComponentHandler<SpawnComponentData> implements SpawnComponentHandler
 {
-    
-    /** the underlying component. */
-    protected ComponentInterface component;
-
-    @Override
-    public void initArena(ArenaInterface a) throws McException
-    {
-        super.initArena(a);
-        this.dataFile = new File(MinigamesPlugin.instance().getDataFolder(), "arenas/" + this.arena.getInternalName() + '/' + this.component.getComponentId() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$
-        if (this.dataFile.exists())
-        {
-            this.loadData();
-        }
-        else
-        {
-            this.saveData();
-        }
-    }
-
-    @Override
-    public void onCreate(ComponentInterface c) throws McException
-    {
-        this.component = c;
-    }
-
-    @Override
-    public void onResume(ComponentInterface c) throws McException
-    {
-        this.component = c;
-    }
-
-    @Override
-    public void onPause(ComponentInterface c)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void canDelete() throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onDelete()
-    {
-        if (this.dataFile.exists())
-        {
-            this.dataFile.delete();
-        }
-    }
-
-    @Override
-    public void canChangeLocation(Location newValue) throws McException
-    {
-        this.checkModifications();
-    }
-
-    @Override
-    public void onLocationChange(Location newValue)
-    {
-        // do nothing
-    }
-
-    @Override
-    public void read(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public void write(DataSection section)
-    {
-        // no additional data in mclib files
-    }
-
-    @Override
-    public boolean test(DataSection section)
-    {
-        // no additional data in mclib files
-        return true;
-    }
 
     @Override
     protected Class<SpawnComponentData> getDataClass()
@@ -141,100 +64,6 @@ public class SpawnComponent extends AbstractBaseArenaObjectHandler<ComponentRule
     protected SpawnComponentData createData()
     {
         return new SpawnComponentData();
-    }
-
-    @Override
-    protected void applyListeners(ComponentRuleSetInterface listeners)
-    {
-        this.component.registerHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
-    }
-
-    @Override
-    protected void removeListeners(ComponentRuleSetInterface listeners)
-    {
-        this.component.unregisterHandlers(MinigamesPlugin.instance().getPlugin(), listeners);
-    }
-
-    @Override
-    protected ComponentRuleSetInterface create(ComponentRuleSetType ruleset) throws McException
-    {
-        return calculateInCopiedContext(() -> {
-            return MinigamesPlugin.instance().creator(ruleset).apply(ruleset, this);
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInNewContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaComponentHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @throws McException
-     *             rethrown from runnable.
-     */
-    void runInCopiedContext(McRunnable runnable) throws McException
-    {
-        McLibInterface.instance().runInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaComponentHandler.class, this);
-            runnable.run();
-        });
-    }
-    
-    /**
-     * Runs the code in new context; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInNewContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaComponentHandler.class, this);
-            return runnable.get();
-        });
-    }
-    
-    /**
-     * Runs the code but copies all context variables before; changes made inside the runnable will be undone.
-     * 
-     * @param runnable
-     *            the runnable to execute.
-     * @return result from runnable
-     * @throws McException
-     *             rethrown from runnable.
-     * @param <T>
-     *            Type of return value
-     */
-    <T> T calculateInCopiedContext(McSupplier<T> runnable) throws McException
-    {
-        return McLibInterface.instance().calculateInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaComponentHandler.class, this);
-            return runnable.get();
-        });
     }
 
     @Override
@@ -266,9 +95,52 @@ public class SpawnComponent extends AbstractBaseArenaObjectHandler<ComponentRule
     }
 
     @Override
-    public ComponentInterface getComponent()
+    protected Plugin getPlugin()
     {
-        return this.component;
+        return MinigamesPlugin.instance().getPlugin();
+    }
+    
+    @Override
+    public Collection<CheckFailure> check()
+    {
+        final Collection<CheckFailure> result = super.check();
+        
+        final Location loc = this.getComponent().getLocation();
+        
+        final Collection<ZoneIdInterface> myZones = this.arena.getZones(loc, BasicZoneTypes.Battle);
+        if (myZones.size() == 0)
+        {
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NotWithinBattleZone, new Serializable[]{this.getName()}, Messages.NotWithinBattleZone_Description));
+        }
+    
+        return result;
+    }
+    
+    /**
+     * The common messages.
+     * 
+     * @author mepeisen
+     */
+    @LocalizedMessages(value = "components.Spawn")
+    public enum Messages implements LocalizedMessageInterface
+    {
+        
+        /**
+         * not within battle zone.
+         */
+        @LocalizedMessage(defaultMessage = "spawn '%1$s' not within battle zone!", severity = MessageSeverityType.Error)
+        @MessageComment(value = "not within battle zone", args = {@Argument("component name")})
+        NotWithinBattleZone,
+        
+        /**
+         * not within battle zone.
+         */
+        @LocalizedMessageList({
+            "Your spawn is not within a battle zone.",
+            "Only spawning inside battle zones will work."})
+        @MessageComment("not within battle zone")
+        NotWithinBattleZone_Description,
+        
     }
     
 }

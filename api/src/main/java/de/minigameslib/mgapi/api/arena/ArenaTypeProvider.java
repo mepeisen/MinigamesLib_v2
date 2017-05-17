@@ -24,6 +24,7 @@
 
 package de.minigameslib.mgapi.api.arena;
 
+import java.util.Collection;
 import java.util.Set;
 
 import de.minigameslib.mclib.api.McException;
@@ -47,81 +48,110 @@ public interface ArenaTypeProvider
     
     /**
      * Returns a display name for the minigame.
+     * 
      * @return minigame display name.
      */
     LocalizedMessageInterface getDisplayName();
     
     /**
      * Returns a short single-line description of the minigame
+     * 
      * @return short single-line description
      */
     LocalizedMessageInterface getShortDescription();
     
     /**
      * Returns a multi-line description of the minigame
+     * 
      * @return multi-line description
      */
     LocalizedMessageInterface getDescription();
     
     /**
      * Returns the fixed arena rule set types.
+     * 
      * @return fixed arena rule sets.
      */
     Set<ArenaRuleSetType> getFixedArenaRules();
     
     /**
      * Returns optional arena rule sets
+     * 
      * @return optional arena rule sets.
      */
     Set<ArenaRuleSetType> getOptionalArenaRules();
     
     /**
      * Creates a configuration with defaults for given rule set
+     * 
      * @param ruleSet
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ArenaRuleSetInterface ruleSet) throws McException;
     
     /**
      * Creates a configuration with defaults for given rule set
+     * 
      * @param ruleSet
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ComponentRuleSetInterface ruleSet) throws McException;
     
     /**
      * Creates a configuration with defaults for given rule set
+     * 
      * @param ruleSet
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ZoneRuleSetInterface ruleSet) throws McException;
     
     /**
      * Creates a configuration with defaults for given rule set
+     * 
      * @param ruleSet
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(SignRuleSetInterface ruleSet) throws McException;
     
     /**
      * Creates a configuration for given component
+     * 
      * @param handler
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ArenaComponentHandler handler) throws McException;
     
     /**
      * Creates a configuration for given zone
+     * 
      * @param handler
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ArenaZoneHandler handler) throws McException;
     
     /**
      * Creates a configuration for given sign
+     * 
      * @param handler
-     * @throws McException thrown for problems.
+     * @throws McException
+     *             thrown for problems.
      */
     void configure(ArenaSignHandler handler) throws McException;
+    
+    /**
+     * Check the arena setup and report errors, warnings of informational messages.
+     * 
+     * @param arena
+     *            the arena to check.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check(ArenaInterface arena);
     
 }
