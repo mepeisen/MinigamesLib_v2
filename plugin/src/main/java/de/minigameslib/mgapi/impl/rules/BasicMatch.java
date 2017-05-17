@@ -358,7 +358,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         // check for main lobby
         if (this.getArena().getComponents(BasicComponentTypes.MainLobbySpawn).isEmpty())
         {
-            result.add(new CheckFailure(CheckSeverity.Warning, Messages.NoMainLobbySpawn, Messages.NoMainLobbySpawn_Description));
+            result.add(new CheckFailure(CheckSeverity.Error, Messages.NoMainLobbySpawn, Messages.NoMainLobbySpawn_Description));
         }
         
         return result;
@@ -515,7 +515,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         /**
          * no main lobby spawn found.
          */
-        @LocalizedMessage(defaultMessage = "No main lobby spawn found!", severity = MessageSeverityType.Warning)
+        @LocalizedMessage(defaultMessage = "No main lobby spawn found!", severity = MessageSeverityType.Error)
         @MessageComment("no main lobby spawn found")
         NoMainLobbySpawn,
         
@@ -524,7 +524,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
          */
         @LocalizedMessageList({
             "You did not create any main lobby spawn.",
-            "The arena will work but after leaving a match the players will be ported to a random lobby spawn."})
+            "After leaving a match the players cannot be ported to any location without main lobby spawns."})
         @MessageComment("no main lobby spawn found")
         NoMainLobbySpawn_Description,
         
