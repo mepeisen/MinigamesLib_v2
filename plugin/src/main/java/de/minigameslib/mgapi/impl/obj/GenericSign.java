@@ -40,11 +40,11 @@ public class GenericSign extends AbstractArenaSignHandler<GenericSignData> imple
     @Override
     protected String[] getLines()
     {
-        // TODO join lines
         return new String[]{
-                "GENERIC",
-                this.getArena().getInternalName(),
-                String.valueOf(System.currentTimeMillis())
+                this.parseLine(this.data.getLine1(), "%arena.name%"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine2(), "-~"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine3(), "GENERIC SIGN"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine4(), "%sys.datetime%") //$NON-NLS-1$
         };
     }
 

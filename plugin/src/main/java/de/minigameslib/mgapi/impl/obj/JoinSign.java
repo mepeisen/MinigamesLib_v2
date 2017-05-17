@@ -66,11 +66,11 @@ public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements 
     @Override
     protected String[] getLines()
     {
-        // TODO join lines
         return new String[]{
-                "JOIN",
-                this.getArena().getInternalName(),
-                String.valueOf(System.currentTimeMillis())
+                this.parseLine(this.data.getLine1(), "%arena.name%"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine2(), "-~"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine3(), "JOIN SIGN"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine4(), "%sys.datetime%") //$NON-NLS-1$
         };
     }
 

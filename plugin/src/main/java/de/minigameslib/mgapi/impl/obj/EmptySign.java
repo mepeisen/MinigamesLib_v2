@@ -40,11 +40,11 @@ public class EmptySign extends AbstractArenaSignHandler<EmptySignData> implement
     @Override
     protected String[] getLines()
     {
-        // TODO join lines
         return new String[]{
-                "EMPTY",
-                this.getArena().getInternalName(),
-                String.valueOf(System.currentTimeMillis())
+                this.parseLine(this.data.getLine1(), "%arena.name%"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine2(), "-~"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine3(), "EMPTY SIGN"), //$NON-NLS-1$
+                this.parseLine(this.data.getLine4(), "%sys.datetime%") //$NON-NLS-1$
         };
     }
 
