@@ -95,6 +95,7 @@ import de.minigameslib.mgapi.impl.obj.SpectatorZone;
 import de.minigameslib.mgapi.impl.rules.BasicMatch;
 import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
 import de.minigameslib.mgapi.impl.rules.BasicSpawns;
+import de.minigameslib.mgapi.impl.rules.BasicSpectator;
 
 /**
  * The common messages.
@@ -160,6 +161,7 @@ import de.minigameslib.mgapi.impl.rules.BasicSpawns;
     BasicSpawns.Messages.class,
     BasicMatch.Messages.class,
     BasicMatchTimer.Messages.class,
+    BasicSpectator.Messages.class,
     
     // components etc.
     AbstractArenaZoneHandler.Messages.class,

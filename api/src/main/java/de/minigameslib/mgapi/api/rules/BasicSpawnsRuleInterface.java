@@ -35,8 +35,8 @@ public interface BasicSpawnsRuleInterface extends ArenaRuleSetInterface
 {
     
     /**
-     * Returns the spawn rule
-     * @return the spawn rule
+     * Returns the spawn type
+     * @return the spawn type
      */
     SpawnType getSpawnType();
 

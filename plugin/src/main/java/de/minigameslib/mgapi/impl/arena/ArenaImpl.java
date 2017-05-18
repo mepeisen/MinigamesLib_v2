@@ -506,17 +506,10 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.match.leave(player);
         
         player.getMcPlayer().sendMessage(Messages.YouLeft, this.getDisplayName());
-        // port to main lobby
-        this.teleportRandom(player, this.getComponents(BasicComponentTypes.MainLobbySpawn));
     }
 
-    /**
-     * Port player to a random component taken from given list
-     * @param player
-     * @param components
-     * @return {@code true} if player was ported
-     */
-    private boolean teleportRandom(ArenaPlayerInterface player, Collection<?> components)
+    @Override
+    public boolean teleportRandom(ArenaPlayerInterface player, Collection<?> components)
     {
         if (components.size() > 0)
         {
@@ -536,12 +529,8 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         return false;
     }
 
-    /**
-     * Port player to a component
-     * @param player
-     * @param component
-     */
-    private void teleport(ArenaPlayerInterface player, ComponentIdInterface component)
+    @Override
+    public void teleport(ArenaPlayerInterface player, ComponentIdInterface component)
     {
         if (component != null)
         {
@@ -549,12 +538,8 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         }
     }
 
-    /**
-     * Port player to a component
-     * @param player
-     * @param component
-     */
-    private void teleport(ArenaPlayerInterface player, ComponentInterface component)
+    @Override
+    public void teleport(ArenaPlayerInterface player, ComponentInterface component)
     {
         if (component != null)
         {
@@ -576,8 +561,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         
         this.match.join(player);
         player.getMcPlayer().sendMessage(Messages.JoinedArena, this.getDisplayName());
-        // port to main lobby
-        this.teleportRandom(player, this.getComponents(BasicComponentTypes.LobbySpawn));
     }
 
     @Override
@@ -603,6 +586,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
                 this.match.spectate(player);
                 
                 player.getMcPlayer().sendMessage(Messages.SpectatingArena, this.getDisplayName());
+                // TODO Move to a spectator rule
                 this.teleportToSpectate(player);
                 break;
         }
@@ -787,7 +771,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         }
         arenaPlayerImpl.switchArenaOrMode(null, false);
         player.sendMessage(Messages.YouWereKicked, kickReason);
-        this.teleportRandom(arenaPlayerImpl, this.getComponents(BasicComponentTypes.MainLobbySpawn));
     }
 
     @Override
@@ -845,7 +828,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         final ArenaStateChangedEvent changedEvent = new ArenaStateChangedEvent(this, this.state, ArenaState.PreMatch);
         this.state = ArenaState.PreMatch;
         Bukkit.getPluginManager().callEvent(changedEvent);
-        // TODO Start pre match phase, teleport to spawns etc.
     }
 
     @Override

@@ -46,6 +46,7 @@ import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
+import de.minigameslib.mgapi.api.rules.BasicMatchConfig;
 import de.minigameslib.mgapi.api.rules.BasicMatchTimerConfig;
 import de.minigameslib.mgapi.api.rules.BasicMatchTimerRuleInterface;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
@@ -146,6 +147,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicMatchTimerConfig.MaxSeconds.setInt(this.seconds);
+            BasicMatchTimerConfig.MaxSeconds.saveConfig();
         });
         this.arena.reconfigureRuleSets(this.type);
     }

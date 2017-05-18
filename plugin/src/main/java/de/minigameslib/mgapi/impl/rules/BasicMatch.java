@@ -182,6 +182,9 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         {
             startCountdown();
         }
+        
+        // port to a lobby
+        evt.getArena().teleportRandom(evt.getArenaPlayer(), evt.getArena().getComponents(BasicComponentTypes.LobbySpawn));
     }
 
     /**
@@ -230,6 +233,9 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.CountdownAborted));
             this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.CountdownAborted));
         }
+        
+        // port back to main lobby
+        evt.getArena().teleportRandom(evt.getArenaPlayer(), evt.getArena().getComponents(BasicComponentTypes.MainLobbySpawn));
     }
     
     /**
@@ -300,6 +306,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         this.runInCopiedContext(() -> {
             BasicMatchConfig.MinPlayers.setInt(minPlayers);
             BasicMatchConfig.MaxPlayers.setInt(maxPlayers);
+            BasicMatchConfig.MaxPlayers.saveConfig();
         });
         this.arena.reconfigureRuleSets(this.type);
     }
@@ -318,6 +325,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         }
         this.runInCopiedContext(() -> {
             BasicMatchConfig.LobbyCountdown.setInt(lobbyCountdown);
+            BasicMatchConfig.LobbyCountdown.saveConfig();
         });
         this.arena.reconfigureRuleSets(this.type);
     }

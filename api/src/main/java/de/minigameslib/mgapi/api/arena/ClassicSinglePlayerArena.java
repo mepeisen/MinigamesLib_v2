@@ -52,14 +52,18 @@ public abstract class ClassicSinglePlayerArena implements ArenaTypeProvider
     @Override
     public Set<ArenaRuleSetType> getFixedArenaRules()
     {
-        return new HashSet<>(Arrays.asList(BasicArenaRuleSets.BasicMatch));
+        return new HashSet<>(Arrays.asList(
+                BasicArenaRuleSets.BasicMatch,
+                BasicArenaRuleSets.BasicSpawns,
+                BasicArenaRuleSets.BasicSpectator));
     }
 
     @Override
     public Set<ArenaRuleSetType> getOptionalArenaRules()
     {
-        // TODO optional rules for classic simple player arena
-        return new HashSet<>();
+        return new HashSet<>(Arrays.asList(
+                BasicArenaRuleSets.BasicMatchTimer
+                ));
     }
     
     @Override

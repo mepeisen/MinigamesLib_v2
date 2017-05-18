@@ -37,6 +37,7 @@ import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.Cuboid;
 import de.minigameslib.mclib.api.objects.EntityIdInterface;
@@ -132,6 +133,31 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
      * @return arena state.
      */
     ArenaState getState();
+    
+    /**
+     * Port player to a random component taken from given list.
+     * 
+     * @param player
+     * @param components
+     * @return {@code true} if player was ported
+     */
+    boolean teleportRandom(ArenaPlayerInterface player, Collection<?> components);
+    
+    /**
+     * Port player to a component.
+     * 
+     * @param player
+     * @param component
+     */
+    void teleport(ArenaPlayerInterface player, ComponentIdInterface component);
+    
+    /**
+     * Port player to a component.
+     * 
+     * @param player
+     * @param component
+     */
+    void teleport(ArenaPlayerInterface player, ComponentInterface component);
     
     /**
      * Let the given player leave the arena. Prints a text message to player on success.

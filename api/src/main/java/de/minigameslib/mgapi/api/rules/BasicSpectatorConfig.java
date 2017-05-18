@@ -24,42 +24,41 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationBool;
+import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
+import de.minigameslib.mclib.api.config.ConfigurationValues;
+
 /**
- * Basic arena rule sets
+ * Basic spectator configurations
  * 
  * @author mepeisen
+ * 
+ * @see BasicArenaRuleSets#BasicSpectator
  */
-public enum BasicArenaRuleSets implements ArenaRuleSetType
+@ConfigurationValues(path = "core")
+public enum BasicSpectatorConfig implements ConfigurationValueInterface
 {
     
     /**
-     * A basic match rule containing:
-     * - min player handling
-     * - max player handling
-     * @see BasicMatchRuleInterface
+     * Is spectating without pending match allowed?
      */
-    @RuleSetConfigurable(config = BasicMatchConfig.class)
-    BasicMatch,
+    @ConfigurationBool(defaultValue = true)
+    @ConfigComment({"Is spectating without pending match allowed?"})
+    SpectatingWithoutMatch,
     
     /**
-     * Spawn modes during matches
-     * @see BasicSpawnsRuleInterface
+     * Is free spectating within pending match allowed?
      */
-    @RuleSetConfigurable(config = BasicSpawnsConfig.class)
-    BasicSpawns,
+    @ConfigurationBool(defaultValue = true)
+    @ConfigComment({"Is free spectating with pending match allowed?"})
+    FreeSpectatingWithinMatch,
     
     /**
-     * Maximum timer for matches
-     * @see BasicMatchTimerRuleInterface
+     * Losing and winning players join spectators?
      */
-    @RuleSetConfigurable(config = BasicMatchTimerConfig.class)
-    BasicMatchTimer,
-    
-    /**
-     * Spectator handling
-     * @see BasicSpectatorRuleInterface
-     */
-    @RuleSetConfigurable(config = BasicSpectatorConfig.class)
-    BasicSpectator,
+    @ConfigurationBool(defaultValue = true)
+    @ConfigComment({"Winning and losing players join spectators?"})
+    SpectatingAfterWinOrLose,
     
 }

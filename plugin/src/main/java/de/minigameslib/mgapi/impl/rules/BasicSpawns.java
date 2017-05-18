@@ -109,6 +109,7 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicSpawnsConfig.SpawnOption.setEnum(this.spawnType);
+            BasicSpawnsConfig.SpawnOption.saveConfig();
         });
         this.arena.reconfigureRuleSets(this.type);
     }
