@@ -25,13 +25,8 @@
 package de.minigameslib.mgapi.impl.rules;
 
 import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
-import de.minigameslib.mclib.api.locale.LocalizedMessageList;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
-import de.minigameslib.mclib.api.locale.MessageComment;
-import de.minigameslib.mclib.api.locale.MessageComment.Argument;
-import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;

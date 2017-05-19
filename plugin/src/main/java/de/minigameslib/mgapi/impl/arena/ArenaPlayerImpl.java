@@ -50,7 +50,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
      * Player back reference.
      */
     @PersistentField
-    protected McPlayerInterface player;
+    protected McPlayerInterface       player;
     
     /**
      * Persistent data storage.
@@ -77,6 +77,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     
     /**
      * Returns persistent data storage.
+     * 
      * @return persistent player data
      */
     private ArenaPlayerPersistentData getData()
@@ -92,7 +93,26 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         }
         return this.persistent;
     }
-
+    
+    /**
+     * Stores player data into persistence; will be invoked before joining an arena.
+     */
+    public void storePlayerData()
+    {
+        this.getData().setPlayerData(this.getBukkitPlayer());
+        this.saveData();
+    }
+    
+    /**
+     * Reset player data from persistence; will be invoked after leaving an arena.
+     */
+    public void resetPlayerData()
+    {
+        
+        this.getData().setPlayerData(this.getBukkitPlayer());
+        this.saveData();
+    }
+    
     @Override
     public McPlayerInterface getMcPlayer()
     {
@@ -120,6 +140,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     
     /**
      * Switches arena name or mode
+     * 
      * @param arena
      * @param isSpectating
      */
@@ -152,13 +173,13 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     {
         return this.getData().getArenaName() != null;
     }
-
+    
     @Override
     public void die() throws McException
     {
         this.die(null);
     }
-
+    
     @Override
     public void die(ArenaPlayerInterface killer) throws McException
     {
@@ -179,10 +200,10 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
                 return;
             }
         }
-
+        
         throw new McException(ArenaImpl.Messages.InvalidModificationBeforeStart, "?"); //$NON-NLS-1$
     }
-
+    
     @Override
     public void lose() throws McException
     {
@@ -195,10 +216,10 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
                 return;
             }
         }
-
+        
         throw new McException(ArenaImpl.Messages.InvalidModificationBeforeStart, "?"); //$NON-NLS-1$
     }
-
+    
     @Override
     public void win() throws McException
     {
@@ -211,7 +232,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
                 return;
             }
         }
-
+        
         throw new McException(ArenaImpl.Messages.InvalidModificationBeforeStart, "?"); //$NON-NLS-1$
     }
     
