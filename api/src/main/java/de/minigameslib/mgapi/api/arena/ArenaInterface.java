@@ -25,6 +25,7 @@
 package de.minigameslib.mgapi.api.arena;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import org.bukkit.block.Sign;
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
 import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
@@ -965,5 +967,13 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
      *             thrown if arena is in wrong state
      */
     void setAdminsEnabled(boolean adminsEnabled) throws McException;
+
+    /**
+     * Kicks a single player with given reason
+     * @param arenaPlayer the player to kick
+     * @param kickReason the kick reason
+     * @param args the message arguments
+     */
+    void kick(ArenaPlayerInterface arenaPlayer, LocalizedMessageInterface kickReason, Serializable... args);
     
 }

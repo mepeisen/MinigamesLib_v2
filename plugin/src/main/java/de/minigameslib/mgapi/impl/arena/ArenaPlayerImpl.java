@@ -25,8 +25,12 @@
 package de.minigameslib.mgapi.impl.arena;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.config.ConfigItemStackData;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.FalseStub;
 import de.minigameslib.mclib.api.util.function.McOutgoingStubbing;
@@ -39,6 +43,7 @@ import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.events.ArenaPlayerDieEvent;
 import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
+import de.minigameslib.mgapi.impl.MglibConfig;
 
 /**
  * @author mepeisen
@@ -105,12 +110,111 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     
     /**
      * Reset player data from persistence; will be invoked after leaving an arena.
+     * @param regularLeave {@code true} if player leaves arena regularly
      */
-    public void resetPlayerData()
+    @SuppressWarnings("deprecation")
+    public void resetPlayerData(boolean regularLeave)
     {
-        
-        this.getData().setPlayerData(this.getBukkitPlayer());
-        this.saveData();
+        final Player bukkit = this.player.getBukkitPlayer();
+        final ArenaPlayerPersistentData data = this.getData();
+        if (regularLeave)
+        {
+            if (MglibConfig.RestoreCompassTargetOnLeave.getBoolean())
+            {
+                bukkit.setCompassTarget(new Location(
+                        Bukkit.getWorld(data.getCompassTarget().getWorld()),
+                        data.compassTarget.getX(),
+                        data.compassTarget.getY(),
+                        data.compassTarget.getZ(),
+                        data.compassTarget.getYaw(),
+                        data.compassTarget.getPitch()));
+            }
+            if (MglibConfig.RestoreExperienceOnLeave.getBoolean())
+            {
+                bukkit.setExp(data.getExp());
+                bukkit.setLevel(data.getLevel());
+            }
+            if (MglibConfig.RestoreFlyOnLeave.getBoolean())
+            {
+                bukkit.setAllowFlight(data.isAllowFlight());
+                bukkit.setFlying(data.isFlying());
+            }
+            if (MglibConfig.RestoreFoodOnLeave.getBoolean())
+            {
+                bukkit.setSaturation(data.getSaturation());
+                bukkit.setExhaustion(data.getExhaustion());
+                bukkit.setFoodLevel(data.getFoodLevel());
+            }
+            if (MglibConfig.RestoreGameModeOnLeave.getBoolean())
+            {
+                bukkit.setGameMode(data.getGameMode());
+            }
+            if (MglibConfig.RestoreHealthOnLeave.getBoolean())
+            {
+                bukkit.setMaxHealth(data.getMaxHealth());
+                bukkit.setHealthScale(data.getHealthScale());
+                bukkit.setHealth(data.getHealth());
+            }
+            if (MglibConfig.RestoreInventoryOnLeave.getBoolean())
+            {
+                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData)i).toBukkit()).toArray(ItemStack[]::new);
+                bukkit.getInventory().setStorageContents(items);
+            }
+            if (MglibConfig.RestoreSpeedOnLeave.getBoolean())
+            {
+                bukkit.setWalkSpeed(data.getWalkSpeed());
+                bukkit.setFlySpeed(data.getFlySpeed());
+            }
+        }
+        else
+        {
+            if (MglibConfig.RestoreCompassTargetOnCrash.getBoolean())
+            {
+                bukkit.setCompassTarget(new Location(
+                        Bukkit.getWorld(data.getCompassTarget().getWorld()),
+                        data.compassTarget.getX(),
+                        data.compassTarget.getY(),
+                        data.compassTarget.getZ(),
+                        data.compassTarget.getYaw(),
+                        data.compassTarget.getPitch()));
+            }
+            if (MglibConfig.RestoreExperienceOnCrash.getBoolean())
+            {
+                bukkit.setExp(data.getExp());
+                bukkit.setLevel(data.getLevel());
+            }
+            if (MglibConfig.RestoreFlyOnCrash.getBoolean())
+            {
+                bukkit.setAllowFlight(data.isAllowFlight());
+                bukkit.setFlying(data.isFlying());
+            }
+            if (MglibConfig.RestoreFoodOnCrash.getBoolean())
+            {
+                bukkit.setSaturation(data.getSaturation());
+                bukkit.setExhaustion(data.getExhaustion());
+                bukkit.setFoodLevel(data.getFoodLevel());
+            }
+            if (MglibConfig.RestoreGameModeOnCrash.getBoolean())
+            {
+                bukkit.setGameMode(data.getGameMode());
+            }
+            if (MglibConfig.RestoreHealthOnCrash.getBoolean())
+            {
+                bukkit.setMaxHealth(data.getMaxHealth());
+                bukkit.setHealthScale(data.getHealthScale());
+                bukkit.setHealth(data.getHealth());
+            }
+            if (MglibConfig.RestoreInventoryOnCrash.getBoolean())
+            {
+                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData)i).toBukkit()).toArray(ItemStack[]::new);
+                bukkit.getInventory().setStorageContents(items);
+            }
+            if (MglibConfig.RestoreSpeedOnCrash.getBoolean())
+            {
+                bukkit.setWalkSpeed(data.getWalkSpeed());
+                bukkit.setFlySpeed(data.getFlySpeed());
+            }
+        }
     }
     
     @Override

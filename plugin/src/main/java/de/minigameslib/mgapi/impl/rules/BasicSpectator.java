@@ -24,15 +24,33 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.event.McEventHandler;
+import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
+import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.arena.ArenaState;
+import de.minigameslib.mgapi.api.events.ArenaPlayerJoinSpectatorsEvent;
+import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
+import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
+import de.minigameslib.mgapi.api.obj.SpectatorSpawnComponentHandler;
+import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
 import de.minigameslib.mgapi.api.rules.BasicSpectatorConfig;
 import de.minigameslib.mgapi.api.rules.BasicSpectatorRuleInterface;
+import de.minigameslib.mgapi.api.team.CommonTeams;
+import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
  * The implementation of BasicSpectator rule set
@@ -73,6 +91,96 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
             this.isFreeSpectatingWithinMatch = BasicSpectatorConfig.FreeSpectatingWithinMatch.getBoolean();
             this.isSpectatingAfterWinOrLose = BasicSpectatorConfig.SpectatingAfterWinOrLose.getBoolean();
         });
+    }
+    
+    /**
+     * Arena state changed event.
+     * @param evt event
+     */
+    @McEventHandler
+    public void onMatchState(ArenaStateChangedEvent evt)
+    {
+        if (evt.getNewState() == ArenaState.PreMatch)
+        {
+            if (!this.isFreeSpectatingWithinMatch)
+            {
+                // kick all spectators that are not playing the match
+                evt.getArena().getCurrentMatch().getTeamMembers(CommonTeams.Spectators).forEach(uuid -> {
+                    evt.getArena().kick(MinigamesLibInterface.instance().getPlayer(uuid), Messages.KickedForMatch);
+                });
+            }
+        }
+    }
+
+    /**
+     * Teleports given player to spectators
+     * @param player
+     */
+    private void doSpectate(ArenaPlayerInterface player)
+    {
+        if (this.getArena().isMatch())
+        {
+            // match in progress
+            final TeamIdType team = this.getArena().getCurrentMatch().getTeam(player.getPlayerUUID());
+            if (team != null)
+            {
+                final ObjectServiceInterface osi = ObjectServiceInterface.instance();
+                final Collection<ComponentInterface> teamspawns = this.getArena().getComponents(BasicComponentTypes.SpectatorSpawn).stream()
+                        .map(osi::findComponent)
+                        .filter(c -> ((SpectatorSpawnComponentHandler)c.getHandler()).getTeam() == team)
+                        .collect(Collectors.toList());
+                if (this.getArena().teleportRandom(player, teamspawns))
+                {
+                    // succeeded
+                    return;
+                }
+            }
+        }
+        this.getArena().teleportRandom(player, this.getArena().getComponents(BasicComponentTypes.SpectatorSpawn));
+    }
+    
+    /**
+     * Player joins spectator event.
+     * @param evt event
+     */
+    @McEventHandler
+    public void onSpectate(ArenaPlayerJoinSpectatorsEvent evt)
+    {
+        final boolean inMatch = evt.getArena().isMatch();
+        final boolean hasPlayedBefore = evt.getArena().getCurrentMatch().getTeam(evt.getPlayer().getPlayerUUID()) != CommonTeams.Spectators;
+        if (!inMatch)
+        {
+            if (this.isSpectatingWithoutMatch)
+            {
+                this.doSpectate(evt.getArenaPlayer());
+            }
+            else
+            {
+                evt.setCancelled(Messages.OutsideMatchesDisabled);
+            }
+        }
+        else if (!hasPlayedBefore)
+        {
+            if (this.isFreeSpectatingWithinMatch)
+            {
+                this.doSpectate(evt.getArenaPlayer());
+            }
+            else
+            {
+                evt.setCancelled(Messages.FreeDisabled);
+            }
+        }
+        else
+        {
+            if (this.isSpectatingAfterWinOrLose)
+            {
+                this.doSpectate(evt.getArenaPlayer());
+            }
+            else
+            {
+                evt.setCancelled(Messages.Disabled);
+            }
+        }
     }
     
     @Override
@@ -146,8 +254,34 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
     @LocalizedMessages(value = "rules.BasicSpectator")
     public enum Messages implements LocalizedMessageInterface
     {
+
+        /**
+         * Spectating outside matches disabled
+         */
+        @LocalizedMessage(defaultMessage = "Spectating outside matches is disabled.", severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Spectating outside matches disabled" })
+        OutsideMatchesDisabled,
         
-        // TODO
+        /**
+         * Free match spectating is disabled
+         */
+        @LocalizedMessage(defaultMessage = "Free match spectating is disabled.", severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Free match spectating is disabled" })
+        FreeDisabled,
+        
+        /**
+         * Spectating disabled
+         */
+        @LocalizedMessage(defaultMessage = "Spectating is disabled.", severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Spectating disabled" })
+        Disabled,
+        
+        /**
+         * Kicked for starting match
+         */
+        @LocalizedMessage(defaultMessage = "A match is starting and free spectating is disallowed.", severity = MessageSeverityType.Error)
+        @MessageComment(value = { "Kicked for starting match" })
+        KickedForMatch,
         
     }
     

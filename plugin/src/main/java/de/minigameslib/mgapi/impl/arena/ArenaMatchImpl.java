@@ -274,7 +274,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             throw new McException(Messages.AlreadyInArena, player.getArena().getDisplayName());
         }
-        ((ArenaPlayerImpl)player).switchArenaOrMode(this.getArena().getInternalName(), false);
+        ((ArenaPlayerImpl)player).switchArenaOrMode(this.getArena().getInternalName(), true);
+        ((ArenaPlayerImpl)player).storePlayerData();
         
         final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), MatchPlayer::new);
         
@@ -324,6 +325,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(Messages.CannotLeaveNotInArena, this.getArena().getDisplayName());
         }
         ((ArenaPlayerImpl)player).switchArenaOrMode(null, false);
+        ((ArenaPlayerImpl)player).resetPlayerData(player.isOnline());
         
         final MatchPlayer mplayer = this.players.get(player.getPlayerUUID());
         if (mplayer != null)
@@ -386,6 +388,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(Messages.AlreadyInArena, player.getArena().getDisplayName());
         }
         ((ArenaPlayerImpl)player).switchArenaOrMode(this.getArena().getInternalName(), false);
+        ((ArenaPlayerImpl)player).storePlayerData();
         
         TeamIdType preTeam = this.isTeamMatch() ? this.getPreferredTeam() : CommonTeams.Unknown;
         if (preTeam == null) preTeam = CommonTeams.Unknown;

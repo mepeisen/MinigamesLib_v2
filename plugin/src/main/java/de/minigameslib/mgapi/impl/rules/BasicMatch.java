@@ -39,6 +39,7 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
+import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
@@ -48,8 +49,10 @@ import de.minigameslib.mgapi.api.events.ArenaPlayerJoinEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerLeftEvent;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
+import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
 import de.minigameslib.mgapi.api.obj.BasicZoneTypes;
+import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
@@ -151,6 +154,29 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         {
             this.countdownTask.cancel();
             this.countdownTask = null;
+        }
+        
+        if (evt.getNewState() == ArenaState.Disabled || evt.getNewState() == ArenaState.Maintenance || evt.getNewState() == ArenaState.Restarting)
+        {
+            // port all participants back to main lobby by force them leaving the arena
+            final ArenaMatchInterface match = evt.getArena().getCurrentMatch();
+            if (match != null)
+            {
+                match.getParticipants(true).forEach(uuid -> {
+                    final ArenaPlayerInterface player = MinigamesLibInterface.instance().getPlayer(uuid);
+                    if (player.getArena() == evt.getArena())
+                    {
+                        try
+                        {
+                            evt.getArena().leave(player);
+                        }
+                        catch (McException e)
+                        {
+                            // TODO logging
+                        }
+                    }
+                });
+            }
         }
     }
     

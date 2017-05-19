@@ -26,6 +26,7 @@ package de.minigameslib.mgapi.impl.arena;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,8 +96,6 @@ import de.minigameslib.mgapi.api.match.MatchPlayerInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
-import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
-import de.minigameslib.mgapi.api.obj.SpectatorSpawnComponentHandler;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.AbstractRuleSetContainer;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
@@ -574,49 +573,20 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         {
             case Booting:
             case Disabled:
-            case Join:
             case Maintenance:
             case Restarting:
             case Starting:
             default:
                 throw new McException(Messages.SpectateWrongState);
+            case Join:
             case Match:
             case PostMatch:
             case PreMatch:
                 this.match.spectate(player);
                 
                 player.getMcPlayer().sendMessage(Messages.SpectatingArena, this.getDisplayName());
-                // TODO Move to a spectator rule
-                this.teleportToSpectate(player);
                 break;
         }
-    }
-
-    /**
-     * Teleports given player to spectators
-     * @param player
-     */
-    private void teleportToSpectate(ArenaPlayerInterface player)
-    {
-        if (this.isMatch())
-        {
-            // match in progress
-            final TeamIdType team = this.match.getTeam(player.getPlayerUUID());
-            if (team != null)
-            {
-                final ObjectServiceInterface osi = ObjectServiceInterface.instance();
-                final Collection<ComponentInterface> teamspawns = this.getComponents(BasicComponentTypes.SpectatorSpawn).stream()
-                        .map(osi::findComponent)
-                        .filter(c -> ((SpectatorSpawnComponentHandler)c.getHandler()).getTeam() == team)
-                        .collect(Collectors.toList());
-                if (this.teleportRandom(player, teamspawns))
-                {
-                    // succeeded
-                    return;
-                }
-            }
-        }
-        this.teleportRandom(player, this.getComponents(BasicComponentTypes.SpectatorSpawn));
     }
 
     @Override
@@ -749,15 +719,11 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         }
     }
 
-    /**
-     * Kicks a single player with given reason
-     * @param uuid
-     * @param kickReason
-     */
-    private void kick(UUID uuid, LocalizedMessageInterface kickReason)
+    @Override
+    public void kick(ArenaPlayerInterface arenaPlayer, LocalizedMessageInterface kickReason, Serializable... args)
     {
-        final McPlayerInterface player = ObjectServiceInterface.instance().getPlayer(uuid);
-        final ArenaPlayerImpl arenaPlayerImpl = (ArenaPlayerImpl)MinigamesLibInterface.instance().getPlayer(player);
+        final McPlayerInterface player = arenaPlayer.getMcPlayer();
+        final ArenaPlayerImpl arenaPlayerImpl = (ArenaPlayerImpl)arenaPlayer;
         if (this.match != null)
         {
             try
@@ -770,7 +736,17 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             }
         }
         arenaPlayerImpl.switchArenaOrMode(null, false);
-        player.sendMessage(Messages.YouWereKicked, kickReason);
+        player.sendMessage(Messages.YouWereKicked, kickReason.toArg(args));
+    }
+
+    /**
+     * Kicks a single player with given reason
+     * @param uuid
+     * @param kickReason
+     */
+    private void kick(UUID uuid, LocalizedMessageInterface kickReason)
+    {
+        this.kick(MinigamesLibInterface.instance().getPlayer(uuid), kickReason);
     }
 
     @Override
@@ -841,7 +817,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.state = ArenaState.Restarting;
         this.match.finish();
         Bukkit.getPluginManager().callEvent(changedEvent);
-        // TODO Teleport players back to main lobby
     }
 
     @Override
@@ -855,7 +830,6 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.state = ArenaState.Restarting;
         this.match.abort();
         Bukkit.getPluginManager().callEvent(changedEvent);
-        // TODO Teleport players back to main lobby
     }
 
     @Override

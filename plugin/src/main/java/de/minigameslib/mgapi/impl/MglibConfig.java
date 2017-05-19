@@ -190,7 +190,7 @@ public enum MglibConfig implements ConfigurationValueInterface
         "Flag to restore player speed on regular arena leave.",
         "If you have multiple worlds and experience problems restoring player speed try set to set this value to false."
     })
-    RestoreSpeedLeave,
+    RestoreSpeedOnLeave,
     
     /**
      * Restore player speed on arena leave.
