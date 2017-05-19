@@ -24,47 +24,32 @@
 
 package de.minigameslib.mgapi.impl.test;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
-import de.minigameslib.mclib.spigottest.SpigotInject;
-import de.minigameslib.mclib.spigottest.SpigotJunit4Runner;
-import de.minigameslib.mclib.spigottest.SpigotServer;
-import de.minigameslib.mclib.spigottest.SpigotTest;
+import org.junit.Test;
+
+import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mgapi.api.MinigamesLibInterface;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.impl.test.plugin.TestArenas;
 
 /**
  * Test case for arena impl.
  * 
  * @author mepeisen
  */
-//@RunWith(SpigotJunit4Runner.class)
-@SpigotTest(all = true)
-public class ArenaImplTest
+public class ArenaImplTest extends AbstractMinigamesTest
 {
     
     /**
-     * the spigot server.
-     */
-    @SpigotInject
-    private SpigotServer server;
-    
-    /**
-     * Loads the test plugin.
-     */
-    @Before
-    public void loadPlugin()
-    {
-        // TODO assertTrue(this.server.loadTestPlugin("JUNIT", TestPlugin.class)); //$NON-NLS-1$
-    }
-    
-    /**
-     * Tests constructor to create new arenas
+     * test me.
+     * @throws McException 
      */
     @Test
-    public void testConstructorNew()
+    public void testArenaLifecycle() throws McException
     {
-        // TODO test case
+        //final ArenaInterface arena = MinigamesLibInterface.instance().create("Test", TestArenas.BasicTest); //$NON-NLS-1$
+        //assertEquals("Test", arena.getInternalName()); //$NON-NLS-1$
     }
     
 }

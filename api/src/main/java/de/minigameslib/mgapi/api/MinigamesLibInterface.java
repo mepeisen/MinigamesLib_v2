@@ -26,6 +26,7 @@ package de.minigameslib.mgapi.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.plugin.Plugin;
@@ -94,14 +95,13 @@ public interface MinigamesLibInterface
     int APIVERSION_1_0_0 = 10000;
     
     /**
-     * This api version is not yet used; the api version is compatible to {@link #APIVERSION_1_0_0} but
-     * may introduce new features or methods. Use this for version checks (getApiVersion &lt; APIVERSION_1_1_0).
+     * This api version is not yet used; the api version is compatible to {@link #APIVERSION_1_0_0} but may introduce new features or methods. Use this for version checks (getApiVersion &lt;
+     * APIVERSION_1_1_0).
      */
     int APIVERSION_1_1_0 = 10100;
     
     /**
-     * This api version is not yet used; the api version is incompatible to {@link #APIVERSION_1_0_0}.
-     * Use this for version checks (getApiVersion &lt; APIVERSION_2_0_0).
+     * This api version is not yet used; the api version is incompatible to {@link #APIVERSION_1_0_0}. Use this for version checks (getApiVersion &lt; APIVERSION_2_0_0).
      */
     int APIVERSION_2_0_0 = 20000;
     
@@ -118,15 +118,13 @@ public interface MinigamesLibInterface
      * </ul>
      * 
      * <p>
-     * Different fix levels are returned for new minecraft versions. It indicates that the mclib version type enum
-     * contains new entries and that MinigamesLib supports a new minecraft version. For most situations you need not
-     * take care about fix levels. You need only check for fix levels if you require a special feature found at newest
-     * minecraft versions.
+     * Different fix levels are returned for new minecraft versions. It indicates that the mclib version type enum contains new entries and that MinigamesLib supports a new minecraft version. For most
+     * situations you need not take care about fix levels. You need only check for fix levels if you require a special feature found at newest minecraft versions.
      * </p>
      * 
      * <p>
-     * The minor version number is changed if MinigamesLib adds new features or methods to the existing API.
-     * You will find an informative annotation (@ApiVersion) for methods being present in a specific api version.
+     * The minor version number is changed if MinigamesLib adds new features or methods to the existing API. You will find an informative annotation (@ApiVersion) for methods being present in a
+     * specific api version.
      * </p>
      * 
      * <p>
@@ -149,9 +147,9 @@ public interface MinigamesLibInterface
     // teams
     
     /**
-     * Checks if given team is a special team.
-     * A "special" team is a team not being a real party on team arenas. "special" teams cannnot be confiugured as teams on arenas.
-     * Instead they are used for special features on arenas, for example the "Winners" and "Spectators" have their own team.
+     * Checks if given team is a special team. A "special" team is a team not being a real party on team arenas. "special" teams cannnot be confiugured as teams on arenas. Instead they are used for
+     * special features on arenas, for example the "Winners" and "Spectators" have their own team.
+     * 
      * @param id
      * @return {@code true} for special teams
      * @see CommonTeams#Winners
@@ -180,8 +178,9 @@ public interface MinigamesLibInterface
     void initMinigame(Plugin plugin, MinigameProvider provider) throws McException;
     
     /**
-     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create
-     * a new rule set instance. The instance lives as long as the underlying object lives or as long as it is not removed.
+     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the
+     * underlying object lives or as long as it is not removed.
+     * 
      * @param plugin
      * @param ruleset
      * @param creator
@@ -189,8 +188,9 @@ public interface MinigamesLibInterface
     void registerRuleset(Plugin plugin, ArenaRuleSetType ruleset, McBiFunction<ArenaRuleSetType, ArenaInterface, ArenaRuleSetInterface> creator);
     
     /**
-     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create
-     * a new rule set instance. The instance lives as long as the underlying object lives or as long as it is not removed.
+     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the
+     * underlying object lives or as long as it is not removed.
+     * 
      * @param plugin
      * @param ruleset
      * @param creator
@@ -198,8 +198,9 @@ public interface MinigamesLibInterface
     void registerRuleset(Plugin plugin, ComponentRuleSetType ruleset, McBiFunction<ComponentRuleSetType, ArenaComponentHandler, ComponentRuleSetInterface> creator);
     
     /**
-     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create
-     * a new rule set instance. The instance lives as long as the underlying object lives or as long as it is not removed.
+     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the
+     * underlying object lives or as long as it is not removed.
+     * 
      * @param plugin
      * @param ruleset
      * @param creator
@@ -207,8 +208,9 @@ public interface MinigamesLibInterface
     void registerRuleset(Plugin plugin, SignRuleSetType ruleset, McBiFunction<SignRuleSetType, ArenaSignHandler, SignRuleSetInterface> creator);
     
     /**
-     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create
-     * a new rule set instance. The instance lives as long as the underlying object lives or as long as it is not removed.
+     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the
+     * underlying object lives or as long as it is not removed.
+     * 
      * @param plugin
      * @param ruleset
      * @param creator
@@ -217,30 +219,33 @@ public interface MinigamesLibInterface
     
     /**
      * Registers a new component with arena support.
+     * 
      * @param plugin
      * @param type
      * @param creator
-     * @param clazz 
+     * @param clazz
      * @throws McException
      */
     <T extends ArenaComponentHandler> void registerArenaComponent(Plugin plugin, ComponentTypeId type, McSupplier<T> creator, Class<T> clazz) throws McException;
     
     /**
      * Registers a new zone with arena support.
+     * 
      * @param plugin
      * @param type
      * @param creator
-     * @param clazz 
+     * @param clazz
      * @throws McException
      */
     <T extends ArenaZoneHandler> void registerArenaZone(Plugin plugin, ZoneTypeId type, McSupplier<T> creator, Class<T> clazz) throws McException;
     
     /**
      * Registers a new sign with arena support.
+     * 
      * @param plugin
      * @param type
      * @param creator
-     * @param clazz 
+     * @param clazz
      * @throws McException
      */
     <T extends ArenaSignHandler> void registerArenaSign(Plugin plugin, SignTypeId type, McSupplier<T> creator, Class<T> clazz) throws McException;
@@ -523,16 +528,18 @@ public interface MinigamesLibInterface
      *             thrown if there are problems creating the arena.
      */
     ArenaInterface create(String name, ArenaTypeInterface type) throws McException;
-
+    
     /**
      * Returns the arena player for given mclib player
+     * 
      * @param player
      * @return arena player
      */
     ArenaPlayerInterface getPlayer(McPlayerInterface player);
-
+    
     /**
      * Returns the arena player for given player uuid
+     * 
      * @param uuid
      * @return arena player
      */
@@ -573,5 +580,14 @@ public interface MinigamesLibInterface
      * @return creator function
      */
     McBiFunction<ZoneRuleSetType, ArenaZoneHandler, ZoneRuleSetInterface> creator(ZoneRuleSetType type);
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by type provider as well as extensions.
+     * 
+     * @param type
+     *            the type
+     * @return all optional rule sets being available for this arena type.
+     */
+    Set<ArenaRuleSetType> getOptionalRuleSets(ArenaTypeInterface type);
     
 }

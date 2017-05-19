@@ -80,8 +80,6 @@ import de.minigameslib.mgapi.impl.cmd.SpectateCommand;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorProvider;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 import de.minigameslib.mgapi.impl.obj.BattleZone;
-import de.minigameslib.mgapi.impl.obj.EmptyComponent;
-import de.minigameslib.mgapi.impl.obj.EmptySign;
 import de.minigameslib.mgapi.impl.obj.GenericSign;
 import de.minigameslib.mgapi.impl.obj.JoinSign;
 import de.minigameslib.mgapi.impl.obj.LeaveSign;
@@ -174,8 +172,6 @@ import de.minigameslib.mgapi.impl.rules.BasicSpectator;
     LeaveSign.Messages.class,
     JoinSign.Messages.class,
     GenericSign.Messages.class,
-    EmptySign.Messages.class,
-    EmptyComponent.Messages.class,
     BattleZone.Messages.class,
     LobbyZone.Messages.class,
     SpectatorZone.Messages.class,

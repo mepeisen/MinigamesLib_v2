@@ -300,7 +300,10 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
                 final ArenaPlayerDieEvent event = new ArenaPlayerDieEvent(this.getArena(), this);
                 Bukkit.getPluginManager().callEvent(event);
                 
-                // TODO do respawn if player is still in match
+                if (this.isPlaying() || this.isSpectating())
+                {
+                    this.getArena().teleport(this, this.getArena().getCurrentMatch().getSpawn(this.getPlayerUUID()));
+                }
                 return;
             }
         }

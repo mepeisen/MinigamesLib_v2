@@ -24,11 +24,15 @@
 
 package de.minigameslib.mgapi.impl;
 
+import java.util.Set;
+
 import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mgapi.api.ExtensionInterface;
 import de.minigameslib.mgapi.api.ExtensionProvider;
+import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 
 /**
  * @author mepeisen
@@ -87,6 +91,16 @@ class ExtensionImpl implements ExtensionInterface
     public Plugin getPlugin()
     {
         return this.plugin;
+    }
+
+    /**
+     * Returns the optional arena rules for given type.
+     * @param type arena type
+     * @return arena rules.
+     */
+    public Set<ArenaRuleSetType> getOptionalArenaRules(ArenaTypeInterface type)
+    {
+        return this.provider.getOptionalArenaRules(type);
     }
     
 }

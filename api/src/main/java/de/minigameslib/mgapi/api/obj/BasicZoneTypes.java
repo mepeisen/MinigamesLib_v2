@@ -71,12 +71,6 @@ public enum BasicZoneTypes implements ZoneTypeId
     Spectator,
     
     /**
-     * Some empty zone that can be used with new rule sets for minigame developers.
-     * @see EmptyZoneHandler
-     */
-    Empty,
-    
-    /**
      * A special generic zone used by administrators with individual rule sets.
      * @see GenericZoneHandler
      */

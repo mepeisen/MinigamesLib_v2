@@ -24,7 +24,12 @@
 
 package de.minigameslib.mgapi.api;
 
+import java.util.Collections;
+import java.util.Set;
+
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 
 /**
  * A proider to describe an extension.
@@ -60,8 +65,18 @@ public interface ExtensionProvider
     
     /**
      * Returns a how-to-use manual, mainly for administrators
-     * @return how-to-use manual, mainly for adminstrators
+     * @return how-to-use manual, mainly for administrators
      */
     LocalizedMessageInterface getManual();
+
+    /**
+     * Returns the optional arena rules for given type.
+     * @param type arena type
+     * @return arena rules.
+     */
+    default Set<ArenaRuleSetType> getOptionalArenaRules(ArenaTypeInterface type)
+    {
+        return Collections.emptySet();
+    }
     
 }
