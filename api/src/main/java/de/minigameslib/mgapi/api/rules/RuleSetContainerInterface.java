@@ -47,7 +47,7 @@ public interface RuleSetContainerInterface<T extends RuleSetType, Q extends Rule
     
     /**
      * Returns the rule sets applied to this element.
-     * The resulting collection contains fixed rule sets (not removable becuase the minigame code relies on it) or
+     * The resulting collection contains fixed rule sets (not removable because the minigame code relies on it) or
      * optional rule sets.
      * @return applied rule sets
      */
@@ -60,28 +60,28 @@ public interface RuleSetContainerInterface<T extends RuleSetType, Q extends Rule
     Collection<T> getAvailableRuleSetTypes();
     
     /**
-     * Checks if given rule set is fixed and thus cannot be removed
+     * Checks if given rule set is fixed and thus cannot be removed.
      * @param ruleset
      * @return true if given ruleset is fixed.
      */
     boolean isFixed(T ruleset);
     
     /**
-     * Checks if given rule set is optional and thus can be removed
+     * Checks if given rule set is optional and thus can be removed.
      * @param ruleset
-     * @return true if given ruleset is fixed.
+     * @return true if given ruleset is optional.
      */
     boolean isOptional(T ruleset);
     
     /**
-     * Checks if given rule set is applied
+     * Checks if given rule set is applied.
      * @param ruleset
-     * @return true if given ruleset is fixed.
+     * @return true if given ruleset is applied.
      */
     boolean isApplied(T ruleset);
     
     /**
-     * Checks if given rule set is available
+     * Checks if given rule set is available and thus can be applied.
      * @param ruleset
      * @return true if given ruleset is not yet applied and if it is allowed to apply it to this element.
      */

@@ -47,12 +47,6 @@ public enum BasicSignTypes implements SignTypeId
     Leave,
     
     /**
-     * Some empty sign that can be used with new rule sets for minigame developers.
-     * @see EmptySignHandler
-     */
-    Empty,
-    
-    /**
      * A special generic sign used by administrators with individual rule sets.
      * @see GenericSignHandler
      */

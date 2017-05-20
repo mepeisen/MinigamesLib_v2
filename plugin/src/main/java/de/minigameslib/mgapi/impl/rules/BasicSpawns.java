@@ -46,6 +46,7 @@ import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
+import de.minigameslib.mgapi.api.events.ArenaPlayerDieEvent;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
 import de.minigameslib.mgapi.api.obj.BasicComponentTypes;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
@@ -124,6 +125,30 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
         if (evt.getNewState() == ArenaState.PreMatch)
         {
             this.shuffleSpawns();
+        }
+    }
+    
+    /**
+     * Arena die event
+     * @param evt
+     */
+    @McEventHandler
+    public void onPlayerDie(ArenaPlayerDieEvent evt)
+    {
+        if (this.spawnType == SpawnType.FullyRandom)
+        {
+            try
+            {
+                evt.getArena().getCurrentMatch().selectSpawn(evt.getArenaPlayer().getPlayerUUID(), this.currentSpawns.remove(0));
+            }
+            catch (McException e)
+            {
+                // TODO Logging
+            }
+            if (this.currentSpawns.isEmpty())
+            {
+                this.fillShuffledSpawns();
+            }
         }
     }
 

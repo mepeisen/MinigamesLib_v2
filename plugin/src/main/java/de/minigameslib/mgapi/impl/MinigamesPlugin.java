@@ -120,9 +120,6 @@ import de.minigameslib.mgapi.impl.cmd.gui.MgAnvilGuis;
 import de.minigameslib.mgapi.impl.cmd.gui.MgClickGuis;
 import de.minigameslib.mgapi.impl.internal.TaskManager;
 import de.minigameslib.mgapi.impl.obj.BattleZone;
-import de.minigameslib.mgapi.impl.obj.EmptyComponent;
-import de.minigameslib.mgapi.impl.obj.EmptySign;
-import de.minigameslib.mgapi.impl.obj.EmptyZone;
 import de.minigameslib.mgapi.impl.obj.GenericComponent;
 import de.minigameslib.mgapi.impl.obj.GenericSign;
 import de.minigameslib.mgapi.impl.obj.GenericZone;
@@ -322,17 +319,14 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         
         try
         {
-            this.registerArenaComponent(this, BasicComponentTypes.Empty, EmptyComponent::new, EmptyComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.Generic, GenericComponent::new, GenericComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.Spawn, SpawnComponent::new, SpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.LobbySpawn, LobbySpawnComponent::new, LobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.MainLobbySpawn, MainLobbySpawnComponent::new, MainLobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.SpectatorSpawn, SpectatorSpawnComponent::new, SpectatorSpawnComponent.class);
-            this.registerArenaSign(this, BasicSignTypes.Empty, EmptySign::new, EmptySign.class);
             this.registerArenaSign(this, BasicSignTypes.Generic, GenericSign::new, GenericSign.class);
             this.registerArenaSign(this, BasicSignTypes.Join, JoinSign::new, JoinSign.class);
             this.registerArenaSign(this, BasicSignTypes.Leave, LeaveSign::new, LeaveSign.class);
-            this.registerArenaZone(this, BasicZoneTypes.Empty, EmptyZone::new, EmptyZone.class);
             this.registerArenaZone(this, BasicZoneTypes.Generic, GenericZone::new, GenericZone.class);
             this.registerArenaZone(this, BasicZoneTypes.Battle, BattleZone::new, BattleZone.class);
             this.registerArenaZone(this, BasicZoneTypes.Join, JoinZone::new, JoinZone.class);
@@ -873,6 +867,25 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
     public Plugin getPlugin()
     {
         return this;
+    }
+
+    @Override
+    public Set<ArenaRuleSetType> getOptionalRuleSets(ArenaTypeInterface type)
+    {
+        final Set<ArenaRuleSetType> result = new HashSet<>();
+        try
+        {
+            result.addAll(type.safeCreateProvider().getOptionalArenaRules());
+        }
+        catch (McException e)
+        {
+            // TODO Logging
+        }
+        for (final ExtensionImpl ext : this.extensionsPerName.values())
+        {
+            result.addAll(ext.getOptionalArenaRules(type));
+        }
+        return result;
     }
     
 }

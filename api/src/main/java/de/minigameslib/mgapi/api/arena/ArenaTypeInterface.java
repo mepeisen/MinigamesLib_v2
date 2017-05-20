@@ -24,11 +24,14 @@
 
 package de.minigameslib.mgapi.api.arena;
 
+import java.util.Set;
+
 import de.minigameslib.mclib.api.CommonMessages;
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.enums.McUniqueEnumInterface;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
+import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 
 /**
  * Interface implemented by enumerations for building arena types.
@@ -37,6 +40,16 @@ import de.minigameslib.mgapi.api.MinigamesLibInterface;
  */
 public interface ArenaTypeInterface extends McUniqueEnumInterface
 {
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by type provider as well as extensions.
+     * 
+     * @return all optional rule sets being available for this arena type.
+     */
+    default Set<ArenaRuleSetType> getOptionalRuleSets()
+    {
+        return MinigamesLibInterface.instance().getOptionalRuleSets(this);
+    }
     
     /**
      * Returns the arena type provider for this type.

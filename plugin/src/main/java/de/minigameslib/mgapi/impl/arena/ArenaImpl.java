@@ -85,6 +85,7 @@ import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.api.arena.ArenaTypeProvider;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
 import de.minigameslib.mgapi.api.events.ArenaDeleteEvent;
@@ -381,22 +382,30 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     private void resumeRuleSets() throws McException
     {
         final Set<ArenaRuleSetType> oldfixed = new HashSet<>(this.arenaData.getFixedRules());
-        for (final ArenaRuleSetType ruleset : this.type.safeCreateProvider().getFixedArenaRules())
+        final ArenaTypeProvider provider = this.type.safeCreateProvider();
+        
+        // apply currently fixed rule sets.
+        for (final ArenaRuleSetType ruleset : provider.getFixedArenaRules())
         {
             if (!oldfixed.remove(ruleset))
             {
+                // maybe an optional rule set becoming fixed or maybe a completly new rule set.
                 this.arenaData.getOptionalRules().remove(ruleset);
                 this.arenaData.getFixedRules().add(ruleset);
                 this.saveDataInternal();
             }
             this.ruleSets.applyFixedRuleSet(ruleset);
         }
+        
+        // previously fixed rule sets become optional
         for (final ArenaRuleSetType ruleset : oldfixed)
         {
             this.arenaData.getFixedRules().remove(ruleset);
             this.arenaData.getOptionalRules().add(ruleset);
             this.saveDataInternal();
         }
+        
+        // apply all optional rule sets
         for (final ArenaRuleSetType ruleset :  this.arenaData.getOptionalRules())
         {
             this.ruleSets.applyOptionalRuleSet(ruleset);
@@ -1211,8 +1220,9 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     @Override
     public Collection<ArenaRuleSetType> getAvailableRuleSetTypes()
     {
-        // TODO implement available rule sets
-        return Collections.emptyList();
+        final Set<ArenaRuleSetType> result = this.type.getOptionalRuleSets();
+        result.removeAll(this.getAppliedRuleSetTypes());
+        return result;
     }
 
     @Override
@@ -1236,8 +1246,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     @Override
     public boolean isAvailable(ArenaRuleSetType ruleset)
     {
-        // TODO implement available rule sets
-        return false;
+        return this.getAvailableRuleSetTypes().contains(ruleset);
     }
 
     @Override
