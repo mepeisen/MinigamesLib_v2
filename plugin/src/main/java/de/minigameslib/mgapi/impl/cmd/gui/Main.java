@@ -42,6 +42,7 @@ import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.ExtensionInterface;
@@ -246,6 +247,10 @@ public class Main implements ClickGuiInterface, ClickGuiPageInterface
         final ItemMeta meta = itemStack.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemStack.setItemMeta(meta);
+        if (arena.getDisplayName() == null)
+        {
+            return new ClickGuiItem(itemStack, Messages.IconArena, handler, arena.getInternalName());
+        }
         return new ClickGuiItem(itemStack, arena.getDisplayName(), handler);
     }
     
@@ -411,6 +416,13 @@ public class Main implements ClickGuiInterface, ClickGuiPageInterface
         @LocalizedMessage(defaultMessage = "MAIN - Minigames v2")
         @MessageComment({"Gui title (main menu)"})
         Title,
+        
+        /**
+         * The arena icon
+         */
+        @LocalizedMessage(defaultMessage = "%1$s")
+        @MessageComment(value = {"Arena icon"}, args={@Argument("internal name")})
+        IconArena,
         
         /**
          * The arenas icon
