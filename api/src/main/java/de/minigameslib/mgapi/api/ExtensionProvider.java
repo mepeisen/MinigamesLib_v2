@@ -28,8 +28,15 @@ import java.util.Collections;
 import java.util.Set;
 
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
+import de.minigameslib.mclib.api.objects.SignInterface;
+import de.minigameslib.mclib.api.objects.ZoneInterface;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
+import de.minigameslib.mgapi.api.rules.SignRuleSetType;
+import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
 /**
  * A proider to describe an extension.
@@ -75,6 +82,48 @@ public interface ExtensionProvider
      * @return arena rules.
      */
     default Set<ArenaRuleSetType> getOptionalArenaRules(ArenaTypeInterface type)
+    {
+        return Collections.emptySet();
+    }
+    
+    /**
+     * Returns all optional rule sets for this type.
+     * 
+     * @param arena
+     *            target arena
+     * @param sign
+     *            target sign
+     * @return all optional rule sets being available for this sign.
+     */
+    default Set<SignRuleSetType> getOptionalRuleSets(ArenaInterface arena, SignInterface sign)
+    {
+        return Collections.emptySet();
+    }
+    
+    /**
+     * Returns all optional rule sets for this type.
+     * 
+     * @param arena
+     *            target arena
+     * @param zone
+     *            target zone
+     * @return all optional rule sets being available for this zone.
+     */
+    default Set<ZoneRuleSetType> getOptionalRuleSets(ArenaInterface arena, ZoneInterface zone)
+    {
+        return Collections.emptySet();
+    }
+    
+    /**
+     * Returns all optional rule sets for this type.
+     * 
+     * @param arena
+     *            target arena
+     * @param component
+     *            target component
+     * @return all optional rule sets being available for this component.
+     */
+    default Set<ComponentRuleSetType> getOptionalRuleSets(ArenaInterface arena, ComponentInterface component)
     {
         return Collections.emptySet();
     }

@@ -247,7 +247,7 @@ public class Main implements ClickGuiInterface, ClickGuiPageInterface
         final ItemMeta meta = itemStack.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         itemStack.setItemMeta(meta);
-        if (arena.getDisplayName() == null)
+        if (arena.getDisplayName() == null || arena.getDisplayName().getLanguages().isEmpty())
         {
             return new ClickGuiItem(itemStack, Messages.IconArena, handler, arena.getInternalName());
         }

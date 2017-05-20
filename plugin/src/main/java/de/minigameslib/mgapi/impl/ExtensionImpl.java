@@ -29,10 +29,17 @@ import java.util.Set;
 import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
+import de.minigameslib.mclib.api.objects.SignInterface;
+import de.minigameslib.mclib.api.objects.ZoneInterface;
 import de.minigameslib.mgapi.api.ExtensionInterface;
 import de.minigameslib.mgapi.api.ExtensionProvider;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
+import de.minigameslib.mgapi.api.rules.SignRuleSetType;
+import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
 /**
  * @author mepeisen
@@ -101,6 +108,48 @@ class ExtensionImpl implements ExtensionInterface
     public Set<ArenaRuleSetType> getOptionalArenaRules(ArenaTypeInterface type)
     {
         return this.provider.getOptionalArenaRules(type);
+    }
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param sign
+     *            target sign
+     * @return all optional rule sets being available for this sign.
+     */
+    public Set<SignRuleSetType> getOptionalRuleSets(ArenaInterface arena, SignInterface sign)
+    {
+        return this.provider.getOptionalRuleSets(arena, sign);
+    }
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param zone
+     *            target zone
+     * @return all optional rule sets being available for this zone.
+     */
+    public Set<ZoneRuleSetType> getOptionalRuleSets(ArenaInterface arena, ZoneInterface zone)
+    {
+        return this.provider.getOptionalRuleSets(arena, zone);
+    }
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param component
+     *            target component
+     * @return all optional rule sets being available for this component.
+     */
+    public Set<ComponentRuleSetType> getOptionalRuleSets(ArenaInterface arena, ComponentInterface component)
+    {
+        return this.provider.getOptionalRuleSets(arena, component);
     }
     
 }

@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.api.obj;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.minigameslib.mclib.api.McException;
@@ -156,6 +157,14 @@ public abstract class AbstractArenaZoneHandler<D extends AbstractObjectData<Zone
     protected void removeListeners(ZoneRuleSetInterface listeners)
     {
         this.zone.unregisterHandlers(this.getPlugin(), listeners);
+    }
+    
+    @Override
+    public Collection<ZoneRuleSetType> getAvailableRuleSetTypes()
+    {
+        final Set<ZoneRuleSetType> result = MinigamesLibInterface.instance().getOptionalRuleSets(this.getArena(), this.getZone());
+        result.removeAll(this.getAppliedRuleSetTypes());
+        return result;
     }
 
     @Override

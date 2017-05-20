@@ -32,9 +32,12 @@ import java.util.UUID;
 import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
+import de.minigameslib.mclib.api.objects.ZoneInterface;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
 import de.minigameslib.mclib.api.util.function.McBiFunction;
 import de.minigameslib.mclib.api.util.function.McSupplier;
@@ -589,5 +592,38 @@ public interface MinigamesLibInterface
      * @return all optional rule sets being available for this arena type.
      */
     Set<ArenaRuleSetType> getOptionalRuleSets(ArenaTypeInterface type);
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param sign
+     *            target sign
+     * @return all optional rule sets being available for this sign.
+     */
+    Set<SignRuleSetType> getOptionalRuleSets(ArenaInterface arena, SignInterface sign);
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param zone
+     *            target zone
+     * @return all optional rule sets being available for this zone.
+     */
+    Set<ZoneRuleSetType> getOptionalRuleSets(ArenaInterface arena, ZoneInterface zone);
+    
+    /**
+     * Returns all optional rule sets for this type; can be influenced by extensions.
+     * 
+     * @param arena
+     *            target arena
+     * @param component
+     *            target component
+     * @return all optional rule sets being available for this component.
+     */
+    Set<ComponentRuleSetType> getOptionalRuleSets(ArenaInterface arena, ComponentInterface component);
     
 }

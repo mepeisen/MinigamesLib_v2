@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.api.obj;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 
 import org.bukkit.Location;
 
@@ -155,6 +156,14 @@ public abstract class AbstractArenaComponentHandler<D extends AbstractObjectData
     protected void removeListeners(ComponentRuleSetInterface listeners)
     {
         this.component.unregisterHandlers(this.getPlugin(), listeners);
+    }
+    
+    @Override
+    public Collection<ComponentRuleSetType> getAvailableRuleSetTypes()
+    {
+        final Set<ComponentRuleSetType> result = MinigamesLibInterface.instance().getOptionalRuleSets(this.getArena(), this.getComponent());
+        result.removeAll(this.getAppliedRuleSetTypes());
+        return result;
     }
 
     @Override

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
@@ -239,6 +240,14 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
         this.sign.unregisterHandlers(this.getPlugin(), listeners);
     }
     
+    @Override
+    public Collection<SignRuleSetType> getAvailableRuleSetTypes()
+    {
+        final Set<SignRuleSetType> result = MinigamesLibInterface.instance().getOptionalRuleSets(this.getArena(), this.getSign());
+        result.removeAll(this.getAppliedRuleSetTypes());
+        return result;
+    }
+
     @Override
     protected SignRuleSetInterface create(SignRuleSetType ruleset) throws McException
     {

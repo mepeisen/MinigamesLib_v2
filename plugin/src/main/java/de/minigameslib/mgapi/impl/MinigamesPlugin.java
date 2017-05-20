@@ -53,10 +53,13 @@ import de.minigameslib.mclib.api.cmd.CommandImpl;
 import de.minigameslib.mclib.api.config.ConfigServiceInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.enums.EnumServiceInterface;
+import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
+import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
+import de.minigameslib.mclib.api.objects.ZoneInterface;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
 import de.minigameslib.mclib.api.util.function.McBiFunction;
 import de.minigameslib.mclib.api.util.function.McSupplier;
@@ -886,6 +889,113 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         for (final ExtensionImpl ext : this.extensionsPerName.values())
         {
             result.addAll(ext.getOptionalArenaRules(type));
+        }
+        return result;
+    }
+
+    @Override
+    public Set<SignRuleSetType> getOptionalRuleSets(ArenaInterface arena, SignInterface sign)
+    {
+        final Set<SignRuleSetType> result = new HashSet<>();
+        for (final ExtensionImpl ext : this.extensionsPerName.values())
+        {
+            result.addAll(ext.getOptionalRuleSets(arena, sign));
+        }
+        return result;
+    }
+
+    @Override
+    public Set<ZoneRuleSetType> getOptionalRuleSets(ArenaInterface arena, ZoneInterface zone)
+    {
+        final Set<ZoneRuleSetType> result = new HashSet<>();
+        for (final ExtensionImpl ext : this.extensionsPerName.values())
+        {
+            result.addAll(ext.getOptionalRuleSets(arena, zone));
+        }
+        
+        final ZoneTypeId type = zone.getTypeId();
+        if (type == BasicZoneTypes.Battle)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.DieOnLeave,
+                    BasicZoneRuleSets.LoseOnLeave,
+                    BasicZoneRuleSets.Heal,
+                    BasicZoneRuleSets.NoMobTargets,
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets,
+                    BasicZoneRuleSets.PlayerNoEntry,
+                    BasicZoneRuleSets.PvPMode
+                    ));
+        }
+        else if (type == BasicZoneTypes.Generic)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.DieOnLeave,
+                    BasicZoneRuleSets.LoseOnLeave,
+                    BasicZoneRuleSets.Heal,
+                    BasicZoneRuleSets.NoMobTargets,
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets,
+                    BasicZoneRuleSets.PlayerNoEntry,
+                    BasicZoneRuleSets.PvPMode
+                    ));
+        }
+        else if (type == BasicZoneTypes.Join)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets
+                    ));
+        }
+        else if (type == BasicZoneTypes.Leave)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets
+                    ));
+        }
+        else if (type == BasicZoneTypes.Lobby)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.Heal,
+                    BasicZoneRuleSets.NoMobTargets,
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets,
+                    BasicZoneRuleSets.PlayerNoEntry,
+                    BasicZoneRuleSets.PvPMode
+                    ));
+        }
+        else if (type == BasicZoneTypes.Main)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.NoMobTargets,
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets,
+                    BasicZoneRuleSets.PlayerNoEntry,
+                    BasicZoneRuleSets.PvPMode
+                    ));
+        }
+        else if (type == BasicZoneTypes.Spectator)
+        {
+            result.addAll(Arrays.asList(
+                    BasicZoneRuleSets.NoMobTargets,
+                    BasicZoneRuleSets.NoWorldMobs,
+                    BasicZoneRuleSets.NoWorldPets,
+                    BasicZoneRuleSets.PlayerNoEntry,
+                    BasicZoneRuleSets.PvPMode
+                    ));
+        }
+        
+        return result;
+    }
+
+    @Override
+    public Set<ComponentRuleSetType> getOptionalRuleSets(ArenaInterface arena, ComponentInterface component)
+    {
+        final Set<ComponentRuleSetType> result = new HashSet<>();
+        for (final ExtensionImpl ext : this.extensionsPerName.values())
+        {
+            result.addAll(ext.getOptionalRuleSets(arena, component));
         }
         return result;
     }

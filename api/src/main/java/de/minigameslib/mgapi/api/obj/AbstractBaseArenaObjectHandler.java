@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 import org.bukkit.plugin.Plugin;
 
@@ -42,6 +43,7 @@ import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.AbstractRuleSetContainer;
+import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.RuleSetInterface;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
 
@@ -157,17 +159,9 @@ public abstract class AbstractBaseArenaObjectHandler<T extends RuleSetType, Q ex
     }
     
     @Override
-    public Collection<T> getAvailableRuleSetTypes()
-    {
-        // TODO implement available rule sets
-        return Collections.emptyList();
-    }
-    
-    @Override
     public boolean isAvailable(T ruleset)
     {
-        // TODO implement available rule sets
-        return false;
+        return this.getAvailableRuleSetTypes().contains(ruleset);
     }
     
     @Override
