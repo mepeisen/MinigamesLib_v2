@@ -436,7 +436,7 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
                     {
                         indexOf = src.length();
                     }
-                    final String var = src.substring(pos, indexOf - 1);
+                    final String var = src.substring(pos, indexOf);
                     pos = indexOf + 1;
                     switch (var)
                     {

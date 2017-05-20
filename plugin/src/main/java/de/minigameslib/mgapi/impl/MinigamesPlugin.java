@@ -673,6 +673,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         {
             throw new McException(MglibCoreErrors.ArenaDuplicate, name);
         }
+        this.checkArenaName(name);
         
         final ArenaCreateEvent createEvent = new ArenaCreateEvent(name, type);
         Bukkit.getPluginManager().callEvent(createEvent);
