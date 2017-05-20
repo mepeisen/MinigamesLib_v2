@@ -205,6 +205,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public ArenaImpl(String name, ArenaTypeInterface type, File dataFile) throws McException
     {
         this.logger = new ArenaLogger(name);
+        this.type = type;
         this.dataFile = dataFile;
         this.arenaData = new ArenaData(name, type);
         this.arenaData.setMaintenance(true);

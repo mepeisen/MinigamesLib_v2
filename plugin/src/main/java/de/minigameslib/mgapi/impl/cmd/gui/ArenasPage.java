@@ -136,7 +136,7 @@ public class ArenasPage extends AbstractPage<ArenaInterface>
         session.setNewPage(new ArenaCreateChooseMinigame((type, name) -> {
                 final ArenaInterface arena = MinigamesLibInterface.instance().create(name, type);
                 arena.setAdminsEnabled(true);
-                arena.getAdmins().add(player.getPlayerUUID());
+                arena.addAdmin(player.getPlayerUUID());
                 arena.saveData();
                 player.openClickGui(new Main(new ArenaEdit(arena, this)));
             },this));

@@ -80,14 +80,8 @@ import de.minigameslib.mgapi.impl.cmd.SpectateCommand;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorProvider;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 import de.minigameslib.mgapi.impl.obj.BattleZone;
-import de.minigameslib.mgapi.impl.obj.EmptyComponent;
-import de.minigameslib.mgapi.impl.obj.EmptySign;
-import de.minigameslib.mgapi.impl.obj.GenericSign;
-import de.minigameslib.mgapi.impl.obj.JoinSign;
-import de.minigameslib.mgapi.impl.obj.LeaveSign;
 import de.minigameslib.mgapi.impl.obj.LobbySpawnComponent;
 import de.minigameslib.mgapi.impl.obj.LobbyZone;
-import de.minigameslib.mgapi.impl.obj.MainLobbySpawnComponent;
 import de.minigameslib.mgapi.impl.obj.MainZone;
 import de.minigameslib.mgapi.impl.obj.SpawnComponent;
 import de.minigameslib.mgapi.impl.obj.SpectatorSpawnComponent;
@@ -167,15 +161,9 @@ import de.minigameslib.mgapi.impl.rules.BasicSpectator;
     AbstractArenaZoneHandler.Messages.class,
     AbstractArenaSignHandler.Messages.class,
     AbstractArenaComponentHandler.Messages.class,
-    MainLobbySpawnComponent.Messages.class,
     SpawnComponent.Messages.class,
     LobbySpawnComponent.Messages.class,
     SpectatorSpawnComponent.Messages.class,
-    LeaveSign.Messages.class,
-    JoinSign.Messages.class,
-    GenericSign.Messages.class,
-    EmptySign.Messages.class,
-    EmptyComponent.Messages.class,
     BattleZone.Messages.class,
     LobbyZone.Messages.class,
     SpectatorZone.Messages.class,
