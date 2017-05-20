@@ -290,7 +290,7 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
         /**
          * not enough spawns.
          */
-        @LocalizedMessage(defaultMessage = "Nit enough spawns!", severity = MessageSeverityType.Error)
+        @LocalizedMessage(defaultMessage = "Not enough spawns!", severity = MessageSeverityType.Error)
         @MessageComment("not enough spawns")
         NotEnoughSpawns,
         

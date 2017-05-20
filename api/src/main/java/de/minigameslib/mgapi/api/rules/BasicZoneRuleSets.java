@@ -66,7 +66,13 @@ public enum BasicZoneRuleSets implements ZoneRuleSetType
      * Pvp-Rules
      * @see PvPModeRuleInterface
      */
-    @RuleSetConfigurable(config = BasicPvpModeConfig.class)
+    @RuleSetConfigurable(config = PvpModeConfig.class)
     PvPMode,
+    
+    /**
+     * Rule to heal players.
+     */
+    @RuleSetConfigurable(config = HealConfig.class)
+    Heal,
     
 }

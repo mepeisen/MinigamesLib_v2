@@ -38,7 +38,7 @@ import de.minigameslib.mclib.shared.api.com.EnumerationValue;
  * @see BasicZoneRuleSets#PvPMode
  */
 @ConfigurationValues(path = "core")
-public enum BasicPvpModeConfig implements ConfigurationValueInterface
+public enum PvpModeConfig implements ConfigurationValueInterface
 {
     
     /**

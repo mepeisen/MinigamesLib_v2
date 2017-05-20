@@ -33,8 +33,8 @@ import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.rules.AbstractZoneRule;
-import de.minigameslib.mgapi.api.rules.BasicPvpModeConfig;
-import de.minigameslib.mgapi.api.rules.BasicPvpModeConfig.PvpModes;
+import de.minigameslib.mgapi.api.rules.PvpModeConfig;
+import de.minigameslib.mgapi.api.rules.PvpModeConfig.PvpModes;
 import de.minigameslib.mgapi.api.rules.PvPModeRuleInterface;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
@@ -59,7 +59,7 @@ public class PvPMode extends AbstractZoneRule implements PvPModeRuleInterface
     {
         super(type, zone);
         this.runInCopiedContext(() -> {
-            this.mode = BasicPvpModeConfig.PvpOption.getEnum(PvpModes.class);
+            this.mode = PvpModeConfig.PvpOption.getEnum(PvpModes.class);
             if (this.mode == null)
             {
                 this.mode = PvpModes.NoPvp;
@@ -84,8 +84,8 @@ public class PvPMode extends AbstractZoneRule implements PvPModeRuleInterface
     {
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
-            BasicPvpModeConfig.PvpOption.setEnum(mode);
-            BasicPvpModeConfig.PvpOption.saveConfig();
+            PvpModeConfig.PvpOption.setEnum(mode);
+            PvpModeConfig.PvpOption.saveConfig();
         });
         this.zone.reconfigureRuleSets(this.type);
     }

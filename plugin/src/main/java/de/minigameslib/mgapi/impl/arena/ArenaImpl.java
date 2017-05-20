@@ -296,16 +296,16 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             throw new McException(CommonMessages.InternalError, e, e.getMessage());
         }
         
-        if (!this.arenaData.isEnabled())
-        {
-            final ArenaStateChangedEvent changedEvent = new ArenaStateChangedEvent(this, this.state, ArenaState.Disabled);
-            this.state = ArenaState.Disabled;
-            Bukkit.getPluginManager().callEvent(changedEvent);
-        }
-        else if (this.arenaData.isMaintenance())
+        if (this.arenaData.isMaintenance())
         {
             final ArenaStateChangedEvent changedEvent = new ArenaStateChangedEvent(this, this.state, ArenaState.Maintenance);
             this.state = ArenaState.Maintenance;
+            Bukkit.getPluginManager().callEvent(changedEvent);
+        }
+        else if (!this.arenaData.isEnabled())
+        {
+            final ArenaStateChangedEvent changedEvent = new ArenaStateChangedEvent(this, this.state, ArenaState.Disabled);
+            this.state = ArenaState.Disabled;
             Bukkit.getPluginManager().callEvent(changedEvent);
         }
         else
@@ -1866,7 +1866,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ComponentIdInterface> getComponents(Location location, ComponentTypeId... types)
     {
         return ObjectServiceInterface.instance().findComponents(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ComponentInterface::getComponentId)
                 .filter(o -> this.arenaData.getComponents().contains(o))
                 .collect(Collectors.toList());
@@ -1876,7 +1876,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ComponentIdInterface> getComponents(Cuboid cuboid, ComponentTypeId... types)
     {
         return ObjectServiceInterface.instance().findComponents(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ComponentInterface::getComponentId)
                 .filter(o -> this.arenaData.getComponents().contains(o))
                 .collect(Collectors.toList());
@@ -1886,7 +1886,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ZoneIdInterface> getZones(Location location, ZoneTypeId... types)
     {
         return ObjectServiceInterface.instance().findZones(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ZoneInterface::getZoneId)
                 .filter(o -> this.arenaData.getZones().contains(o))
                 .collect(Collectors.toList());
@@ -1896,7 +1896,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ZoneIdInterface> getZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types)
     {
         return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ZoneInterface::getZoneId)
                 .filter(o -> this.arenaData.getZones().contains(o))
                 .collect(Collectors.toList());
@@ -1906,7 +1906,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<SignIdInterface> getSigns(Location location, SignTypeId... types)
     {
         return ObjectServiceInterface.instance().findSigns(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(SignInterface::getSignId)
                 .filter(o -> this.arenaData.getSigns().contains(o))
                 .collect(Collectors.toList());
@@ -1916,7 +1916,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<SignIdInterface> getSigns(Cuboid cuboid, SignTypeId... types)
     {
         return ObjectServiceInterface.instance().findSigns(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(SignInterface::getSignId)
                 .filter(o -> this.arenaData.getSigns().contains(o))
                 .collect(Collectors.toList());
@@ -1927,7 +1927,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         // TODO rework in mclib: find entitiers for location
         return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(EntityInterface::getEntityId)
                 .filter(o -> this.arenaData.getEntities().contains(o))
                 .collect(Collectors.toList());
@@ -1937,7 +1937,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<EntityIdInterface> getEntities(Cuboid cuboid, EntityTypeId... types)
     {
         return ObjectServiceInterface.instance().findEntities(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(EntityInterface::getEntityId)
                 .filter(o -> this.arenaData.getEntities().contains(o))
                 .collect(Collectors.toList());
@@ -2020,7 +2020,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ComponentIdInterface> getForeignComponents(Location location, ComponentTypeId... types)
     {
         return ObjectServiceInterface.instance().findComponents(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ComponentInterface::getComponentId)
                 .filter(o -> !this.arenaData.getComponents().contains(o))
                 .collect(Collectors.toList());
@@ -2030,7 +2030,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ComponentIdInterface> getForeignComponents(Cuboid cuboid, ComponentTypeId... types)
     {
         return ObjectServiceInterface.instance().findComponents(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ComponentInterface::getComponentId)
                 .filter(o -> !this.arenaData.getComponents().contains(o))
                 .collect(Collectors.toList());
@@ -2040,7 +2040,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ZoneIdInterface> getForeignZones(Location location, ZoneTypeId... types)
     {
         return ObjectServiceInterface.instance().findZones(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ZoneInterface::getZoneId)
                 .filter(o -> !this.arenaData.getZones().contains(o))
                 .collect(Collectors.toList());
@@ -2050,7 +2050,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<ZoneIdInterface> getForeignZones(Cuboid cuboid, CuboidMode mode, ZoneTypeId... types)
     {
         return ObjectServiceInterface.instance().findZones(cuboid, mode).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(ZoneInterface::getZoneId)
                 .filter(o -> !this.arenaData.getZones().contains(o))
                 .collect(Collectors.toList());
@@ -2060,7 +2060,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<SignIdInterface> getForeignSigns(Location location, SignTypeId... types)
     {
         return ObjectServiceInterface.instance().findSigns(location).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(SignInterface::getSignId)
                 .filter(o -> !this.arenaData.getSigns().contains(o))
                 .collect(Collectors.toList());
@@ -2070,7 +2070,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<SignIdInterface> getForeignSigns(Cuboid cuboid, SignTypeId... types)
     {
         return ObjectServiceInterface.instance().findSigns(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(SignInterface::getSignId)
                 .filter(o -> !this.arenaData.getSigns().contains(o))
                 .collect(Collectors.toList());
@@ -2081,7 +2081,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         // TODO rework in mclib: find entitiers for location
         return ObjectServiceInterface.instance().findEntities(new Cuboid(location, location)).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(EntityInterface::getEntityId)
                 .filter(o -> !this.arenaData.getEntities().contains(o))
                 .collect(Collectors.toList());
@@ -2091,7 +2091,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     public Collection<EntityIdInterface> getForeignEntities(Cuboid cuboid, EntityTypeId... types)
     {
         return ObjectServiceInterface.instance().findEntities(cuboid).stream()
-                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) < 0)
+                .filter(o -> Arrays.binarySearch(types, o.getTypeId()) >= 0)
                 .map(EntityInterface::getEntityId)
                 .filter(o -> !this.arenaData.getEntities().contains(o))
                 .collect(Collectors.toList());

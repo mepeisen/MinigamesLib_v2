@@ -349,7 +349,7 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
         final Collection<ZoneIdInterface> myMainZones = this.getArena().getZones(loc, BasicZoneTypes.Main);
         final Collection<SignIdInterface> mySigns = this.getArena().getSigns(loc)
                 // filter myself
-                .stream().filter(z -> z.equals(this.getSign().getSignId())).collect(Collectors.toList());
+                .stream().filter(z -> !z.equals(this.getSign().getSignId())).collect(Collectors.toList());
         
         final Collection<ZoneIdInterface> foreignZones = this.getArena().getForeignZones(loc);
         final Collection<ComponentIdInterface> foreignComponents = this.getArena().getForeignComponents(loc);

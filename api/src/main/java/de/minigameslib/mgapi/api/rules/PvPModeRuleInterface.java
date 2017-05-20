@@ -25,7 +25,7 @@
 package de.minigameslib.mgapi.api.rules;
 
 import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mgapi.api.rules.BasicPvpModeConfig.PvpModes;
+import de.minigameslib.mgapi.api.rules.PvpModeConfig.PvpModes;
 
 /**
  * @author mepeisen

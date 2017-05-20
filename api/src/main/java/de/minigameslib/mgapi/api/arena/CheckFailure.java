@@ -55,7 +55,7 @@ public class CheckFailure
     {
         this.severity = severity;
         this.title = title.toArg(titleArgs);
-        this.details = details.toArg(detailArgs);
+        this.details = details.isMultiLine() ? details.toListArg(detailArgs) : details.toArg(detailArgs);
     }
     
     /**
@@ -69,7 +69,7 @@ public class CheckFailure
     {
         this.severity = severity;
         this.title = title.toArg();
-        this.details = details.toArg(detailArgs);
+        this.details = details.isMultiLine() ? details.toListArg(detailArgs) : details.toArg(detailArgs);
     }
 
     /**

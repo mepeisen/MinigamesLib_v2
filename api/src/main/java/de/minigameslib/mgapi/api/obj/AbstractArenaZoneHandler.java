@@ -255,7 +255,7 @@ public abstract class AbstractArenaZoneHandler<D extends AbstractObjectData<Zone
 
         final Collection<ZoneIdInterface> myMainZones = this.getArena().getZones(cuboid, CuboidMode.FindParents, BasicZoneTypes.Main)
                 // filter myself (relevant only for main zones to not return themselves)
-                .stream().filter(z -> z.equals(this.getZone().getZoneId())).collect(Collectors.toList());
+                .stream().filter(z -> !z.equals(this.getZone().getZoneId())).collect(Collectors.toList());
         
         final Collection<ZoneIdInterface> foreignZones = this.getArena().getForeignZones(cuboid, CuboidMode.FindShared);
         final Collection<ComponentIdInterface> foreignComponents = this.getArena().getForeignComponents(cuboid);

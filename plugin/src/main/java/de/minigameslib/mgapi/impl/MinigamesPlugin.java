@@ -139,6 +139,7 @@ import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
 import de.minigameslib.mgapi.impl.rules.BasicSpawns;
 import de.minigameslib.mgapi.impl.rules.BasicSpectator;
 import de.minigameslib.mgapi.impl.rules.DieOnLeave;
+import de.minigameslib.mgapi.impl.rules.Heal;
 import de.minigameslib.mgapi.impl.rules.LastManStanding;
 import de.minigameslib.mgapi.impl.rules.LoseOnDeath;
 import de.minigameslib.mgapi.impl.rules.LoseOnLeave;
@@ -316,6 +317,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         this.registerRuleset(this, BasicZoneRuleSets.NoMobTargets, NoMobsTargets::new);
         this.registerRuleset(this, BasicZoneRuleSets.PlayerNoEntry, PlayerNoEntry::new);
         this.registerRuleset(this, BasicZoneRuleSets.PvPMode, PvPMode::new);
+        this.registerRuleset(this, BasicZoneRuleSets.Heal, Heal::new);
         
         try
         {

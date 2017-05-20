@@ -25,6 +25,7 @@
 package de.minigameslib.mgapi.impl.cmd.gui;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
@@ -44,6 +45,7 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
+import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
 import de.minigameslib.mgapi.impl.cmd.ArenaCommand;
 
@@ -414,8 +416,8 @@ public class ArenaEdit implements ClickGuiPageInterface
      */
     private void onCheck(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        // TODO gui support check
-        player.sendMessage(Main.Messages.NotAvailable);
+        final Collection<CheckFailure> checks = this.arena.check();
+        session.setNewPage(new ChecksPage(player, this.arena, this, checks));
     }
     
     /**

@@ -62,6 +62,8 @@ import de.minigameslib.mclib.api.gui.ClickGuiId;
     ZonesPage.Messages.class,
     ZoneEdit.Messages.class,
     ZonesCreateChooseType.Messages.class,
+    
+    ChecksPage.Messages.class,
 })
 public enum MgClickGuis implements ClickGuiId
 {
