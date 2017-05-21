@@ -44,7 +44,10 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import de.minigameslib.mclib.api.CommonMessages;
 import de.minigameslib.mclib.api.McException;
@@ -53,6 +56,7 @@ import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
@@ -532,7 +536,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             {
                 comp = ObjectServiceInterface.instance().findComponent((ComponentIdInterface) id);
             }
-            player.getMcPlayer().getBukkitPlayer().teleport(comp.getLocation());
+            this.teleport(player, comp);
             return true;
         }
         return false;
@@ -543,7 +547,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (component != null)
         {
-            player.getMcPlayer().getBukkitPlayer().teleport(ObjectServiceInterface.instance().findComponent(component).getLocation());
+            this.teleport(player, ObjectServiceInterface.instance().findComponent(component));
         }
     }
 
@@ -552,7 +556,51 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         if (component != null)
         {
-            player.getMcPlayer().getBukkitPlayer().teleport(component.getLocation());
+            final Player bukkitPlayer = player.getMcPlayer().getBukkitPlayer();
+            bukkitPlayer.teleport(component.getLocation().clone().add(0.0d, 1.0d, 0.0d), TeleportCause.PLUGIN);
+            bukkitPlayer.setFallDistance(-1F);
+            bukkitPlayer.setVelocity(new Vector(0d, 0d, 0d));
+            bukkitPlayer.setFireTicks(0);
+            
+            // TODO this was from minigameslib v1
+//            final Chunk chunk = l.getChunk();
+//            if (MinigamesAPI.SERVER_VERSION.isBelow(MinecraftVersionsType.V1_8))
+//            {
+//                l.getWorld().refreshChunk(chunk.getX(), chunk.getZ());
+//            }
+//            else
+//            {
+//                try
+//                {
+//                    final Method getChunkHandle = chunk.getClass().getMethod("getHandle");
+//                    final Method getPlayerHandle = p.getClass().getMethod("getHandle");
+//                    final Object handle = getPlayerHandle.invoke(p);
+//                    final Field playerConnection = handle.getClass().getField("playerConnection");
+//                    playerConnection.setAccessible(true);
+//                    final Method sendPacket = playerConnection.getType().getMethod("sendPacket", Class.forName("net.minecraft.server." + MinigamesAPI.getAPI().internalServerVersion + ".Packet"));
+//                    final Class<?> chunkClazz = Class.forName("net.minecraft.server." + MinigamesAPI.getAPI().internalServerVersion + ".Chunk");
+//                    final Object packet;
+//                    if (MinigamesAPI.SERVER_VERSION.isAtLeast(MinecraftVersionsType.V1_9_R2))
+//                    {
+//                        final Constructor<?> constr = Class.forName("net.minecraft.server." + MinigamesAPI.getAPI().internalServerVersion + ".PacketPlayOutMapChunk").getConstructor(chunkClazz, int.class);
+//                        packet = constr.newInstance(getChunkHandle.invoke(chunk), 20);
+//                    }
+//                    else
+//                    {
+//                        final Constructor<?> constr = Class.forName("net.minecraft.server." + MinigamesAPI.getAPI().internalServerVersion + ".PacketPlayOutMapChunk").getConstructor(chunkClazz, boolean.class, int.class);
+//                        packet = constr.newInstance(getChunkHandle.invoke(chunk), false, 20);
+//                    }
+//                    sendPacket.invoke(playerConnection.get(handle), packet);
+//                    
+//                    // ((CraftPlayer)p).getHandle().playerConnection.sendPacket(new PacketPlayOutMapChunk(((CraftChunk)chunk).getHandle(), true, 65535));
+//                    chunk.unload(true);
+//                    chunk.load();
+//                }
+//                catch (Exception ex)
+//                {
+//                    MinigamesAPI.getAPI().getLogger().log(Level.WARNING, "exception", ex);
+//                }
+//            }
         }
     }
 
@@ -569,6 +617,7 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         }
         
         this.match.join(player);
+        // TODO internal name if display name is empty
         player.getMcPlayer().sendMessage(Messages.JoinedArena, this.getDisplayName());
     }
 
@@ -817,6 +866,18 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     }
 
     @Override
+    public void setMatchPhase(ArenaState state) throws McException
+    {
+        if (!this.isMatch() || (state != ArenaState.PreMatch && state != ArenaState.Match && state != ArenaState.PostMatch))
+        {
+            throw new McException(Messages.MatchPhaseWrongState);
+        }
+        final ArenaStateChangedEvent changedEvent = new ArenaStateChangedEvent(this, this.state, state);
+        this.state = state;
+        Bukkit.getPluginManager().callEvent(changedEvent);
+    }
+
+    @Override
     public void finish() throws McException
     {
         if (!this.isMatch())
@@ -954,7 +1015,13 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             final ObjectServiceInterface osi = ObjectServiceInterface.instance();
             for (final ComponentIdInterface id : this.getComponents())
             {
-                final ArenaComponentHandler handler = (ArenaComponentHandler) osi.findComponent(id).getHandler();
+                final ComponentInterface comp = osi.findComponent(id);
+                if (comp == null)
+                {
+                    list.add(new CheckFailure(CheckSeverity.Error, Messages.ObjectNotFound, new Serializable[]{id.toString()}, Messages.ObjectNotFound_Description));
+                    continue;
+                }
+                final ArenaComponentHandler handler = (ArenaComponentHandler) comp.getHandler();
                 list.addAll(handler.check());
                 for (final ComponentRuleSetType ruleset : handler.getAppliedRuleSetTypes())
                 {
@@ -963,7 +1030,13 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             }
             for (final ZoneIdInterface id : this.getZones())
             {
-                final ArenaZoneHandler handler = (ArenaZoneHandler) osi.findZone(id).getHandler();
+                final ZoneInterface zone = osi.findZone(id);
+                if (zone == null)
+                {
+                    list.add(new CheckFailure(CheckSeverity.Error, Messages.ObjectNotFound, new Serializable[]{id.toString()}, Messages.ObjectNotFound_Description));
+                    continue;
+                }
+                final ArenaZoneHandler handler = (ArenaZoneHandler) zone.getHandler();
                 list.addAll(handler.check());
                 for (final ZoneRuleSetType ruleset : handler.getAppliedRuleSetTypes())
                 {
@@ -972,7 +1045,13 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             }
             for (final SignIdInterface id : this.getSigns())
             {
-                final ArenaSignHandler handler = (ArenaSignHandler) osi.findSign(id).getHandler();
+                final SignInterface sign = osi.findSign(id);
+                if (sign == null)
+                {
+                    list.add(new CheckFailure(CheckSeverity.Error, Messages.ObjectNotFound, new Serializable[]{id.toString()}, Messages.ObjectNotFound_Description));
+                    continue;
+                }
+                final ArenaSignHandler handler = (ArenaSignHandler) sign.getHandler();
                 list.addAll(handler.check());
                 for (final SignRuleSetType ruleset : handler.getAppliedRuleSetTypes())
                 {
@@ -1676,6 +1755,13 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         TestWrongState,
         
         /**
+         * Cannot switch match phase because arena is in invalid state
+         */
+        @LocalizedMessage(defaultMessage = "Cannot switch match phase because arena ist in invlid state.", severity = MessageSeverityType.Error)
+        @MessageComment({"Cannot switch match phase because arena is in invalid state"})
+        MatchPhaseWrongState,
+        
+        /**
          * Cannot start match because arena is not in join mode
          */
         @LocalizedMessage(defaultMessage = "Cannot start match because arena ist not in join mode.", severity = MessageSeverityType.Error)
@@ -1786,6 +1872,20 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         @LocalizedMessage(defaultMessage = "Unable to re-join a match you already played (%1$s).", severity = MessageSeverityType.Error)
         @MessageComment(value = {"Cannot rejoin same match"}, args = @Argument("arena display name"))
         CannotRejoin,
+        
+        /**
+         * Object not found
+         */
+        @LocalizedMessage(defaultMessage = "Object %1$s not found.", severity = MessageSeverityType.Error)
+        @MessageComment(value = {"Object not found"}, args = @Argument("object id"))
+        ObjectNotFound,
+        
+        /**
+         * Component not found
+         */
+        @LocalizedMessageList({"An object was not found.", "The object database seems to be broken.", "Did you manually edit or copy the configuration files?"})
+        @MessageComment(value = {"Object not found"})
+        ObjectNotFound_Description,
         
     }
 

@@ -90,6 +90,7 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
     {
         super(type, arena);
         this.runInCopiedContext(() -> {
+            BasicSpawnsConfig.SpawnOption.verifyConfig();
             this.spawnType = BasicSpawnsConfig.SpawnOption.getEnum(SpawnType.class);
             if (this.spawnType == null)
             {
@@ -110,7 +111,16 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicSpawnsConfig.SpawnOption.setEnum(this.spawnType);
-            BasicSpawnsConfig.SpawnOption.saveConfig();
+            try
+            {
+                BasicSpawnsConfig.SpawnOption.verifyConfig();
+                BasicSpawnsConfig.SpawnOption.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicSpawnsConfig.SpawnOption.rollbackConfig();
+                throw ex;
+            }
         });
         this.arena.reconfigureRuleSets(this.type);
     }
@@ -305,8 +315,6 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
         NotEnoughSpawns_Description,
         
     }
-    
-    // TODO watch for player die event and re-select a spawn
     
     // TODO implement spawns for Team mode
     

@@ -31,6 +31,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.events.ArenaTeamStatisticEvent;
 import de.minigameslib.mgapi.api.match.MatchStatisticId;
 import de.minigameslib.mgapi.api.match.MatchTeamInterface;
 import de.minigameslib.mgapi.api.team.TeamIdType;
@@ -50,6 +54,9 @@ class MatchTeam implements MatchTeamInterface
     /** registered team members. */
     private final Set<UUID> teamMembers = new HashSet<>();
     
+    /** underlying arena. */
+    private ArenaInterface arena;
+    
     /**
      * the match statistics.
      */
@@ -57,11 +64,13 @@ class MatchTeam implements MatchTeamInterface
 
     /**
      * Constructor
+     * @param arena
      * @param teamId
      */
-    public MatchTeam(TeamIdType teamId)
+    public MatchTeam(ArenaInterface arena, TeamIdType teamId)
     {
         this.teamId = teamId;
+        this.arena = arena;
     }
 
     @Override
@@ -94,23 +103,37 @@ class MatchTeam implements MatchTeamInterface
     @Override
     public void setStatistic(MatchStatisticId statistic, int newValue)
     {
+        final int oldValue = this.getStatistic(statistic);
         this.statistics.put(statistic, Integer.valueOf(newValue));
+        
+        final ArenaTeamStatisticEvent event = new ArenaTeamStatisticEvent(this.arena, this.teamId, statistic, oldValue, newValue);
+        Bukkit.getPluginManager().callEvent(event);
     }
     
     @Override
     public int addStatistic(MatchStatisticId statistic, int amount)
     {
-        final int newvalue = this.getStatistic(statistic) + amount;
-        this.setStatistic(statistic, newvalue);
-        return newvalue;
+        final int oldValue = this.getStatistic(statistic);
+        final int newValue = oldValue + amount;
+        this.setStatistic(statistic, newValue);
+        
+        final ArenaTeamStatisticEvent event = new ArenaTeamStatisticEvent(this.arena, this.teamId, statistic, oldValue, newValue);
+        Bukkit.getPluginManager().callEvent(event);
+        
+        return newValue;
     }
     
     @Override
     public int decStatistic(MatchStatisticId statistic, int amount)
     {
-        final int newvalue = this.getStatistic(statistic) - amount;
-        this.setStatistic(statistic, newvalue);
-        return newvalue;
+        final int oldValue = this.getStatistic(statistic);
+        final int newValue = oldValue - amount;
+        this.setStatistic(statistic, newValue);
+        
+        final ArenaTeamStatisticEvent event = new ArenaTeamStatisticEvent(this.arena, this.teamId, statistic, oldValue, newValue);
+        Bukkit.getPluginManager().callEvent(event);
+        
+        return newValue;
     }
     
 }

@@ -28,9 +28,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.config.ConfigItemStackData;
+import de.minigameslib.mclib.api.event.McEntityDamageByEntityEvent;
+import de.minigameslib.mclib.api.event.McEventHandler;
+import de.minigameslib.mclib.api.event.McListener;
+import de.minigameslib.mclib.api.event.McPlayerDeathEvent;
+import de.minigameslib.mclib.api.objects.ComponentIdInterface;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.FalseStub;
 import de.minigameslib.mclib.api.util.function.McOutgoingStubbing;
@@ -48,7 +56,7 @@ import de.minigameslib.mgapi.impl.MglibConfig;
 /**
  * @author mepeisen
  */
-public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlayerInterface
+public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlayerInterface, McListener
 {
     
     /**
@@ -61,6 +69,17 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
      * Persistent data storage.
      */
     private ArenaPlayerPersistentData persistent;
+    
+    /** the current movement speed. */
+    private float                     currentMoveSpeed  = 0.1f;
+    
+    /** the current fly speed. */
+    private float                     currentFlySpeed   = 0.1f;
+    
+    /**
+     * flag to control if player listener is installed.
+     */
+    private boolean                   listenerInstalled = false;
     
     /**
      * Constructor
@@ -78,6 +97,30 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     {
         this.player = player;
         this.persistent = persistent;
+    }
+    
+    /**
+     * install listeners.
+     */
+    private void installListener()
+    {
+        if (!this.listenerInstalled)
+        {
+            this.player.registerHandlers((Plugin) MinigamesLibInterface.instance(), this);
+            this.listenerInstalled = true;
+        }
+    }
+    
+    /**
+     * uninstall listeners.
+     */
+    private void uninstallListener()
+    {
+        if (this.listenerInstalled)
+        {
+            this.player.unregisterHandlers((Plugin) MinigamesLibInterface.instance(), this);
+            this.listenerInstalled = false;
+        }
     }
     
     /**
@@ -110,7 +153,9 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
     
     /**
      * Reset player data from persistence; will be invoked after leaving an arena.
-     * @param regularLeave {@code true} if player leaves arena regularly
+     * 
+     * @param regularLeave
+     *            {@code true} if player leaves arena regularly
      */
     @SuppressWarnings("deprecation")
     public void resetPlayerData(boolean regularLeave)
@@ -121,13 +166,8 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         {
             if (MglibConfig.RestoreCompassTargetOnLeave.getBoolean())
             {
-                bukkit.setCompassTarget(new Location(
-                        Bukkit.getWorld(data.getCompassTarget().getWorld()),
-                        data.compassTarget.getX(),
-                        data.compassTarget.getY(),
-                        data.compassTarget.getZ(),
-                        data.compassTarget.getYaw(),
-                        data.compassTarget.getPitch()));
+                bukkit.setCompassTarget(new Location(Bukkit.getWorld(data.getCompassTarget().getWorld()), data.compassTarget.getX(), data.compassTarget.getY(), data.compassTarget.getZ(),
+                        data.compassTarget.getYaw(), data.compassTarget.getPitch()));
             }
             if (MglibConfig.RestoreExperienceOnLeave.getBoolean())
             {
@@ -157,7 +197,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
             }
             if (MglibConfig.RestoreInventoryOnLeave.getBoolean())
             {
-                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData)i).toBukkit()).toArray(ItemStack[]::new);
+                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData) i).toBukkit()).toArray(ItemStack[]::new);
                 bukkit.getInventory().setStorageContents(items);
             }
             if (MglibConfig.RestoreSpeedOnLeave.getBoolean())
@@ -170,13 +210,8 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         {
             if (MglibConfig.RestoreCompassTargetOnCrash.getBoolean())
             {
-                bukkit.setCompassTarget(new Location(
-                        Bukkit.getWorld(data.getCompassTarget().getWorld()),
-                        data.compassTarget.getX(),
-                        data.compassTarget.getY(),
-                        data.compassTarget.getZ(),
-                        data.compassTarget.getYaw(),
-                        data.compassTarget.getPitch()));
+                bukkit.setCompassTarget(new Location(Bukkit.getWorld(data.getCompassTarget().getWorld()), data.compassTarget.getX(), data.compassTarget.getY(), data.compassTarget.getZ(),
+                        data.compassTarget.getYaw(), data.compassTarget.getPitch()));
             }
             if (MglibConfig.RestoreExperienceOnCrash.getBoolean())
             {
@@ -206,7 +241,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
             }
             if (MglibConfig.RestoreInventoryOnCrash.getBoolean())
             {
-                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData)i).toBukkit()).toArray(ItemStack[]::new);
+                final ItemStack[] items = data.getInventory().stream().map(i -> ((ConfigItemStackData) i).toBukkit()).toArray(ItemStack[]::new);
                 bukkit.getInventory().setStorageContents(items);
             }
             if (MglibConfig.RestoreSpeedOnCrash.getBoolean())
@@ -254,6 +289,14 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         data.setArenaName(arena);
         data.setSpectator(isSpectating);
         this.saveData();
+        if (arena == null)
+        {
+            this.uninstallListener();
+        }
+        else
+        {
+            this.installListener();
+        }
     }
     
     @Override
@@ -284,6 +327,97 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         this.die(null);
     }
     
+    /**
+     * Player death event.
+     * 
+     * @param evt
+     *            event
+     */
+    @McEventHandler
+    public void onPlayerDie(McPlayerDeathEvent evt)
+    {
+        if (this.inArena())
+        {
+            final ArenaMatchInterface match = this.getArena().getCurrentMatch();
+            if (match != null)
+            {
+                evt.getBukkitEvent().setDeathMessage(null);
+                evt.getBukkitEvent().setKeepInventory(true);
+                evt.getBukkitEvent().setKeepLevel(true);
+                evt.getBukkitEvent().setDroppedExp(0);
+                
+                die0();
+            }
+        }
+    }
+    
+    /**
+     * Player dmg, track player killers.
+     * 
+     * @param evt
+     *            event
+     */
+    @McEventHandler
+    public void onPlayerDmg(McEntityDamageByEntityEvent evt)
+    {
+        if (evt.getBukkitEvent().getDamager() instanceof Player && evt.getBukkitEvent().getEntity() instanceof Player)
+        {
+            final ArenaPlayerInterface arenaDamager = MinigamesLibInterface.instance().getPlayer(evt.getBukkitEvent().getDamager().getUniqueId());
+            final ArenaPlayerInterface arenaTarget = MinigamesLibInterface.instance().getPlayer(evt.getBukkitEvent().getEntity().getUniqueId());
+            if (arenaDamager.getArena() == arenaTarget.getArena())
+            {
+                try
+                {
+                    this.getArena().getCurrentMatch().trackDamageForKill(
+                            evt.getBukkitEvent().getEntity().getUniqueId(),
+                            evt.getBukkitEvent().getDamager().getUniqueId());
+                }
+                catch (McException e)
+                {
+                    // TODO logging
+                }
+            }
+        }
+    }
+    
+    /**
+     * Performs die sequence.
+     */
+    private void die0()
+    {
+        @SuppressWarnings("deprecation")
+        final double maxHealth = this.player.getBukkitPlayer().getMaxHealth();
+        final ArenaPlayerDieEvent event = new ArenaPlayerDieEvent(this.getArena(), this, maxHealth);
+        Bukkit.getPluginManager().callEvent(event);
+        
+        if (this.isPlaying() || this.isSpectating())
+        {
+            this.player.getBukkitPlayer().setHealth(event.getNewHealth());
+            if (event.getNewSpawn() == null)
+            {
+                final ComponentIdInterface newSpawn = this.getArena().getCurrentMatch().getSpawn(this.getPlayerUUID());
+                this.getArena().teleport(this, newSpawn);
+            }
+            else
+            {
+                this.getArena().teleport(this, event.getNewSpawn());
+            }
+        }
+        else if (this.player.getBukkitPlayer().getHealth() == 0)
+        {
+            this.player.getBukkitPlayer().setHealth(maxHealth);
+        }
+        
+        try
+        {
+            this.getArena().getCurrentMatch().resetKillerTracking(this.player.getPlayerUUID());
+        }
+        catch (McException e)
+        {
+            // TODO logging
+        }
+    }
+    
     @Override
     public void die(ArenaPlayerInterface killer) throws McException
     {
@@ -297,13 +431,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
                     match.trackDamageForKill(this.getPlayerUUID(), killer.getPlayerUUID());
                 }
                 
-                final ArenaPlayerDieEvent event = new ArenaPlayerDieEvent(this.getArena(), this);
-                Bukkit.getPluginManager().callEvent(event);
-                
-                if (this.isPlaying() || this.isSpectating())
-                {
-                    this.getArena().teleport(this, this.getArena().getCurrentMatch().getSpawn(this.getPlayerUUID()));
-                }
+                die0();
                 return;
             }
         }
@@ -341,6 +469,46 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         }
         
         throw new McException(ArenaImpl.Messages.InvalidModificationBeforeStart, "?"); //$NON-NLS-1$
+    }
+    
+    @Override
+    public void allowMovement()
+    {
+        this.player.getBukkitPlayer().removePotionEffect(PotionEffectType.JUMP);
+        this.player.getBukkitPlayer().setWalkSpeed(this.currentMoveSpeed);
+        this.player.getBukkitPlayer().setFlySpeed(this.currentFlySpeed);
+    }
+    
+    @Override
+    public void lockMovement()
+    {
+        this.player.getBukkitPlayer().setWalkSpeed(0.0F);
+        this.player.getBukkitPlayer().setFlySpeed(0.0F);
+        this.player.getBukkitPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 9999999, -7)); // -5
+    }
+    
+    @Override
+    public float getCurrentMoveSpeed()
+    {
+        return this.currentMoveSpeed;
+    }
+    
+    @Override
+    public void setCurrentMoveSpeed(float currentMoveSpeed)
+    {
+        this.currentMoveSpeed = currentMoveSpeed;
+    }
+    
+    @Override
+    public float getCurrentFlySpeed()
+    {
+        return this.currentFlySpeed;
+    }
+    
+    @Override
+    public void setCurrentFlySpeed(float currentFlySpeed)
+    {
+        this.currentFlySpeed = currentFlySpeed;
     }
     
 }

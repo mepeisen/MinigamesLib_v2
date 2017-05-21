@@ -78,7 +78,6 @@ import de.minigameslib.mgapi.api.events.ArenaDeletedEvent;
 import de.minigameslib.mgapi.api.events.ArenaForceStartRequestedEvent;
 import de.minigameslib.mgapi.api.events.ArenaLoseEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerDieEvent;
-import de.minigameslib.mgapi.api.events.ArenaPlayerDiesEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinSpectatorsEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
@@ -141,15 +140,25 @@ import de.minigameslib.mgapi.impl.rules.BasicMatch;
 import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
 import de.minigameslib.mgapi.impl.rules.BasicSpawns;
 import de.minigameslib.mgapi.impl.rules.BasicSpectator;
+import de.minigameslib.mgapi.impl.rules.CountDeaths;
+import de.minigameslib.mgapi.impl.rules.CountKills;
 import de.minigameslib.mgapi.impl.rules.DieOnLeave;
 import de.minigameslib.mgapi.impl.rules.Heal;
+import de.minigameslib.mgapi.impl.rules.HealAfterDeath;
+import de.minigameslib.mgapi.impl.rules.HealAtBegin;
+import de.minigameslib.mgapi.impl.rules.Kills;
 import de.minigameslib.mgapi.impl.rules.LastManStanding;
+import de.minigameslib.mgapi.impl.rules.Lives;
 import de.minigameslib.mgapi.impl.rules.LoseOnDeath;
 import de.minigameslib.mgapi.impl.rules.LoseOnLeave;
 import de.minigameslib.mgapi.impl.rules.NoMobsTargets;
 import de.minigameslib.mgapi.impl.rules.NoWorldMobs;
 import de.minigameslib.mgapi.impl.rules.NoWorldPets;
 import de.minigameslib.mgapi.impl.rules.PlayerNoEntry;
+import de.minigameslib.mgapi.impl.rules.Points;
+import de.minigameslib.mgapi.impl.rules.PointsForDamage;
+import de.minigameslib.mgapi.impl.rules.PointsForDeath;
+import de.minigameslib.mgapi.impl.rules.PointsForKill;
 import de.minigameslib.mgapi.impl.rules.PvPMode;
 import de.minigameslib.mgapi.impl.tasks.InitTask;
 
@@ -304,15 +313,23 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         McLibInterface.instance().registerEvent(this, ArenaWinEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaLoseEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaPlayerDieEvent.class);
-        McLibInterface.instance().registerEvent(this, ArenaPlayerDiesEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaForceStartRequestedEvent.class);
         
         this.registerRuleset(this, BasicArenaRuleSets.BasicMatch, BasicMatch::new);
         this.registerRuleset(this, BasicArenaRuleSets.BasicSpawns, BasicSpawns::new);
         this.registerRuleset(this, BasicArenaRuleSets.BasicMatchTimer, BasicMatchTimer::new);
         this.registerRuleset(this, BasicArenaRuleSets.BasicSpectator, BasicSpectator::new);
+        this.registerRuleset(this, BasicArenaRuleSets.HealAfterDeath, HealAfterDeath::new);
+        this.registerRuleset(this, BasicArenaRuleSets.HealAtBegin, HealAtBegin::new);
+        this.registerRuleset(this, BasicArenaRuleSets.CountKills, CountKills::new);
+        this.registerRuleset(this, BasicArenaRuleSets.CountDeaths, CountDeaths::new);
+        this.registerRuleset(this, BasicArenaRuleSets.PointsForDeath, PointsForDeath::new);
+        this.registerRuleset(this, BasicArenaRuleSets.PointsForKill, PointsForKill::new);
         this.registerRuleset(this, BasicWinningRuleSets.LastManStanding, LastManStanding::new);
+        this.registerRuleset(this, BasicWinningRuleSets.Kills, Kills::new);
+        this.registerRuleset(this, BasicWinningRuleSets.Points, Points::new);
         this.registerRuleset(this, BasicLosingRuleSets.LoseOnDeath, LoseOnDeath::new);
+        this.registerRuleset(this, BasicLosingRuleSets.Lives, Lives::new);
         this.registerRuleset(this, BasicZoneRuleSets.DieOnLeave, DieOnLeave::new);
         this.registerRuleset(this, BasicZoneRuleSets.LoseOnLeave, LoseOnLeave::new);
         this.registerRuleset(this, BasicZoneRuleSets.NoWorldMobs, NoWorldMobs::new);
@@ -321,6 +338,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         this.registerRuleset(this, BasicZoneRuleSets.PlayerNoEntry, PlayerNoEntry::new);
         this.registerRuleset(this, BasicZoneRuleSets.PvPMode, PvPMode::new);
         this.registerRuleset(this, BasicZoneRuleSets.Heal, Heal::new);
+        this.registerRuleset(this, BasicZoneRuleSets.PointsForDamage, PointsForDamage::new);
         
         try
         {

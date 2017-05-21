@@ -62,4 +62,42 @@ public enum BasicArenaRuleSets implements ArenaRuleSetType
     @RuleSetConfigurable(config = BasicSpectatorConfig.class)
     BasicSpectator,
     
+    /**
+     * Healing at match begin
+     * @see HealAtBeginRuleInterface
+     */
+    @RuleSetConfigurable(config = HealAtBeginConfig.class)
+    HealAtBegin,
+    
+    /**
+     * Healing after death
+     * @see HealAfterDeathRuleInterface
+     */
+    @RuleSetConfigurable(config = HealAfterDeathConfig.class)
+    HealAfterDeath,
+    
+    /**
+     * Points for killing
+     * @see PointsForKillRuleInterface
+     */
+    @RuleSetConfigurable(config = PointsForKillConfig.class)
+    PointsForKill,
+    
+    /**
+     * Points for death
+     * @see PointsForDeathRuleInterface
+     */
+    @RuleSetConfigurable(config = PointsForDeathConfig.class)
+    PointsForDeath,
+    
+    /**
+     * Count kills in statistics
+     */
+    CountKills,
+    
+    /**
+     * Count deaths in statistics
+     */
+    CountDeaths,
+    
 }

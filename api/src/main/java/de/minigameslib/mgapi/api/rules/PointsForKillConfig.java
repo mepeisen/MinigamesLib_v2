@@ -24,31 +24,27 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationInt;
+import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
+import de.minigameslib.mclib.api.config.ConfigurationValues;
+
 /**
- * Rule sets for winning
+ * points configurations
  * 
  * @author mepeisen
+ * 
+ * @see BasicArenaRuleSets#PointsForKill
  */
-public enum BasicWinningRuleSets implements ArenaRuleSetType
+@ConfigurationValues(path = "core")
+public enum PointsForKillConfig implements ConfigurationValueInterface
 {
     
     /**
-     * The last man standing is winning
+     * the number of points for kills
      */
-    LastManStanding,
-    
-    /**
-     * Get a specific number of kills means to win.
-     * @see KillsRuleInterface
-     */
-    @RuleSetConfigurable(config = KillsConfig.class)
-    Kills,
-    
-    /**
-     * Reaching a specific number of points means to win.
-     * @see PointsRuleInterface
-     */
-    @RuleSetConfigurable(config = PointsConfig.class)
+    @ConfigurationInt(defaultValue = 10)
+    @ConfigComment({"Number of points for kills"})
     Points,
     
 }

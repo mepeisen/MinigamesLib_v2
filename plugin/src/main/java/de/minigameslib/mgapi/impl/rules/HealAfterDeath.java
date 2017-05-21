@@ -24,10 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -38,28 +37,22 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
-import de.minigameslib.mclib.api.mcevent.PlayerEnteredZoneEvent;
-import de.minigameslib.mclib.api.mcevent.PlayerLeftZoneEvent;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
+import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
-import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
-import de.minigameslib.mgapi.api.rules.AbstractZoneRule;
-import de.minigameslib.mgapi.api.rules.HealConfig;
-import de.minigameslib.mgapi.api.rules.HealRuleInterface;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
+import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
+import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.HealAfterDeathConfig;
+import de.minigameslib.mgapi.api.rules.HealAfterDeathRuleInterface;
 
 /**
  * @author mepeisen
  *
  */
-public class Heal extends AbstractZoneRule implements HealRuleInterface
+public class HealAfterDeath extends AbstractArenaRule implements HealAfterDeathRuleInterface
 {
-    
-    /**
-     * the cooldown in seconds
-     */
-    private int   cooldown;
     
     /**
      * The heal per ticks.
@@ -78,31 +71,24 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
     
     /**
      * @param type
-     * @param zone
+     * @param arena
      * @throws McException
      *             thrown if config is invalid
      */
-    public Heal(ZoneRuleSetType type, ArenaZoneHandler zone) throws McException
+    public HealAfterDeath(ArenaRuleSetType type, ArenaInterface arena) throws McException
     {
-        super(type, zone);
+        super(type, arena);
         this.runInCopiedContext(() -> {
-            HealConfig.Cooldown.verifyConfig();
-            this.cooldown = HealConfig.Cooldown.getInt();
-            this.healPerTick = HealConfig.HealPerTick.getFloat();
-            this.healTicks = HealConfig.MaxHealTicks.getInt();
+            HealAfterDeathConfig.HealPerTick.verifyConfig();
+            this.healPerTick = HealAfterDeathConfig.HealPerTick.getFloat();
+            this.healTicks = HealAfterDeathConfig.MaxHealTicks.getInt();
         });
     }
     
     @Override
-    public ZoneRuleSetType getType()
+    public ArenaRuleSetType getType()
     {
         return this.type;
-    }
-    
-    @Override
-    public int getHealCooldown()
-    {
-        return this.cooldown;
     }
     
     @Override
@@ -118,43 +104,23 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
     }
     
     @Override
-    public void setHealCooldown(int seconds) throws McException
-    {
-        this.arena.checkModifications();
-        this.runInCopiedContext(() -> {
-            HealConfig.Cooldown.setInt(seconds);
-            try
-            {
-                HealConfig.Cooldown.verifyConfig();
-                HealConfig.Cooldown.saveConfig();
-            }
-            catch (McException ex)
-            {
-                HealConfig.Cooldown.rollbackConfig();
-                throw ex;
-            }
-        });
-        this.zone.reconfigureRuleSets(this.type);
-    }
-    
-    @Override
     public void setHealPerTick(float amount) throws McException
     {
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
-            HealConfig.HealPerTick.setFloat(amount);
+            HealAfterDeathConfig.HealPerTick.setFloat(amount);
             try
             {
-                HealConfig.HealPerTick.verifyConfig();
-                HealConfig.HealPerTick.saveConfig();
+                HealAfterDeathConfig.HealPerTick.verifyConfig();
+                HealAfterDeathConfig.HealPerTick.saveConfig();
             }
             catch (McException ex)
             {
-                HealConfig.HealPerTick.rollbackConfig();
+                HealAfterDeathConfig.HealPerTick.rollbackConfig();
                 throw ex;
             }
         });
-        this.zone.reconfigureRuleSets(this.type);
+        this.arena.reconfigureRuleSets(this.type);
     }
     
     @Override
@@ -162,19 +128,19 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
     {
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
-            HealConfig.MaxHealTicks.setInt(ticks);
+            HealAfterDeathConfig.MaxHealTicks.setInt(ticks);
             try
             {
-                HealConfig.MaxHealTicks.verifyConfig();
-                HealConfig.MaxHealTicks.saveConfig();
+                HealAfterDeathConfig.MaxHealTicks.verifyConfig();
+                HealAfterDeathConfig.MaxHealTicks.saveConfig();
             }
             catch (McException ex)
             {
-                HealConfig.MaxHealTicks.rollbackConfig();
+                HealAfterDeathConfig.MaxHealTicks.rollbackConfig();
                 throw ex;
             }
         });
-        this.zone.reconfigureRuleSets(this.type);
+        this.arena.reconfigureRuleSets(this.type);
     }
     
     /**
@@ -191,8 +157,9 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
             {
                 this.task.cancel();
             }
-            this.task = new HealTask(this.cooldown, this.healPerTick, this.healTicks);
+            this.task = new HealTask(this.healPerTick, this.healTicks);
             this.task.runTaskTimer((Plugin) MinigamesLibInterface.instance(), 1, 1);
+            this.arena.getActivePlayers().forEach(p -> this.task.playerJoins(p.getBukkitPlayer()));
         }
         else
         {
@@ -205,30 +172,16 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
     }
     
     /**
-     * Arena player enters zone.
+     * Arena player dies.
      * 
      * @param evt event
      */
     @McEventHandler
-    public void onPlayerEntersZone(PlayerEnteredZoneEvent evt)
+    public void onPlayerJoins(ArenaPlayerJoinedEvent evt)
     {
         if (this.task != null)
         {
-            this.task.playerEntersZone(evt.getPlayer().getBukkitPlayer());
-        }
-    }
-    
-    /**
-     * Arena player leaves zone.
-     * 
-     * @param evt event
-     */
-    @McEventHandler
-    public void onPlayerLeavesZone(PlayerLeftZoneEvent evt)
-    {
-        if (this.task != null)
-        {
-            this.task.playerLeavesZone(evt.getPlayer().getBukkitPlayer());
+            this.task.playerJoins(evt.getPlayer().getBukkitPlayer());
         }
     }
     
@@ -239,18 +192,10 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
     {
         
         /** the target player. */
-        private Set<Player>              playerInsideZone = new HashSet<>();
-        
-        /** the cooldowns. */
-        private Map<UUID, LocalDateTime> cooldowns        = new HashMap<>();
+        private Set<Player>              players = new HashSet<>();
         
         /** number of ticks a player recived healing. */
         private Map<UUID, Integer>       healTicksReceived = new HashMap<>();
-        
-        /**
-         * the cooldown in seconds
-         */
-        private int                      cooldown;
         
         /**
          * The heal per ticks.
@@ -265,81 +210,53 @@ public class Heal extends AbstractZoneRule implements HealRuleInterface
         /**
          * Constructor.
          * 
-         * @param cooldown
          * @param healPerTick
          * @param healTicks
          */
-        public HealTask(int cooldown, float healPerTick, int healTicks)
+        public HealTask(float healPerTick, int healTicks)
         {
-            this.cooldown = cooldown;
             this.healPerTick = healPerTick;
             this.healTicks = healTicks;
         }
         
         /**
-         * A player enters the healing zone.
+         * A player joins.
          * 
          * @param player
-         *            player that enters the zone.
+         *            player that joined.
          */
-        public void playerEntersZone(Player player)
+        public void playerJoins(Player player)
         {
-            this.playerInsideZone.add(player);
+            this.players.add(player);
             final UUID uuid = player.getUniqueId();
             this.healTicksReceived.put(uuid, 0);
-        }
-        
-        /**
-         * A player leaves the healing zone.
-         * 
-         * @param player
-         *            player that left the zone.
-         */
-        public void playerLeavesZone(Player player)
-        {
-            this.playerInsideZone.remove(player);
-            final UUID uuid = player.getUniqueId();
-            this.cooldowns.put(uuid, LocalDateTime.now().plus(this.cooldown, ChronoUnit.SECONDS));
         }
         
         @SuppressWarnings("deprecation")
         @Override
         public void run()
         {
-            for (final Player player : this.playerInsideZone)
+            final Iterator<Player> iter = this.players.iterator();
+            while (iter.hasNext())
             {
+                final Player player = iter.next();
                 final UUID uuid = player.getUniqueId();
                 int ticks = this.healTicksReceived.get(uuid);
-                if (ticks == 0)
-                {
-                    // check for pending cooldown
-                    final LocalDateTime cd = this.cooldowns.get(uuid);
-                    if (cd != null && cd.isAfter(LocalDateTime.now()))
-                    {
-                        continue;
-                    }
-                }
                 if (ticks >= this.healTicks)
                 {
                     continue;
                 }
                 final double health = player.getHealth();
                 final double maxHealth = player.getMaxHealth();
+                ticks++;
+                this.healTicksReceived.put(uuid, ticks);
                 if (maxHealth < health)
                 {
-                    ticks++;
-                    this.healTicksReceived.put(uuid, ticks);
                     player.setHealth(Math.min(health + this.healPerTick, health));
-                    if (ticks == this.healTicks)
-                    {
-                        this.cooldowns.put(player.getUniqueId(), LocalDateTime.now().plus(this.cooldown, ChronoUnit.SECONDS));
-                        this.healTicksReceived.put(uuid, 0);
-                    }
                 }
-                else
+                if (ticks == this.healTicks)
                 {
-                    this.cooldowns.put(player.getUniqueId(), LocalDateTime.now().plus(this.cooldown, ChronoUnit.SECONDS));
-                    this.healTicksReceived.put(uuid, 0);
+                    iter.remove();
                 }
             }
         }

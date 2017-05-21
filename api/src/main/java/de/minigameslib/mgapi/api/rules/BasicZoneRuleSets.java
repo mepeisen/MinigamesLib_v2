@@ -75,4 +75,11 @@ public enum BasicZoneRuleSets implements ZoneRuleSetType
     @RuleSetConfigurable(config = HealConfig.class)
     Heal,
     
+    /**
+     * Points for damage
+     * @see PointsForDamageRuleInterface
+     */
+    @RuleSetConfigurable(config = PointsForDamageConfig.class)
+    PointsForDamage,
+    
 }

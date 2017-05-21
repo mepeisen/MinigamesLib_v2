@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
@@ -262,16 +261,14 @@ public abstract class AbstractArenaZoneHandler<D extends AbstractObjectData<Zone
         
         final Cuboid cuboid = this.getZone().getCuboid();
 
-        final Collection<ZoneIdInterface> myMainZones = this.getArena().getZones(cuboid, CuboidMode.FindParents, BasicZoneTypes.Main)
-                // filter myself (relevant only for main zones to not return themselves)
-                .stream().filter(z -> !z.equals(this.getZone().getZoneId())).collect(Collectors.toList());
+        final Collection<ZoneIdInterface> myMainZones = this.getArena().getZones(cuboid, CuboidMode.FindParents, BasicZoneTypes.Main);
         
         final Collection<ZoneIdInterface> foreignZones = this.getArena().getForeignZones(cuboid, CuboidMode.FindShared);
         final Collection<ComponentIdInterface> foreignComponents = this.getArena().getForeignComponents(cuboid);
         final Collection<SignIdInterface> foreignSigns = this.getArena().getForeignSigns(cuboid);
         final Collection<EntityIdInterface> foreignEntities = this.getArena().getForeignEntities(cuboid);
 
-        if (myMainZones.size() == 0)
+        if (this.getZone().getTypeId() != BasicZoneTypes.Main && myMainZones.size() == 0)
         {
             result.add(new CheckFailure(CheckSeverity.Warning, Messages.NotWithinMainZone, new Serializable[]{this.getName()}, Messages.NotWithinMainZone_Description));
         }

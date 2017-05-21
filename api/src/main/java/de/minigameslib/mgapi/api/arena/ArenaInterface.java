@@ -302,6 +302,15 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     void start() throws McException;
     
     /**
+     * Sets given match phase.
+     * 
+     * @param state new match phase; one of {@link ArenaState#PreMatch}, {@link ArenaState#Match} and {@link ArenaState#PostMatch}
+     * 
+     * @throws McException thrown if arena is not in any match phase
+     */
+    void setMatchPhase(ArenaState state) throws McException;
+    
+    /**
      * Forces a match start even if match rules may not allow this; will request the gaming rules to start countdown
      * 
      * @throws McException

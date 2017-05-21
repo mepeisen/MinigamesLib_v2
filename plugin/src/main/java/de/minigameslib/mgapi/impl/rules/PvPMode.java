@@ -33,9 +33,9 @@ import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.rules.AbstractZoneRule;
+import de.minigameslib.mgapi.api.rules.PvPModeRuleInterface;
 import de.minigameslib.mgapi.api.rules.PvpModeConfig;
 import de.minigameslib.mgapi.api.rules.PvpModeConfig.PvpModes;
-import de.minigameslib.mgapi.api.rules.PvPModeRuleInterface;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
 
 /**
@@ -59,6 +59,7 @@ public class PvPMode extends AbstractZoneRule implements PvPModeRuleInterface
     {
         super(type, zone);
         this.runInCopiedContext(() -> {
+            PvpModeConfig.PvpOption.verifyConfig();
             this.mode = PvpModeConfig.PvpOption.getEnum(PvpModes.class);
             if (this.mode == null)
             {
@@ -85,7 +86,16 @@ public class PvPMode extends AbstractZoneRule implements PvPModeRuleInterface
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             PvpModeConfig.PvpOption.setEnum(mode);
-            PvpModeConfig.PvpOption.saveConfig();
+            try
+            {
+                PvpModeConfig.PvpOption.verifyConfig();
+                PvpModeConfig.PvpOption.saveConfig();
+            }
+            catch (McException ex)
+            {
+                PvpModeConfig.PvpOption.rollbackConfig();
+                throw ex;
+            }
         });
         this.zone.reconfigureRuleSets(this.type);
     }
@@ -109,7 +119,7 @@ public class PvPMode extends AbstractZoneRule implements PvPModeRuleInterface
                         evt.getBukkitEvent().setCancelled(true);
                         break;
                     case Normal:
-                        // allow  everything
+                        // allow everything
                         break;
                     case PvpDuringMatch:
                         if (this.arena.getState() != ArenaState.Match)

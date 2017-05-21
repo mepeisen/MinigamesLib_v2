@@ -38,15 +38,14 @@ import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
-import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
 import de.minigameslib.mgapi.api.rules.AbstractArenaRule;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
-import de.minigameslib.mgapi.api.rules.BasicMatchConfig;
 import de.minigameslib.mgapi.api.rules.BasicMatchTimerConfig;
 import de.minigameslib.mgapi.api.rules.BasicMatchTimerRuleInterface;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
@@ -130,6 +129,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
     {
         super(type, arena);
         this.runInCopiedContext(() -> {
+            BasicMatchTimerConfig.MaxSeconds.verifyConfig();
             this.seconds = BasicMatchTimerConfig.MaxSeconds.getInt();
             this.matchTime = this.seconds * 1000L;
         });
@@ -147,7 +147,16 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicMatchTimerConfig.MaxSeconds.setInt(this.seconds);
-            BasicMatchTimerConfig.MaxSeconds.saveConfig();
+            try
+            {
+                BasicMatchTimerConfig.MaxSeconds.verifyConfig();
+                BasicMatchTimerConfig.MaxSeconds.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchTimerConfig.MaxSeconds.rollbackConfig();
+                throw ex;
+            }
         });
         this.arena.reconfigureRuleSets(this.type);
     }

@@ -24,31 +24,30 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.McException;
+
 /**
- * Rule sets for winning
- * 
  * @author mepeisen
+ *
  */
-public enum BasicWinningRuleSets implements ArenaRuleSetType
+public interface LivesRuleInterface
 {
     
     /**
-     * The last man standing is winning
+     * Returns the number of lives before losing.
+     * 
+     * @return number of lives before losing.
      */
-    LastManStanding,
+    int getLives();
     
     /**
-     * Get a specific number of kills means to win.
-     * @see KillsRuleInterface
+     * sets the number of lives before losing.
+     * 
+     * @param lives
+     *            number of lives
+     * @throws McException
+     *             thrown if arena is in wrong state
      */
-    @RuleSetConfigurable(config = KillsConfig.class)
-    Kills,
-    
-    /**
-     * Reaching a specific number of points means to win.
-     * @see PointsRuleInterface
-     */
-    @RuleSetConfigurable(config = PointsConfig.class)
-    Points,
+    void setLives(int lives) throws McException;
     
 }

@@ -33,8 +33,15 @@ public enum BasicLosingRuleSets implements ArenaRuleSetType
 {
     
     /**
-     * To die means to lose
+     * To die means to lose.
      */
-    LoseOnDeath
+    LoseOnDeath,
+    
+    /**
+     * To die means to lose a life; zero lives causes to lose the match.
+     * @see LivesRuleInterface
+     */
+    @RuleSetConfigurable(config = LivesConfig.class)
+    Lives,
     
 }

@@ -319,7 +319,7 @@ public abstract class AbstractArenaComponentHandler<D extends AbstractObjectData
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "signs.Base")
+    @LocalizedMessages(value = "components.Base")
     public enum Messages implements LocalizedMessageInterface
     {
         

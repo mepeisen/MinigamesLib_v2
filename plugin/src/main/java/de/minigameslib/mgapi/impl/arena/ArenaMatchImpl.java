@@ -39,6 +39,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
@@ -74,59 +75,61 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     // TODO fire bukkit events for statistics
     
     /** creation timestamp. */
-    private final LocalDateTime created = LocalDateTime.now();
+    private final LocalDateTime         created = LocalDateTime.now();
     
     /** match start timestamp. */
-    private LocalDateTime started;
+    private LocalDateTime               started;
     
     /** match finish timestamp. */
-    private LocalDateTime finished;
+    private LocalDateTime               finished;
     
     /** aborted flag. */
-    private boolean aborted;
+    private boolean                     aborted;
     
     /** players. */
-    private Map<UUID, MatchPlayer> players = new HashMap<>();
+    private Map<UUID, MatchPlayer>      players = new HashMap<>();
     
     /** teams. */
-    private Map<TeamIdType, MatchTeam> teams = new HashMap<>();
+    private Map<TeamIdType, MatchTeam>  teams   = new HashMap<>();
     
     /**
-     * the current results.
-     * The first entry represents the first place.
+     * the current results. The first entry represents the first place.
      */
-    private final List<MatchResultImpl> results = new ArrayList<>();    
+    private final List<MatchResultImpl> results = new ArrayList<>();
     
     /**
      * the position of the first loser.
      */
-    private int firstLoser;
+    private int                         firstLoser;
     
     /**
      * flag for team match
      */
-    private boolean teamMatch;
-
+    private boolean                     teamMatch;
+    
     /**
      * the associated arena
      */
-    private ArenaInterface arena;
-
+    private ArenaInterface              arena;
+    
     /**
      * Constructor
-     * @param arena the associated arena
-     * @param teamMatch flag for team matches
+     * 
+     * @param arena
+     *            the associated arena
+     * @param teamMatch
+     *            flag for team matches
      */
     public ArenaMatchImpl(ArenaInterface arena, boolean teamMatch)
     {
-        this.teams.computeIfAbsent(CommonTeams.Unknown, MatchTeam::new);
-        this.teams.computeIfAbsent(CommonTeams.Spectators, MatchTeam::new);
-        this.teams.computeIfAbsent(CommonTeams.Losers, MatchTeam::new);
-        this.teams.computeIfAbsent(CommonTeams.Winners, MatchTeam::new);
+        this.teams.computeIfAbsent(CommonTeams.Unknown, t -> new MatchTeam(arena, t));
+        this.teams.computeIfAbsent(CommonTeams.Spectators, t -> new MatchTeam(arena, t));
+        this.teams.computeIfAbsent(CommonTeams.Losers, t -> new MatchTeam(arena, t));
+        this.teams.computeIfAbsent(CommonTeams.Winners, t -> new MatchTeam(arena, t));
         this.teamMatch = teamMatch;
         this.arena = arena;
     }
-
+    
     /**
      * @return the associated arena
      */
@@ -134,33 +137,33 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     {
         return this.arena;
     }
-
+    
     /**
      * @param team
      */
     void createTeam(TeamData team)
     {
-        this.teams.computeIfAbsent(team.getId(), MatchTeam::new);
+        this.teams.computeIfAbsent(team.getId(), t -> new MatchTeam(this.arena, t));
     }
-
+    
     @Override
     public LocalDateTime getCreated()
     {
         return this.created;
     }
-
+    
     @Override
     public LocalDateTime getStarted()
     {
         return this.started;
     }
-
+    
     @Override
     public LocalDateTime getFinished()
     {
         return this.finished;
     }
-
+    
     @Override
     public boolean isAborted()
     {
@@ -169,7 +172,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     
     /**
      * Starts this match
-     * @throws McException thrown if match was already started
+     * 
+     * @throws McException
+     *             thrown if match was already started
      */
     public void start() throws McException
     {
@@ -182,25 +187,29 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     
     /**
      * Fnishes this match (regular finish)
-     * @throws McException thrown if match is not pending
+     * 
+     * @throws McException
+     *             thrown if match is not pending
      */
     public void finish() throws McException
     {
         checkMatchPending();
         this.finished = LocalDateTime.now();
     }
-
+    
     /**
-     * @throws McException thrown if match is not pending
+     * @throws McException
+     *             thrown if match is not pending
      */
     private void checkMatchPending() throws McException
     {
         this.checkMatchStarted();
         this.checkMatchNotFinished();
     }
-
+    
     /**
-     * @throws McException thrown if match is not finsihed
+     * @throws McException
+     *             thrown if match is not finsihed
      */
     private void checkMatchNotFinished() throws McException
     {
@@ -209,9 +218,10 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(ArenaImpl.Messages.InvalidModificationAfterFinish, this.arena.getDisplayName());
         }
     }
-
+    
     /**
-     * @throws McException thrown if match is started
+     * @throws McException
+     *             thrown if match is started
      */
     private void checkMatchStarted() throws McException
     {
@@ -220,9 +230,10 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(ArenaImpl.Messages.InvalidModificationBeforeStart, this.arena.getDisplayName());
         }
     }
-
+    
     /**
-     * @throws McException thrown if match is not a team match
+     * @throws McException
+     *             thrown if match is not a team match
      */
     private void checkTeamMatch() throws McException
     {
@@ -234,7 +245,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     
     /**
      * Aborts this match
-     * @throws McException thrown if match is not pending
+     * 
+     * @throws McException
+     *             thrown if match is not pending
      */
     public void abort() throws McException
     {
@@ -242,29 +255,27 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         this.finished = LocalDateTime.now();
         this.aborted = true;
     }
-
+    
     @Override
     public Collection<UUID> getTeamMembers(TeamIdType team)
     {
         final MatchTeamInterface t = this.get(team);
         return t == null ? Collections.emptyList() : t.getMembers();
     }
-
+    
     @Override
     public Collection<TeamIdType> getTeams()
     {
         return this.teams.keySet().stream().filter(t -> !t.isSpecial()).collect(Collectors.toList());
     }
-
+    
     @Override
     public TeamIdType getPreferredTeam()
     {
-        final Optional<MatchTeam> team = this.teams.values().stream()
-            .filter(t -> !t.getTeamId().isSpecial())
-            .min((t1, t2) -> Integer.compare(t1.getTeamMembers().size(), t2.getTeamMembers().size()));
+        final Optional<MatchTeam> team = this.teams.values().stream().filter(t -> !t.getTeamId().isSpecial()).min((t1, t2) -> Integer.compare(t1.getTeamMembers().size(), t2.getTeamMembers().size()));
         return team.isPresent() ? team.get().getTeamId() : null;
     }
-
+    
     @Override
     public void spectate(ArenaPlayerInterface player) throws McException
     {
@@ -274,10 +285,13 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             throw new McException(Messages.AlreadyInArena, player.getArena().getDisplayName());
         }
-        ((ArenaPlayerImpl)player).switchArenaOrMode(this.getArena().getInternalName(), true);
-        ((ArenaPlayerImpl)player).storePlayerData();
+        ((ArenaPlayerImpl) player).switchArenaOrMode(this.getArena().getInternalName(), true);
+        if (!player.inArena())
+        {
+            initPlayerForArena(player);
+        }
         
-        final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), MatchPlayer::new);
+        final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), t -> new MatchPlayer(this.arena, player));
         
         if (mplayer.getTeam() == null)
         {
@@ -314,7 +328,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         final ArenaPlayerJoinedSpectatorsEvent joinEvent = new ArenaPlayerJoinedSpectatorsEvent(this.getArena(), player, mplayer.getTeam() != null);
         Bukkit.getPluginManager().callEvent(joinEvent);
     }
-
+    
     @Override
     public void leave(ArenaPlayerInterface player) throws McException
     {
@@ -324,8 +338,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             throw new McException(Messages.CannotLeaveNotInArena, this.getArena().getDisplayName());
         }
-        ((ArenaPlayerImpl)player).switchArenaOrMode(null, false);
-        ((ArenaPlayerImpl)player).resetPlayerData(player.isOnline());
+        ((ArenaPlayerImpl) player).switchArenaOrMode(null, false);
+        ((ArenaPlayerImpl) player).resetPlayerData(player.isOnline());
         
         final MatchPlayer mplayer = this.players.get(player.getPlayerUUID());
         if (mplayer != null)
@@ -334,12 +348,12 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             {
                 // match was started, mark player as loser
                 final MatchTeam losers = this.teams.get(CommonTeams.Losers);
-
+                
                 mplayer.setTeam(CommonTeams.Losers);
                 mplayer.setLeft(LocalDateTime.now());
                 losers.getTeamMembers().add(player.getPlayerUUID());
                 
-                final MatchResultImpl result = new MatchResultImpl(false, new UUID[]{player.getPlayerUUID()});
+                final MatchResultImpl result = new MatchResultImpl(false, new UUID[] { player.getPlayerUUID() });
                 this.results.add(this.firstLoser, result);
                 for (int i = this.firstLoser; i < this.results.size(); i++)
                 {
@@ -377,7 +391,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             // non playing users will leave silently
         }
     }
-
+    
     @Override
     public void join(ArenaPlayerInterface player) throws McException
     {
@@ -387,13 +401,14 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             throw new McException(Messages.AlreadyInArena, player.getArena().getDisplayName());
         }
-        ((ArenaPlayerImpl)player).switchArenaOrMode(this.getArena().getInternalName(), false);
-        ((ArenaPlayerImpl)player).storePlayerData();
+        ((ArenaPlayerImpl) player).switchArenaOrMode(this.getArena().getInternalName(), false);
+        initPlayerForArena(player);
         
         TeamIdType preTeam = this.isTeamMatch() ? this.getPreferredTeam() : CommonTeams.Unknown;
-        if (preTeam == null) preTeam = CommonTeams.Unknown;
+        if (preTeam == null)
+            preTeam = CommonTeams.Unknown;
         
-        final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), MatchPlayer::new);
+        final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), t -> new MatchPlayer(this.arena, player));
         if (mplayer.getTeam() != null && mplayer.getTeam() != CommonTeams.Spectators)
         {
             throw new McException(ArenaImpl.Messages.CannotRejoin, this.arena.getDisplayName());
@@ -412,7 +427,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             this.teams.get(CommonTeams.Spectators).getTeamMembers().remove(player.getPlayerUUID());
         }
-
+        
         if (this.isTeamMatch())
         {
             if (joinEvent.getPreSelectedTeam() == null || joinEvent.getPreSelectedTeam().isSpecial())
@@ -429,15 +444,35 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             mplayer.setTeam(CommonTeams.Unknown);
         }
         
-        this.teams.computeIfAbsent(mplayer.getTeam(), MatchTeam::new).getTeamMembers().add(player.getPlayerUUID());
+        this.teams.computeIfAbsent(mplayer.getTeam(), t -> new MatchTeam(this.arena, t)).getTeamMembers().add(player.getPlayerUUID());
         
         final ArenaPlayerJoinedEvent joinedEvent = new ArenaPlayerJoinedEvent(this.getArena(), player);
         Bukkit.getPluginManager().callEvent(joinedEvent);
-
+        
         final ArenaPlayerJoinedTeamEvent join2Event = new ArenaPlayerJoinedTeamEvent(this.getArena(), player, mplayer.getTeam());
         Bukkit.getPluginManager().callEvent(join2Event);
     }
-
+    
+    /**
+     * Initializes given player for arena.
+     * 
+     * <p>
+     * Sets food etc. to best values.
+     * </p>
+     * 
+     * @param player
+     *            player to initialize
+     */
+    private void initPlayerForArena(ArenaPlayerInterface player)
+    {
+        ((ArenaPlayerImpl) player).storePlayerData();
+        player.getBukkitPlayer().getInventory().clear();
+        player.getBukkitPlayer().setGameMode(GameMode.SURVIVAL);
+        player.getBukkitPlayer().setFoodLevel(20);
+        player.getBukkitPlayer().setSaturation(5.0f);
+        player.getBukkitPlayer().setExhaustion(0.0f);
+    }
+    
     @Override
     public void join(ArenaPlayerInterface player, TeamIdType team) throws McException
     {
@@ -471,12 +506,12 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         mplayer.setPlaying(true);
         mplayer.setTeam(team);
-        this.teams.computeIfAbsent(team, MatchTeam::new).getTeamMembers().add(player.getPlayerUUID());
+        this.teams.computeIfAbsent(team, t -> new MatchTeam(this.arena, t)).getTeamMembers().add(player.getPlayerUUID());
         
         final ArenaPlayerJoinedTeamEvent joinEvent = new ArenaPlayerJoinedTeamEvent(this.getArena(), player, team);
         Bukkit.getPluginManager().callEvent(joinEvent);
     }
-
+    
     @Override
     public void leave(ArenaPlayerInterface player, TeamIdType team) throws McException
     {
@@ -521,7 +556,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         final ArenaPlayerLeftTeamEvent leftEvent = new ArenaPlayerLeftTeamEvent(this.getArena(), player, team);
         Bukkit.getPluginManager().callEvent(leftEvent);
     }
-
+    
     @Override
     public void switchTeam(ArenaPlayerInterface player, TeamIdType team) throws McException
     {
@@ -548,19 +583,19 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             this.teams.get(mplayer.getTeam()).getTeamMembers().remove(player.getPlayerUUID());
             mplayer.setPlaying(true);
             mplayer.setTeam(team);
-            this.teams.computeIfAbsent(team, MatchTeam::new).getTeamMembers().add(player.getPlayerUUID());
+            this.teams.computeIfAbsent(team, t -> new MatchTeam(this.arena, t)).getTeamMembers().add(player.getPlayerUUID());
             
             final ArenaPlayerJoinedTeamEvent joinEvent = new ArenaPlayerJoinedTeamEvent(this.getArena(), player, team);
             Bukkit.getPluginManager().callEvent(joinEvent);
         }
     }
-
+    
     @Override
     public boolean isTeamMatch()
     {
         return this.teamMatch;
     }
-
+    
     @Override
     public TeamIdType getTeam(UUID uuid)
     {
@@ -571,7 +606,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return null;
     }
-
+    
     @Override
     public Collection<UUID> getParticipants(boolean returnSpectators)
     {
@@ -579,12 +614,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             return this.players.keySet();
         }
-        return this.players.entrySet().stream()
-                .filter(p -> p.getValue().getTeam() != CommonTeams.Spectators)
-                .map(p -> p.getKey())
-                .collect(Collectors.toList());
+        return this.players.entrySet().stream().filter(p -> p.getValue().getTeam() != CommonTeams.Spectators).map(p -> p.getKey()).collect(Collectors.toList());
     }
-
+    
     @Override
     public int getParticipantCount(boolean returnSpectators)
     {
@@ -592,97 +624,83 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             return this.players.size();
         }
-        return (int) this.players.values().stream()
-                .filter(p -> p.getTeam() != CommonTeams.Spectators)
-                .count();
+        return (int) this.players.values().stream().filter(p -> p.getTeam() != CommonTeams.Spectators).count();
     }
-
+    
     @Override
     public Collection<UUID> getPlayers()
     {
-        return this.players.entrySet().stream()
-                .filter(p -> p.getValue().isPlaying())
-                .filter(p -> p.getValue().getTeam() != CommonTeams.Spectators)
-                .map(p -> p.getKey())
-                .collect(Collectors.toList());
+        return this.players.entrySet().stream().filter(p -> p.getValue().isPlaying()).filter(p -> p.getValue().getTeam() != CommonTeams.Spectators).map(p -> p.getKey()).collect(Collectors.toList());
     }
-
+    
     @Override
     public int getPlayerCount()
     {
-        return (int) this.players.entrySet().stream()
-                .filter(p -> p.getValue().isPlaying())
-                .filter(p -> p.getValue().getTeam() != CommonTeams.Spectators)
-                .count();
+        return (int) this.players.entrySet().stream().filter(p -> p.getValue().isPlaying()).filter(p -> p.getValue().getTeam() != CommonTeams.Spectators).count();
     }
-
+    
     @Override
     public Collection<UUID> getSpectators()
     {
-        return this.players.entrySet().stream()
-                .filter(p -> p.getValue().isSpec())
-                .map(p -> p.getKey())
-                .collect(Collectors.toList());
+        return this.players.entrySet().stream().filter(p -> p.getValue().isSpec()).map(p -> p.getKey()).collect(Collectors.toList());
     }
-
+    
     @Override
     public int getSpectatorCount()
     {
-        return (int) this.players.entrySet().stream()
-                .filter(p -> p.getValue().isSpec())
-                .count();
+        return (int) this.players.entrySet().stream().filter(p -> p.getValue().isSpec()).count();
     }
-
+    
     @Override
     public int getWinnerCount()
     {
         return this.teams.get(CommonTeams.Winners).getTeamMembers().size();
     }
-
+    
     @Override
     public int getLoserCount()
     {
         return this.teams.get(CommonTeams.Losers).getTeamMembers().size();
     }
-
+    
     @Override
     public Collection<UUID> getWinners()
     {
         return this.teams.get(CommonTeams.Winners).getMembers();
     }
-
+    
     @Override
     public Collection<UUID> getLosers()
     {
         return this.teams.get(CommonTeams.Losers).getMembers();
     }
-
+    
     @Override
     public Collection<MatchResult> getResults()
     {
         return new ArrayList<>(this.results);
     }
-
+    
     @Override
     public int getResultCount()
     {
         return this.results.size();
     }
-
+    
     @Override
     public MatchResult getResult(int place)
     {
         int pos = place - 1;
         return pos < 0 || this.results.size() <= pos ? null : this.results.get(pos);
     }
-
+    
     @Override
     public ComponentIdInterface getSpawn(UUID uuid)
     {
         final MatchPlayer player = this.players.get(uuid);
         return player == null ? null : player.getSpawn();
     }
-
+    
     @Override
     public void selectSpawn(UUID player, ComponentIdInterface spawn) throws McException
     {
@@ -692,7 +710,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             p.setSpawn(spawn);
         }
     }
-
+    
     @Override
     public int getStatistic(UUID player, MatchStatisticId statistic)
     {
@@ -703,13 +721,13 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public MatchPlayerInterface get(UUID uuid)
     {
         return this.players.get(uuid);
     }
-
+    
     @Override
     public MatchTeamInterface get(TeamIdType team)
     {
@@ -721,9 +739,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     {
         this.checkMatchNotFinished();
         this.checkTeamMatch();
-        return this.teams.computeIfAbsent(team, MatchTeam::new);
+        return this.teams.computeIfAbsent(team, t -> new MatchTeam(this.arena, t));
     }
-
+    
     @Override
     public int getStatistic(TeamIdType team, MatchStatisticId statistic)
     {
@@ -734,7 +752,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public void setStatistic(UUID player, MatchStatisticId statistic, int value) throws McException
     {
@@ -745,7 +763,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             p.setStatistic(statistic, value);
         }
     }
-
+    
     @Override
     public void setStatistic(TeamIdType team, MatchStatisticId statistic, int value) throws McException
     {
@@ -757,7 +775,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             p.setStatistic(statistic, value);
         }
     }
-
+    
     @Override
     public int addStatistic(UUID player, MatchStatisticId statistic, int amount) throws McException
     {
@@ -769,7 +787,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public int addStatistic(TeamIdType team, MatchStatisticId statistic, int amount) throws McException
     {
@@ -782,7 +800,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public int decStatistic(UUID player, MatchStatisticId statistic, int amount) throws McException
     {
@@ -794,7 +812,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public int decStatistic(TeamIdType team, MatchStatisticId statistic, int amount) throws McException
     {
@@ -807,7 +825,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public long getPlayTime(UUID player)
     {
@@ -832,13 +850,13 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         return 0;
     }
-
+    
     @Override
     public KillerTracking getKillerTracking(UUID player)
     {
         return this.players.get(player);
     }
-
+    
     @Override
     public void resetKillerTracking(UUID player) throws McException
     {
@@ -849,10 +867,12 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             p.setKillerTracking(null);
         }
     }
-
+    
     @Override
     public void trackDamageForKill(UUID targetPlayer, UUID damager) throws McException
     {
+        if (targetPlayer.equals(damager)) return;
+        
         this.checkMatchPending();
         final MatchPlayer p = this.players.get(targetPlayer);
         if (p != null)
@@ -860,7 +880,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             p.setKillerTracking(damager);
         }
     }
-
+    
     @Override
     public void setLoser(UUID... players) throws McException
     {
@@ -893,7 +913,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             Bukkit.getPluginManager().callEvent(event);
         }
     }
-
+    
     @Override
     public void setWinner(UUID... players) throws McException
     {
@@ -927,7 +947,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             Bukkit.getPluginManager().callEvent(event);
         }
     }
-
+    
     @Override
     public void setLoser(TeamIdType... teams) throws McException
     {
@@ -972,7 +992,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             }
         }
     }
-
+    
     @Override
     public void setWinner(TeamIdType... teams) throws McException
     {
@@ -1026,14 +1046,14 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     {
         
         /** the place this result represents. */
-        private int place;
+        private int              place;
         
         /** winning flag. */
-        private final boolean isWin;
+        private final boolean    isWin;
         
         /** players on this place. */
         private final List<UUID> players = new ArrayList<>();
-
+        
         /**
          * @param isWin
          * @param uuids
@@ -1046,27 +1066,28 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 this.players.add(player);
             }
         }
-
+        
         /**
-         * @param place the place to set
+         * @param place
+         *            the place to set
          */
         public void setPlace(int place)
         {
             this.place = place;
         }
-
+        
         @Override
         public int getPlace()
         {
             return this.place;
         }
-
+        
         @Override
         public Collection<UUID> getPlayers()
         {
             return this.players;
         }
-
+        
         @Override
         public boolean isWin()
         {

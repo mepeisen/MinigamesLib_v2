@@ -183,5 +183,39 @@ public interface ArenaPlayerInterface
      * @return {@code true} if player is playing a match or waiting inside an arena
      */
     boolean isPlaying();
+
+    /**
+     * Allows movement.
+     */
+    void allowMovement();
+    
+    /**
+     * Locks movement.
+     */
+    void lockMovement();
+
+    /**
+     * Returns the current movement speed.
+     * @return the currentMoveSpeed
+     */
+    float getCurrentMoveSpeed();
+
+    /**
+     * Sets the current movement speed.
+     * @param currentMoveSpeed the currentMoveSpeed to set
+     */
+    void setCurrentMoveSpeed(float currentMoveSpeed);
+
+    /**
+     * Returns the current fly speed.
+     * @return the currentFlySpeed
+     */
+    float getCurrentFlySpeed();
+
+    /**
+     * Sets the current fly speed.
+     * @param currentFlySpeed the currentFlySpeed to set
+     */
+    void setCurrentFlySpeed(float currentFlySpeed);
     
 }

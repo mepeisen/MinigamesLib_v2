@@ -24,31 +24,27 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationFloat;
+import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
+import de.minigameslib.mclib.api.config.ConfigurationValues;
+
 /**
- * Rule sets for winning
+ * point configurations
  * 
  * @author mepeisen
+ * 
+ * @see BasicArenaRuleSets#PointsForDamage
  */
-public enum BasicWinningRuleSets implements ArenaRuleSetType
+@ConfigurationValues(path = "core")
+public enum PointsForDamageConfig implements ConfigurationValueInterface
 {
     
     /**
-     * The last man standing is winning
+     * the factor for dealing damage
      */
-    LastManStanding,
-    
-    /**
-     * Get a specific number of kills means to win.
-     * @see KillsRuleInterface
-     */
-    @RuleSetConfigurable(config = KillsConfig.class)
-    Kills,
-    
-    /**
-     * Reaching a specific number of points means to win.
-     * @see PointsRuleInterface
-     */
-    @RuleSetConfigurable(config = PointsConfig.class)
-    Points,
+    @ConfigurationFloat(defaultValue = 0.2f)
+    @ConfigComment({"the factor for dealing damage (1 means one point for one health point)"})
+    Factor,
     
 }

@@ -24,31 +24,39 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationFloat;
+import de.minigameslib.mclib.api.config.ConfigurationInt;
+import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
+import de.minigameslib.mclib.api.config.ConfigurationValues;
+import de.minigameslib.mclib.api.config.ValidateFMin;
+import de.minigameslib.mclib.api.config.ValidateLMin;
+
 /**
- * Rule sets for winning
+ * heal configurations
  * 
  * @author mepeisen
+ * 
+ * @see BasicArenaRuleSets#HealAtBegin
  */
-public enum BasicWinningRuleSets implements ArenaRuleSetType
+@ConfigurationValues(path = "core")
+public enum HealAfterDeathConfig implements ConfigurationValueInterface
 {
     
     /**
-     * The last man standing is winning
+     * the heal per tick
      */
-    LastManStanding,
+    @ConfigurationFloat(defaultValue = 0.1f)
+    @ConfigComment({"Heal amount per tick"})
+    @ValidateFMin(0.0d)
+    HealPerTick,
     
     /**
-     * Get a specific number of kills means to win.
-     * @see KillsRuleInterface
+     * maximum ticks to receive heal
      */
-    @RuleSetConfigurable(config = KillsConfig.class)
-    Kills,
-    
-    /**
-     * Reaching a specific number of points means to win.
-     * @see PointsRuleInterface
-     */
-    @RuleSetConfigurable(config = PointsConfig.class)
-    Points,
+    @ConfigurationInt(defaultValue = 40)
+    @ConfigComment({"Maximum heal ticks"})
+    @ValidateLMin(0)
+    MaxHealTicks,
     
 }

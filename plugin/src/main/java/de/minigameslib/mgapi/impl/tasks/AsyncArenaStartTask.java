@@ -25,14 +25,17 @@
 package de.minigameslib.mgapi.impl.tasks;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
 import de.minigameslib.mgapi.impl.arena.ArenaImpl;
+import de.minigameslib.mgapi.impl.cmd.gui.ChecksPage.Messages;
 
 /**
  * A task to check and start a arena.
@@ -74,10 +77,17 @@ public class AsyncArenaStartTask extends AbstractAsyncArenaTask
             {
                 final StringBuilder builder = new StringBuilder();
                 boolean hadError = false;
-                builder.append("arena ").append(this.arena.getInternalName()).append(" maybe broken. Got followng results:\n"); //$NON-NLS-1$ //$NON-NLS-2$
+                builder.append("arena ").append(this.arena.getInternalName()).append(" maybe broken. Got following results:\n"); //$NON-NLS-1$ //$NON-NLS-2$
                 for (final CheckFailure failure : checks)
                 {
-                    builder.append("--> ").append(failure.getSeverity()).append(": ").append(failure.getTitle()).append("\n").append(failure.getDetails()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    final Locale defaultLocale = McLibInterface.instance().getDefaultLocale();
+                    builder
+                        .append("--> ") //$NON-NLS-1$
+                        .append(failure.getSeverity())
+                        .append(": ") //$NON-NLS-1$
+                        .append(Messages.ElementTitle.toUserMessage(defaultLocale, failure.getTitle()))
+                        .append("\n") //$NON-NLS-1$
+                        .append(Messages.ElementDescription.toUserMessage(defaultLocale, failure.getDetails()));
                     hadError |= failure.getSeverity() == CheckSeverity.Error;
                 }
                 LOGGER.log(Level.WARNING, builder.toString());
@@ -86,6 +96,14 @@ public class AsyncArenaStartTask extends AbstractAsyncArenaTask
                     LOGGER.log(Level.WARNING, "disabling arena " + this.arena.getInternalName() + " caused by errors."); //$NON-NLS-1$ //$NON-NLS-2$
                     this.arena.setDisabled0();
                 }
+                else
+                {
+                    this.arena.setJoin0();
+                }
+            }
+            else
+            {
+                this.arena.setJoin0();
             }
         }
         

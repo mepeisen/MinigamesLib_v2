@@ -29,26 +29,21 @@ import org.bukkit.event.HandlerList;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.MinecraftEvent;
-import de.minigameslib.mclib.api.objects.ComponentIdInterface;
-import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectInterface;
 import de.minigameslib.mclib.api.util.function.FalseStub;
 import de.minigameslib.mclib.api.util.function.McOutgoingStubbing;
 import de.minigameslib.mclib.api.util.function.McPredicate;
 import de.minigameslib.mclib.api.util.function.TrueStub;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
+import de.minigameslib.mgapi.api.match.MatchStatisticId;
+import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
- * Event fired before an arena player dies caused by dmg.
- * Allows rules to perform a valid action.
+ * Event fired after statistic change.
  * 
  * @author mepeisen
- * 
- * @see ArenaPlayerInterface#die()
- * @see ArenaPlayerInterface#die(ArenaPlayerInterface)
  */
-public class ArenaPlayerDieEvent extends Event implements MinecraftEvent<ArenaPlayerDieEvent, ArenaPlayerDieEvent>
+public class ArenaTeamStatisticEvent extends Event implements MinecraftEvent<ArenaTeamStatisticEvent, ArenaTeamStatisticEvent>
 {
     
     /** handlers list. */
@@ -57,25 +52,36 @@ public class ArenaPlayerDieEvent extends Event implements MinecraftEvent<ArenaPl
     /** the arena instance. */
     private final ArenaInterface arena;
     
-    /** the arena player. */
-    private final ArenaPlayerInterface player;
+    /** the arena team. */
+    private final TeamIdType team;
     
-    /** the new health for the player. */
-    private double newHealth;
+    /** the statistic id. */
+    private final MatchStatisticId id;
     
-    /** the new spawn point. */
-    private ComponentIdInterface newSpawn;
+    /** the old value. */
+    private final int oldValue;
+    
+    /** the new value. */
+    private final int newValue;
+    
+    
 
     /**
+     * Constructor.
+     * 
      * @param arena
-     * @param player
-     * @param newHealth
+     * @param team
+     * @param id
+     * @param oldValue
+     * @param newValue
      */
-    public ArenaPlayerDieEvent(ArenaInterface arena, ArenaPlayerInterface player, double newHealth)
+    public ArenaTeamStatisticEvent(ArenaInterface arena, TeamIdType team, MatchStatisticId id, int oldValue, int newValue)
     {
         this.arena = arena;
-        this.player = player;
-        this.newHealth = newHealth;
+        this.team = team;
+        this.id = id;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 
     /**
@@ -87,11 +93,11 @@ public class ArenaPlayerDieEvent extends Event implements MinecraftEvent<ArenaPl
     }
 
     /**
-     * @return the arena player
+     * @return the arena team
      */
-    public ArenaPlayerInterface getArenaPlayer()
+    public TeamIdType getTeam()
     {
-        return this.player;
+        return this.team;
     }
 
     /**
@@ -116,7 +122,7 @@ public class ArenaPlayerDieEvent extends Event implements MinecraftEvent<ArenaPl
     }
 
     @Override
-    public ArenaPlayerDieEvent getBukkitEvent()
+    public ArenaTeamStatisticEvent getBukkitEvent()
     {
         return this;
     }
@@ -127,46 +133,32 @@ public class ArenaPlayerDieEvent extends Event implements MinecraftEvent<ArenaPl
         return this.arena.getObject();
     }
 
-    @Override
-    public McPlayerInterface getPlayer()
+    /**
+     * @return the id
+     */
+    public MatchStatisticId getId()
     {
-        return this.player.getMcPlayer();
+        return this.id;
     }
 
     /**
-     * @return the newHealth
+     * @return the oldValue
      */
-    public double getNewHealth()
+    public int getOldValue()
     {
-        return this.newHealth;
+        return this.oldValue;
     }
 
     /**
-     * @param newHealth the newHealth to set
+     * @return the newValue
      */
-    public void setNewHealth(double newHealth)
+    public int getNewValue()
     {
-        this.newHealth = newHealth;
-    }
-
-    /**
-     * @return the newSpawn
-     */
-    public ComponentIdInterface getNewSpawn()
-    {
-        return this.newSpawn;
-    }
-
-    /**
-     * @param newSpawn the newSpawn to set
-     */
-    public void setNewSpawn(ComponentIdInterface newSpawn)
-    {
-        this.newSpawn = newSpawn;
+        return this.newValue;
     }
 
     @Override
-    public McOutgoingStubbing<ArenaPlayerDieEvent> when(McPredicate<ArenaPlayerDieEvent> test) throws McException
+    public McOutgoingStubbing<ArenaTeamStatisticEvent> when(McPredicate<ArenaTeamStatisticEvent> test) throws McException
     {
         if (test.test(this))
         {

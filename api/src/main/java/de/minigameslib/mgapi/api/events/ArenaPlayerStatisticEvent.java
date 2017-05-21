@@ -24,11 +24,11 @@
 
 package de.minigameslib.mgapi.api.events;
 
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.MinecraftEvent;
-import de.minigameslib.mclib.api.mcevent.AbstractVetoEvent;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.ObjectInterface;
 import de.minigameslib.mclib.api.util.function.FalseStub;
@@ -36,15 +36,15 @@ import de.minigameslib.mclib.api.util.function.McOutgoingStubbing;
 import de.minigameslib.mclib.api.util.function.McPredicate;
 import de.minigameslib.mclib.api.util.function.TrueStub;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.match.MatchStatisticId;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 
 /**
- * Event fired before an arena player dies caused by dmg.
- * Allows rules to perform a valid action.
+ * Event fired after statistic change.
  * 
  * @author mepeisen
  */
-public class ArenaPlayerDiesEvent extends AbstractVetoEvent implements MinecraftEvent<ArenaPlayerDiesEvent, ArenaPlayerDiesEvent>
+public class ArenaPlayerStatisticEvent extends Event implements MinecraftEvent<ArenaPlayerStatisticEvent, ArenaPlayerStatisticEvent>
 {
     
     /** handlers list. */
@@ -56,33 +56,33 @@ public class ArenaPlayerDiesEvent extends AbstractVetoEvent implements Minecraft
     /** the arena player. */
     private final ArenaPlayerInterface player;
     
-    /** the pre-selected team */
-    private PlayerAction action = PlayerAction.Die;
+    /** the statistic id. */
+    private final MatchStatisticId id;
+    
+    /** the old value. */
+    private final int oldValue;
+    
+    /** the new value. */
+    private final int newValue;
+    
+    
 
     /**
+     * Constructor.
+     * 
      * @param arena
      * @param player
+     * @param id
+     * @param oldValue
+     * @param newValue
      */
-    public ArenaPlayerDiesEvent(ArenaInterface arena, ArenaPlayerInterface player)
+    public ArenaPlayerStatisticEvent(ArenaInterface arena, ArenaPlayerInterface player, MatchStatisticId id, int oldValue, int newValue)
     {
         this.arena = arena;
         this.player = player;
-    }
-    
-    /**
-     * Action to be performed on player die
-     * @author mepeisen
-     */
-    public enum PlayerAction
-    {
-        /** the player autuomatically wins. */
-        Win,
-        /** the player automatically loses. */
-        Lose,
-        /** the ArenaPlayerDieEvent is played; delegates action to other rules fetching this event */
-        Die,
-        /** The player is respawning without playing the ArenaPlayerDieEvent */
-        SilentRespawn,
+        this.id = id;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
     }
 
     /**
@@ -99,22 +99,6 @@ public class ArenaPlayerDiesEvent extends AbstractVetoEvent implements Minecraft
     public ArenaPlayerInterface getArenaPlayer()
     {
         return this.player;
-    }
-
-    /**
-     * @return the action
-     */
-    public PlayerAction getAction()
-    {
-        return this.action;
-    }
-
-    /**
-     * @param action the action to set
-     */
-    public void setAction(PlayerAction action)
-    {
-        this.action = action;
     }
 
     /**
@@ -139,7 +123,7 @@ public class ArenaPlayerDiesEvent extends AbstractVetoEvent implements Minecraft
     }
 
     @Override
-    public ArenaPlayerDiesEvent getBukkitEvent()
+    public ArenaPlayerStatisticEvent getBukkitEvent()
     {
         return this;
     }
@@ -156,8 +140,32 @@ public class ArenaPlayerDiesEvent extends AbstractVetoEvent implements Minecraft
         return this.player.getMcPlayer();
     }
 
+    /**
+     * @return the id
+     */
+    public MatchStatisticId getId()
+    {
+        return this.id;
+    }
+
+    /**
+     * @return the oldValue
+     */
+    public int getOldValue()
+    {
+        return this.oldValue;
+    }
+
+    /**
+     * @return the newValue
+     */
+    public int getNewValue()
+    {
+        return this.newValue;
+    }
+
     @Override
-    public McOutgoingStubbing<ArenaPlayerDiesEvent> when(McPredicate<ArenaPlayerDiesEvent> test) throws McException
+    public McOutgoingStubbing<ArenaPlayerStatisticEvent> when(McPredicate<ArenaPlayerStatisticEvent> test) throws McException
     {
         if (test.test(this))
         {

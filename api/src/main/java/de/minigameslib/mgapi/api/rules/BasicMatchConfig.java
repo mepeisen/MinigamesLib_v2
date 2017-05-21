@@ -25,9 +25,13 @@
 package de.minigameslib.mgapi.api.rules;
 
 import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationDouble;
+import de.minigameslib.mclib.api.config.ConfigurationFloat;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
+import de.minigameslib.mclib.api.config.ValidateFMax;
+import de.minigameslib.mclib.api.config.ValidateFMin;
 import de.minigameslib.mclib.api.config.ValidateLMax;
 import de.minigameslib.mclib.api.config.ValidateLMin;
 
@@ -67,6 +71,51 @@ public enum BasicMatchConfig implements ConfigurationValueInterface
     @ConfigComment({"The seconds for lobby count down before match starts"})
     @ValidateLMin(5)
     @ValidateLMax(600)
-    LobbyCountdown
+    LobbyCountdown,
+    
+    /**
+     * The pre match countdown
+     */
+    @ConfigurationInt(defaultValue = 5)
+    @ConfigComment({"The seconds for pre match phase before match starts"})
+    @ValidateLMin(5)
+    @ValidateLMax(600)
+    PreMatchCountdown,
+    
+    /**
+     * The starting movement speed
+     */
+    @ConfigurationFloat(defaultValue = 0.2f)
+    @ConfigComment({"The movement speed"})
+    @ValidateFMin(-1.0d)
+    @ValidateFMax(1.0d)
+    MovementSpeed,
+    
+    /**
+     * The starting fly speed
+     */
+    @ConfigurationFloat(defaultValue = 0.1f)
+    @ConfigComment({"The fly speed"})
+    @ValidateFMin(-1.0d)
+    @ValidateFMax(1.0d)
+    FlySpeed,
+    
+    /**
+     * The starting max health
+     */
+    @ConfigurationDouble(defaultValue = 20d)
+    @ConfigComment({"The max health"})
+    @ValidateFMin(0.00000001d)
+    @ValidateFMax(20d)
+    MaxHealth,
+    
+    /**
+     * The starting health
+     */
+    @ConfigurationDouble(defaultValue = 20d)
+    @ConfigComment({"The health"})
+    @ValidateFMin(0.00000001d)
+    @ValidateFMax(20d)
+    Health,
     
 }

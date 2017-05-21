@@ -24,31 +24,47 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import de.minigameslib.mclib.api.McException;
+
 /**
- * Rule sets for winning
- * 
  * @author mepeisen
+ *
  */
-public enum BasicWinningRuleSets implements ArenaRuleSetType
+public interface HealAtBeginRuleInterface
 {
     
     /**
-     * The last man standing is winning
+     * Returns the heal per tick.
+     * 
+     * @return amount of heal per tick.
      */
-    LastManStanding,
+    float getHealPerTick();
     
     /**
-     * Get a specific number of kills means to win.
-     * @see KillsRuleInterface
+     * Returns the maximum ticks for healing.
+     * 
+     * @return maximum ticks for healing.
      */
-    @RuleSetConfigurable(config = KillsConfig.class)
-    Kills,
+    int getMaxHealTicks();
     
     /**
-     * Reaching a specific number of points means to win.
-     * @see PointsRuleInterface
+     * sets heal amount.
+     * 
+     * @param amount
+     *            amount per tick
+     * @throws McException
+     *             thrown if arena is in wrong state
      */
-    @RuleSetConfigurable(config = PointsConfig.class)
-    Points,
+    void setHealPerTick(float amount) throws McException;
+    
+    /**
+     * sets max heal in ticks.
+     * 
+     * @param ticks
+     *            max heal in ticks
+     * @throws McException
+     *             thrown if arena is in wrong state
+     */
+    void setMaxHealTicks(int ticks) throws McException;
     
 }

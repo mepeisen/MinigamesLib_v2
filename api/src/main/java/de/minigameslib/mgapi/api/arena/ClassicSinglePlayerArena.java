@@ -37,6 +37,8 @@ import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
+import de.minigameslib.mgapi.api.rules.BasicLosingRuleSets;
+import de.minigameslib.mgapi.api.rules.BasicWinningRuleSets;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
@@ -55,14 +57,21 @@ public abstract class ClassicSinglePlayerArena implements ArenaTypeProvider
         return new HashSet<>(Arrays.asList(
                 BasicArenaRuleSets.BasicMatch,
                 BasicArenaRuleSets.BasicSpawns,
-                BasicArenaRuleSets.BasicSpectator));
+                BasicArenaRuleSets.BasicSpectator,
+                BasicWinningRuleSets.LastManStanding,
+                BasicLosingRuleSets.LoseOnDeath));
     }
 
     @Override
     public Set<ArenaRuleSetType> getOptionalArenaRules()
     {
         return new HashSet<>(Arrays.asList(
-                BasicArenaRuleSets.BasicMatchTimer
+                BasicArenaRuleSets.BasicMatchTimer,
+                BasicArenaRuleSets.HealAfterDeath,
+                BasicArenaRuleSets.HealAtBegin,
+                BasicWinningRuleSets.Kills,
+                BasicWinningRuleSets.Points,
+                BasicLosingRuleSets.Lives
                 ));
     }
     

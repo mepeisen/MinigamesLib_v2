@@ -87,6 +87,7 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
     {
         super(type, arena);
         this.runInCopiedContext(() -> {
+            BasicSpectatorConfig.SpectatingWithoutMatch.verifyConfig();
             this.isSpectatingWithoutMatch = BasicSpectatorConfig.SpectatingWithoutMatch.getBoolean();
             this.isFreeSpectatingWithinMatch = BasicSpectatorConfig.FreeSpectatingWithinMatch.getBoolean();
             this.isSpectatingAfterWinOrLose = BasicSpectatorConfig.SpectatingAfterWinOrLose.getBoolean();
@@ -219,7 +220,16 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicSpectatorConfig.SpectatingWithoutMatch.setBoolean(flag);
-            BasicSpectatorConfig.SpectatingWithoutMatch.saveConfig();
+            try
+            {
+                BasicSpectatorConfig.SpectatingWithoutMatch.verifyConfig();
+                BasicSpectatorConfig.SpectatingWithoutMatch.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicSpectatorConfig.SpectatingWithoutMatch.rollbackConfig();
+                throw ex;
+            }
         });
         this.arena.reconfigureRuleSets(this.type);
     }
@@ -230,7 +240,16 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicSpectatorConfig.FreeSpectatingWithinMatch.setBoolean(flag);
-            BasicSpectatorConfig.FreeSpectatingWithinMatch.saveConfig();
+            try
+            {
+                BasicSpectatorConfig.FreeSpectatingWithinMatch.verifyConfig();
+                BasicSpectatorConfig.FreeSpectatingWithinMatch.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicSpectatorConfig.FreeSpectatingWithinMatch.rollbackConfig();
+                throw ex;
+            }
         });
         this.arena.reconfigureRuleSets(this.type);
     }
@@ -241,7 +260,16 @@ public class BasicSpectator extends AbstractArenaRule implements BasicSpectatorR
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
             BasicSpectatorConfig.SpectatingAfterWinOrLose.setBoolean(flag);
-            BasicSpectatorConfig.SpectatingAfterWinOrLose.saveConfig();
+            try
+            {
+                BasicSpectatorConfig.SpectatingAfterWinOrLose.verifyConfig();
+                BasicSpectatorConfig.SpectatingAfterWinOrLose.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicSpectatorConfig.SpectatingAfterWinOrLose.rollbackConfig();
+                throw ex;
+            }
         });
         this.arena.reconfigureRuleSets(this.type);
     }

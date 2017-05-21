@@ -35,35 +35,122 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
     
     /**
      * Returns the minimum players when the match countdown starts
+     * 
      * @return the minPlayers
      */
     int getMinPlayers();
-
+    
     /**
      * Returns the maximum players allowed in a match
+     * 
      * @return the maxPlayers
      */
     int getMaxPlayers();
-
+    
     /**
      * Returns the lobby countdown in seconds
+     * 
      * @return the lobbyCountdown
      */
     int getLobbyCountdown();
     
     /**
+     * Returns the pre match countdown in seconds
+     * 
+     * @return the preMatchCountdown
+     */
+    int getPreMatchCountdown();
+    
+    /**
      * Sets the min and max players
+     * 
      * @param minPlayers
      * @param maxPlayers
-     * @throws McException thrown if the config is invalid or if arena is not in maintenance mode
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
      */
     void setPlayers(int minPlayers, int maxPlayers) throws McException;
     
     /**
      * Sets the lobby countdown
+     * 
      * @param seconds
-     * @throws McException thrown if the config is invalid or if arena is not in maintenance mode
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
      */
     void setLobbyCountdown(int seconds) throws McException;
-
+    
+    /**
+     * Sets the pre match countdown
+     * 
+     * @param seconds
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPreMatchCountdown(int seconds) throws McException;
+    
+    /**
+     * The initial movement speed.
+     * 
+     * @return initial movement speed.
+     */
+    float getMovementSpeed();
+    
+    /**
+     * The initial fly speed.
+     * 
+     * @return initial fly speed.
+     */
+    float getFlySpeed();
+    
+    /**
+     * The initial max health.
+     * 
+     * @return max health.
+     */
+    double getMaxHealth();
+    
+    /**
+     * The initial health.
+     * 
+     * @return health.
+     */
+    double getHealth();
+    
+    /**
+     * Sets initial movement speed.
+     * 
+     * @param speed
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setMovementSpeed(float speed) throws McException;
+    
+    /**
+     * Sets initial fly speed.
+     * 
+     * @param speed
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setFlySpeed(float speed) throws McException;
+    
+    /**
+     * Sets initial max health.
+     * 
+     * @param maxHealth
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setMaxHealth(double maxHealth) throws McException;
+    
+    /**
+     * Sets initial health.
+     * 
+     * @param health
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setHealth(double health) throws McException;
+    
 }
