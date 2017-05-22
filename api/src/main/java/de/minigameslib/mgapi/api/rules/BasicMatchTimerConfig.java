@@ -24,8 +24,12 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import org.bukkit.Sound;
+
 import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationBool;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
+import de.minigameslib.mclib.api.config.ConfigurationJavaEnum;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
 import de.minigameslib.mclib.api.config.ValidateLMax;
@@ -48,6 +52,20 @@ public enum BasicMatchTimerConfig implements ConfigurationValueInterface
     @ConfigComment({"The maximum match time in seconds"})
     @ValidateLMin(0)
     @ValidateLMax(60*60*24)
-    MaxSeconds
+    MaxSeconds,
+    
+    /**
+     * The sound to play for each countdown tick
+     */
+    @ConfigurationJavaEnum(clazz = Sound.class)
+    @ConfigComment({"The sound to play for each countdown tick"})
+    CountdownSound,
+    
+    /**
+     * Flag to play the tick sound for countdown
+     */
+    @ConfigurationBool(defaultValue = true)
+    @ConfigComment({"Flag to play the tick sound for countdown"})
+    CountdownPlaySound,
     
 }

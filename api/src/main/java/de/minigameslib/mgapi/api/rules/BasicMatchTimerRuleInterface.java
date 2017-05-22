@@ -24,6 +24,8 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import org.bukkit.Sound;
+
 import de.minigameslib.mclib.api.McException;
 
 /**
@@ -45,6 +47,40 @@ public interface BasicMatchTimerRuleInterface extends ArenaRuleSetInterface
      * @throws McException thrown if the config is invalid or if arena is not in maintenance mode
      */
     void setMaxSeconds(int seconds) throws McException;
+    
+    /**
+     * Returns the sound to play for countdown.
+     * 
+     * @return sound to play for countdown.
+     */
+    Sound getCountdownSound();
+    
+    /**
+     * Returns the flag to play for countdown.
+     * 
+     * @return flag to play for countdown.
+     */
+    boolean isPlayCountdownSound();
+    
+    /**
+     * Sets the sound to play for countdown.
+     * 
+     * @param sound
+     *            sound to play for countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setCountdownSound(Sound sound) throws McException;
+    
+    /**
+     * Returns the flag to play for countdown.
+     * 
+     * @param flag
+     *            flag to play for countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setLobbyCountdownSound(boolean flag) throws McException;
     
     // following methods are callable DURING running matches to influence the timer, for example from other threads
     

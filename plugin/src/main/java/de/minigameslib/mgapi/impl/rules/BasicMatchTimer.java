@@ -29,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
 
 import de.minigameslib.mclib.api.McException;
@@ -60,70 +61,77 @@ import de.minigameslib.mgapi.impl.MinigamesPlugin;
 public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTimerRuleInterface
 {
     
+    /** the sound to play for ticks. */
+    private Sound               sound;
+    
+    /** flag to control sound. */
+    private boolean             playSound;
+    
     /**
      * maximum seconds
      */
-    private int seconds;
+    private int                 seconds;
     
     /**
      * the current match duration in millis
      */
-    private long matchDuration;
+    private long                matchDuration;
     
     /**
      * the current match maxmimum time
      */
-    private long matchTime;
+    private long                matchTime;
     
     /**
      * Flag for paused or running timers; {@code true} if timer is paused
      */
-    private boolean paused;
+    private boolean             paused;
     
     /**
      * Last start of timer
      */
-    private LocalDateTime lastStart = LocalDateTime.now();
+    private LocalDateTime       lastStart = LocalDateTime.now();
     
     /**
      * The timer task
      */
-    private BukkitTask timerTask;
+    private BukkitTask          timerTask;
     
     /** logger. */
-    private static final Logger LOGGER = Logger.getLogger(BasicMatchTimer.class.getName());
+    private static final Logger LOGGER    = Logger.getLogger(BasicMatchTimer.class.getName());
     
     /** {@code true} for warning about 60 seconds left */
-    private boolean warn60 = true;
+    private boolean             warn60    = true;
     
     /** {@code true} for warning about 30 seconds left */
-    private boolean warn30 = true;
+    private boolean             warn30    = true;
     
     /** {@code true} for warning about 20 seconds left */
-    private boolean warn20 = true;
+    private boolean             warn20    = true;
     
     /** {@code true} for warning about 10 seconds left */
-    private boolean warn10 = true;
+    private boolean             warn10    = true;
     
     /** {@code true} for warning about 5 seconds left */
-    private boolean warn5 = true;
+    private boolean             warn5     = true;
     
     /** {@code true} for warning about 4 seconds left */
-    private boolean warn4 = true;
+    private boolean             warn4     = true;
     
     /** {@code true} for warning about 3 seconds left */
-    private boolean warn3 = true;
+    private boolean             warn3     = true;
     
     /** {@code true} for warning about 2 seconds left */
-    private boolean warn2 = true;
+    private boolean             warn2     = true;
     
     /** {@code true} for warning about 1 seconds left */
-    private boolean warn1 = true;
+    private boolean             warn1     = true;
     
     /**
      * @param type
      * @param arena
-     * @throws McException thrown if config is invalid
+     * @throws McException
+     *             thrown if config is invalid
      */
     public BasicMatchTimer(ArenaRuleSetType type, ArenaInterface arena) throws McException
     {
@@ -132,15 +140,21 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
             BasicMatchTimerConfig.MaxSeconds.verifyConfig();
             this.seconds = BasicMatchTimerConfig.MaxSeconds.getInt();
             this.matchTime = this.seconds * 1000L;
+            this.sound = BasicMatchTimerConfig.CountdownSound.getJavaEnum(Sound.class);
+            if (this.sound == null)
+            {
+                this.sound = Sound.BLOCK_GRASS_HIT; // TODO check if this exists in 1.8
+            }
+            this.playSound = BasicMatchTimerConfig.CountdownPlaySound.getBoolean();
         });
     }
-
+    
     @Override
     public int getMaxSeconds()
     {
         return this.seconds;
     }
-
+    
     @Override
     public void setMaxSeconds(int seconds) throws McException
     {
@@ -160,7 +174,59 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         });
         this.arena.reconfigureRuleSets(this.type);
     }
-
+    
+    @Override
+    public Sound getCountdownSound()
+    {
+        return this.sound;
+    }
+    
+    @Override
+    public boolean isPlayCountdownSound()
+    {
+        return this.playSound;
+    }
+    
+    @Override
+    public void setCountdownSound(Sound sound) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchTimerConfig.CountdownSound.setJavaEnum(sound);
+            try
+            {
+                BasicMatchTimerConfig.CountdownSound.verifyConfig();
+                BasicMatchTimerConfig.CountdownSound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchTimerConfig.CountdownSound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+    
+    @Override
+    public void setLobbyCountdownSound(boolean flag) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchTimerConfig.CountdownPlaySound.setBoolean(flag);
+            try
+            {
+                BasicMatchTimerConfig.CountdownPlaySound.verifyConfig();
+                BasicMatchTimerConfig.CountdownPlaySound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchTimerConfig.CountdownPlaySound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+    
     @Override
     public void pause()
     {
@@ -170,7 +236,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
             this.matchDuration += this.lastStart.until(LocalDateTime.now(), ChronoUnit.MILLIS);
         }
     }
-
+    
     @Override
     public void resume()
     {
@@ -180,7 +246,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
             this.lastStart = LocalDateTime.now();
         }
     }
-
+    
     @Override
     public void resetAndResume()
     {
@@ -189,7 +255,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         this.matchDuration = 0;
         this.fixWarnings();
     }
-
+    
     @Override
     public void resetAndPause()
     {
@@ -197,7 +263,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         this.matchDuration = 0;
         this.fixWarnings();
     }
-
+    
     @Override
     public long getDurationMillis()
     {
@@ -207,13 +273,13 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         }
         return this.matchDuration + this.lastStart.until(LocalDateTime.now(), ChronoUnit.MILLIS);
     }
-
+    
     @Override
     public long getMaxMillis()
     {
         return this.matchTime;
     }
-
+    
     @Override
     public void addMaxMillis(long millis)
     {
@@ -224,7 +290,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         }
         this.fixWarnings();
     }
-
+    
     @Override
     public void substractMaxMillis(long millis)
     {
@@ -235,7 +301,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         }
         this.fixWarnings();
     }
-
+    
     @Override
     public void setMaxMillis(long millis)
     {
@@ -246,21 +312,21 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         }
         this.fixWarnings();
     }
-
+    
     @Override
     public void addDurationMillis(long millis)
     {
         this.matchDuration += millis;
         this.fixWarnings();
     }
-
+    
     @Override
     public void substractDurationMillis(long millis)
     {
         this.matchDuration -= millis;
         this.fixWarnings();
     }
-
+    
     @Override
     public void setDurationMillis(long millis)
     {
@@ -270,6 +336,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
     
     /**
      * Arena state change
+     * 
      * @param evt
      */
     @McEventHandler
@@ -292,7 +359,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
             this.stopTimer();
         }
     }
-
+    
     /**
      * Starts the bukkit timer task
      */
@@ -303,7 +370,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
             this.timerTask = McLibInterface.instance().runTaskTimer(MinigamesPlugin.instance().getPlugin(), 20, 20, this::onTimer);
         }
     }
-
+    
     /**
      * Stops the bukkit timer task
      */
@@ -332,6 +399,32 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         this.warn3 = sec >= 3;
         this.warn2 = sec >= 2;
         this.warn1 = sec >= 1;
+    }
+    
+    /**
+     * countdown tick.
+     * 
+     * @param msg
+     *            message to send
+     * @param sec
+     *            seconds to send
+     */
+    private void onCountdown(LocalizedMessageInterface msg, int sec)
+    {
+        this.arena.getPlayers().forEach(p -> {
+            p.getMcPlayer().sendMessage(msg, sec);
+            if (this.playSound)
+            {
+                p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.sound, 1F, 0F);
+            }
+        });
+        this.arena.getSpectators().forEach(p -> {
+            p.getMcPlayer().sendMessage(msg, sec);
+            if (this.playSound)
+            {
+                p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.sound, 1F, 0F);
+            }
+        });
     }
     
     /**
@@ -364,56 +457,47 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
                 final int sec = (int) (delta / 1000);
                 if (this.warn60 && sec <= 60)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 60));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 60));
+                    this.onCountdown(Messages.WarnSeconds, 60);
                     this.warn60 = false;
                 }
                 else if (this.warn30 && sec <= 30)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 30));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 30));
+                    this.onCountdown(Messages.WarnSeconds, 30);
                     this.warn30 = false;
                 }
                 else if (this.warn20 && sec <= 20)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 20));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 20));
+                    this.onCountdown(Messages.WarnSeconds, 20);
                     this.warn20 = false;
                 }
                 else if (this.warn10 && sec <= 10)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 10));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 10));
+                    this.onCountdown(Messages.WarnSeconds, 10);
                     this.warn10 = false;
                 }
                 else if (this.warn5 && sec <= 5)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 5));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 5));
+                    this.onCountdown(Messages.WarnSeconds, 5);
                     this.warn5 = false;
                 }
                 else if (this.warn4 && sec <= 4)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 4));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 4));
+                    this.onCountdown(Messages.WarnSeconds, 4);
                     this.warn4 = false;
                 }
                 else if (this.warn3 && sec <= 3)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 3));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 3));
+                    this.onCountdown(Messages.WarnSeconds, 3);
                     this.warn3 = false;
                 }
                 else if (this.warn2 && sec <= 2)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 2));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 2));
+                    this.onCountdown(Messages.WarnSeconds, 2);
                     this.warn2 = false;
                 }
                 else if (this.warn1 && sec <= 1)
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 1));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.WarnSeconds, 1));
+                    this.onCountdown(Messages.WarnSeconds, 1);
                     this.warn1 = false;
                 }
             }
@@ -442,7 +526,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
         @LocalizedMessage(defaultMessage = "The match is stopping now because the maximum game time was reached.", severity = MessageSeverityType.Loser)
         @MessageComment(value = { "match timer expired" })
         Abort,
-     
+        
     }
     
 }

@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.impl.rules;
 import java.util.Collection;
 import java.util.logging.Level;
 
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
 
 import de.minigameslib.mclib.api.McException;
@@ -130,6 +131,18 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
      */
     private BukkitTask preMatchCountdownTask;
     
+    /** the sound to play for ticks. */
+    private Sound               lobbySound;
+    
+    /** flag to control sound. */
+    private boolean             playLobbySound;
+    
+    /** the sound to play for ticks. */
+    private Sound               preMatchSound;
+    
+    /** flag to control sound. */
+    private boolean             playPreMatchSound;
+    
     /**
      * @param type
      * @param arena
@@ -149,6 +162,18 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             this.moveSpeed = BasicMatchConfig.MovementSpeed.getFloat();
             this.maxHealth = BasicMatchConfig.MaxHealth.getDouble();
             this.health = BasicMatchConfig.Health.getDouble();
+            this.lobbySound = BasicMatchConfig.LobbyCountdownSound.getJavaEnum(Sound.class);
+            if (this.lobbySound == null)
+            {
+                this.lobbySound = Sound.BLOCK_GRASS_HIT; // TODO check if this exists in 1.8
+            }
+            this.playLobbySound = BasicMatchConfig.LobbyCountdownPlaySound.getBoolean();
+            this.preMatchSound = BasicMatchConfig.PreMatchCountdownSound.getJavaEnum(Sound.class);
+            if (this.preMatchSound == null)
+            {
+                this.preMatchSound = Sound.BLOCK_GRASS_HIT; // TODO From v1: SUCCESSFUL_HIT but this does not exist any more
+            }
+            this.playPreMatchSound = BasicMatchConfig.PreMatchCountdownPlaySound.getBoolean();
         });
     }
     
@@ -352,8 +377,20 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         
         if (this.preMatchCountdownTimer <= 10 || this.preMatchCountdownTimer % 10 == 0)
         {
-            this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.PreMatchCountdownTick, this.preMatchCountdownTimer));
-            this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.PreMatchCountdownTick, this.preMatchCountdownTimer));
+            this.arena.getPlayers().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.PreMatchCountdownTick, this.preMatchCountdownTimer);
+                if (this.playPreMatchSound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.preMatchSound, 1F, 0F);
+                }
+            });
+            this.arena.getSpectators().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.PreMatchCountdownTick, this.preMatchCountdownTimer);
+                if (this.playPreMatchSound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.preMatchSound, 1F, 0F);
+                }
+            });
         }
         
         this.preMatchCountdownTimer--;
@@ -383,8 +420,20 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         
         if (this.countdownTimer <= 10 || this.countdownTimer % 10 == 0)
         {
-            this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.CountdownTick, this.countdownTimer));
-            this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.CountdownTick, this.countdownTimer));
+            this.arena.getPlayers().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.CountdownTick, this.countdownTimer);
+                if (this.playLobbySound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.lobbySound, 1F, 0F);
+                }
+            });
+            this.arena.getSpectators().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.CountdownTick, this.countdownTimer);
+                if (this.playLobbySound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.lobbySound, 1F, 0F);
+                }
+            });
         }
         
         this.countdownTimer--;
@@ -469,6 +518,110 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             catch (McException ex)
             {
                 BasicMatchConfig.PreMatchCountdown.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public Sound getLobbyCountdownSound()
+    {
+        return this.lobbySound;
+    }
+
+    @Override
+    public boolean isPlayLobbyCountdownSound()
+    {
+        return this.playLobbySound;
+    }
+
+    @Override
+    public Sound getPreMatchCountdownSound()
+    {
+        return this.preMatchSound;
+    }
+
+    @Override
+    public boolean isPlayPreMatchCountdownSound()
+    {
+        return this.playPreMatchSound;
+    }
+
+    @Override
+    public void setLobbyCountdownSound(Sound sound) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.LobbyCountdownSound.setJavaEnum(sound);
+            try
+            {
+                BasicMatchConfig.LobbyCountdownSound.verifyConfig();
+                BasicMatchConfig.LobbyCountdownSound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.LobbyCountdownSound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public void setPlayLobbyCountdownSound(boolean flag) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.LobbyCountdownPlaySound.setBoolean(flag);
+            try
+            {
+                BasicMatchConfig.LobbyCountdownPlaySound.verifyConfig();
+                BasicMatchConfig.LobbyCountdownPlaySound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.LobbyCountdownPlaySound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public void setPreMatchCountdownSound(Sound sound) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.PreMatchCountdownSound.setJavaEnum(sound);
+            try
+            {
+                BasicMatchConfig.PreMatchCountdownSound.verifyConfig();
+                BasicMatchConfig.PreMatchCountdownSound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.PreMatchCountdownSound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public void setPreMatchLobbyCountdownSound(boolean flag) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.PreMatchCountdownPlaySound.setBoolean(flag);
+            try
+            {
+                BasicMatchConfig.PreMatchCountdownPlaySound.verifyConfig();
+                BasicMatchConfig.PreMatchCountdownPlaySound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.PreMatchCountdownPlaySound.rollbackConfig();
                 throw ex;
             }
         });

@@ -24,6 +24,8 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import org.bukkit.Sound;
+
 import de.minigameslib.mclib.api.McException;
 
 /**
@@ -55,11 +57,39 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
     int getLobbyCountdown();
     
     /**
+     * Returns the sound to play for lobby countdown.
+     * 
+     * @return sound to play for lobby countdown.
+     */
+    Sound getLobbyCountdownSound();
+    
+    /**
+     * Returns the flag to play for lobby countdown.
+     * 
+     * @return flag to play for lobby countdown.
+     */
+    boolean isPlayLobbyCountdownSound();
+    
+    /**
      * Returns the pre match countdown in seconds
      * 
      * @return the preMatchCountdown
      */
     int getPreMatchCountdown();
+    
+    /**
+     * Returns the sound to play for pre match countdown.
+     * 
+     * @return sound to play for pre match countdown.
+     */
+    Sound getPreMatchCountdownSound();
+    
+    /**
+     * Returns the flag to play for pre match countdown.
+     * 
+     * @return flag to play for pre match countdown.
+     */
+    boolean isPlayPreMatchCountdownSound();
     
     /**
      * Sets the min and max players
@@ -81,6 +111,26 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
     void setLobbyCountdown(int seconds) throws McException;
     
     /**
+     * Sets the sound to play for lobby countdown.
+     * 
+     * @param sound
+     *            sound to play for lobby countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setLobbyCountdownSound(Sound sound) throws McException;
+    
+    /**
+     * Returns the flag to play for lobby countdown.
+     * 
+     * @param flag
+     *            flag to play for lobby countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPlayLobbyCountdownSound(boolean flag) throws McException;
+    
+    /**
      * Sets the pre match countdown
      * 
      * @param seconds
@@ -88,6 +138,26 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
      *             thrown if the config is invalid or if arena is not in maintenance mode
      */
     void setPreMatchCountdown(int seconds) throws McException;
+    
+    /**
+     * Sets the sound to play for pre match countdown.
+     * 
+     * @param sound
+     *            sound to play for pre match countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPreMatchCountdownSound(Sound sound) throws McException;
+    
+    /**
+     * Returns the flag to play for pre match countdown.
+     * 
+     * @param flag
+     *            flag to play for pre match countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPreMatchLobbyCountdownSound(boolean flag) throws McException;
     
     /**
      * The initial movement speed.

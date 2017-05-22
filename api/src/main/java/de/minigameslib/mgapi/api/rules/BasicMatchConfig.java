@@ -24,10 +24,14 @@
 
 package de.minigameslib.mgapi.api.rules;
 
+import org.bukkit.Sound;
+
 import de.minigameslib.mclib.api.config.ConfigComment;
+import de.minigameslib.mclib.api.config.ConfigurationBool;
 import de.minigameslib.mclib.api.config.ConfigurationDouble;
 import de.minigameslib.mclib.api.config.ConfigurationFloat;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
+import de.minigameslib.mclib.api.config.ConfigurationJavaEnum;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
 import de.minigameslib.mclib.api.config.ValidateFMax;
@@ -74,6 +78,20 @@ public enum BasicMatchConfig implements ConfigurationValueInterface
     LobbyCountdown,
     
     /**
+     * The sound to play for each countdown tick
+     */
+    @ConfigurationJavaEnum(clazz = Sound.class)
+    @ConfigComment({"The sound to play for each lobby countdown tick"})
+    LobbyCountdownSound,
+    
+    /**
+     * Flag to play the tick sound for lobby countdown
+     */
+    @ConfigurationBool(defaultValue = false)
+    @ConfigComment({"Flag to play the tick sound for lobby countdown"})
+    LobbyCountdownPlaySound,
+    
+    /**
      * The pre match countdown
      */
     @ConfigurationInt(defaultValue = 5)
@@ -81,6 +99,20 @@ public enum BasicMatchConfig implements ConfigurationValueInterface
     @ValidateLMin(5)
     @ValidateLMax(600)
     PreMatchCountdown,
+    
+    /**
+     * The sound to play for each countdown tick
+     */
+    @ConfigurationJavaEnum(clazz = Sound.class)
+    @ConfigComment({"The sound to play for each pre match countdown tick"})
+    PreMatchCountdownSound,
+    
+    /**
+     * Flag to play the tick sound for pre match countdown
+     */
+    @ConfigurationBool(defaultValue = true)
+    @ConfigComment({"Flag to play the tick sound for pre match countdown"})
+    PreMatchCountdownPlaySound,
     
     /**
      * The starting movement speed
