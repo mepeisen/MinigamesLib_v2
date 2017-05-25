@@ -1,0 +1,151 @@
+/*
+    Copyright 2016 by minigameslib.de
+    All rights reserved.
+    If you do not own a hand-signed commercial license from minigames.de
+    you are not allowed to use this software in any way except using
+    GPL (see below).
+
+------
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+package de.minigameslib.mgapi.api.obj;
+
+import java.util.UUID;
+
+import de.minigameslib.mgapi.api.stat.GameStatisticId;
+import de.minigameslib.mgapi.api.stat.PlayerStatisticId;
+import de.minigameslib.mgapi.api.stat.TeamStatisticId;
+import de.minigameslib.mgapi.api.team.TeamIdType;
+
+/**
+ * The statistic sign.
+ * 
+ * @author mepeisen
+ *
+ */
+public interface StatisticSignHandler extends ArenaSignHandler
+{
+    
+    /**
+     * The scope of statistics.
+     */
+    enum StatisticScope
+    {
+        /** the arena. */
+        Arena,
+        /** the arena type. */
+        ArenaType,
+    }
+    
+    /**
+     * The type of statistic interval.
+     */
+    enum StatisticInterval
+    {
+        /** all time statistics. */
+        AllTime,
+        /**
+         * last month.
+         */
+        LastMonth,
+        /**
+         * last day.
+         */
+        LastDay,
+        /**
+         * current month.
+         */
+        CurrentMonth,
+        /**
+         * current day.
+         */
+        CurrentDay,
+        /**
+         * last x matches.
+         */
+        Recent,
+    }
+    
+    /**
+     * The type of statistic to display.
+     */
+    enum StatisticType
+    {
+        /** some game statistics. */
+        Game,
+        /** a player statistic. */
+        Player,
+        /** a team statistic. */
+        Team
+    }
+    
+    /**
+     * Returns the count of matches for {@link StatisticInterval#Recent}.
+     * 
+     * @return count of matches.
+     */
+    int getRecentCount();
+    
+    /**
+     * Returns the statistic scope.
+     * @return statistic scope.
+     */
+    StatisticScope getScope();
+    
+    /**
+     * returns the statistic interval.
+     * @return statistic interval.
+     */
+    StatisticInterval getInterval();
+    
+    /**
+     * Returns the statistic type.
+     * @return statistic type.
+     */
+    StatisticType getType();
+    
+    /**
+     * Returns the game statistic id.
+     * @return game statistic to use.
+     */
+    GameStatisticId getGameStatisticId();
+    
+    /**
+     * Returns the player statistic id.
+     * @return player statistic to use.
+     */
+    PlayerStatisticId getPlayerStatisticId();
+    
+    /**
+     * Returns the team statistic id.
+     * @return team statistic to use.
+     */
+    TeamStatisticId getTeamStatisticId();
+    
+    /**
+     * The player to be used for statistics.
+     * @return player uuid.
+     */
+    UUID getPlayer();
+    
+    /**
+     * The team to be used for statistics.
+     * @return team uuid.
+     */
+    TeamIdType getTeam();
+    
+}

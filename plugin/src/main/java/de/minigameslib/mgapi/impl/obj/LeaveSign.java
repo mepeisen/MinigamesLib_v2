@@ -27,14 +27,14 @@ package de.minigameslib.mgapi.impl.obj;
 import org.bukkit.plugin.Plugin;
 
 import de.minigameslib.mgapi.api.obj.AbstractArenaSignHandler;
-import de.minigameslib.mgapi.api.obj.LeaveSignInterface;
+import de.minigameslib.mgapi.api.obj.LeaveSignHandler;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class LeaveSign extends AbstractArenaSignHandler<LeaveSignData> implements LeaveSignInterface
+public class LeaveSign extends AbstractArenaSignHandler<LeaveSignData> implements LeaveSignHandler
 {
     
     @Override

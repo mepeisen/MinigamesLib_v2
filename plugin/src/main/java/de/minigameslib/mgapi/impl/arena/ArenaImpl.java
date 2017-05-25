@@ -112,6 +112,7 @@ import de.minigameslib.mgapi.api.team.ArenaTeamInterface;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.MglibObjectTypes;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
+import de.minigameslib.mgapi.impl.MinigamesPluginInterface;
 import de.minigameslib.mgapi.impl.arena.ArenaData.TeamData;
 import de.minigameslib.mgapi.impl.internal.TaskManager;
 import de.minigameslib.mgapi.impl.tasks.AsyncArenaRestartTask;
@@ -888,6 +889,11 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.state = ArenaState.Restarting;
         this.match.finish();
         Bukkit.getPluginManager().callEvent(changedEvent);
+        
+        final MinigamesPluginInterface plugin = MinigamesPlugin.instance();
+        plugin.calcStatistics(this.match);
+
+        TaskManager.instance().queue(new AsyncArenaRestartTask(this));
     }
 
     @Override
@@ -901,6 +907,8 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
         this.state = ArenaState.Restarting;
         this.match.abort();
         Bukkit.getPluginManager().callEvent(changedEvent);
+        
+        TaskManager.instance().queue(new AsyncArenaRestartTask(this));
     }
 
     @Override

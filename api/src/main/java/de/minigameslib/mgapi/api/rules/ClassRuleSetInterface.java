@@ -22,16 +22,32 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.rules;
+
+import java.util.Collection;
+
+import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 
 /**
- * A join sign.
+ * Interface for classes rule sets.
  * 
  * @author mepeisen
  */
-public interface JoinSignInterface extends ArenaSignHandler
+public interface ClassRuleSetInterface extends RuleSetInterface<ClassRuleSetType>
 {
-
-    // marker only
+    
+    /**
+     * Returns the underlying player chosen this class.
+     * @return player
+     */
+    ArenaPlayerInterface getPlayer();
+    
+    /**
+     * Check the arena setup and report errors, warnings or informational messages.
+     * 
+     * @return list of check failures (maybe errors, warnings or informational messages.)
+     */
+    Collection<CheckFailure> check();
     
 }

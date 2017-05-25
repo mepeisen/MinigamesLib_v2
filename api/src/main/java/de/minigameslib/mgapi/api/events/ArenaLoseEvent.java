@@ -40,7 +40,7 @@ import de.minigameslib.mclib.api.util.function.McPredicate;
 import de.minigameslib.mclib.api.util.function.TrueStub;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
-import de.minigameslib.mgapi.api.match.ArenaMatchInterface.MatchResult;
+import de.minigameslib.mgapi.api.match.MatchResult;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**

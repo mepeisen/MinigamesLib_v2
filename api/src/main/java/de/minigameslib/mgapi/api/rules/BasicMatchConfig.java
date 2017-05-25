@@ -34,10 +34,10 @@ import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationJavaEnum;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
-import de.minigameslib.mclib.api.config.ValidateFMax;
-import de.minigameslib.mclib.api.config.ValidateFMin;
-import de.minigameslib.mclib.api.config.ValidateLMax;
-import de.minigameslib.mclib.api.config.ValidateLMin;
+import de.minigameslib.mclib.api.validate.ValidateFMax;
+import de.minigameslib.mclib.api.validate.ValidateFMin;
+import de.minigameslib.mclib.api.validate.ValidateLMax;
+import de.minigameslib.mclib.api.validate.ValidateLMin;
 
 /**
  * Basic match configurations
@@ -67,6 +67,29 @@ public enum BasicMatchConfig implements ConfigurationValueInterface
     @ValidateLMin(2)
     @ValidateLMax(100)
     MaxPlayers, // TODO validate min <= max
+    
+    /**
+     * The seconds for post match count down before arena resets
+     */
+    @ConfigurationInt(defaultValue = 5)
+    @ConfigComment({"The seconds for post match count down before arena resets"})
+    @ValidateLMin(5)
+    @ValidateLMax(600)
+    PostMatchCountdown,
+    
+    /**
+     * The sound to play for each countdown tick
+     */
+    @ConfigurationJavaEnum(clazz = Sound.class)
+    @ConfigComment({"The sound to play for each post match countdown tick"})
+    PostMatchCountdownSound,
+    
+    /**
+     * Flag to play the tick sound for post match countdown
+     */
+    @ConfigurationBool(defaultValue = false)
+    @ConfigComment({"Flag to play the tick sound for post match countdown"})
+    PostMatchCountdownPlaySound,
     
     /**
      * The seconds for lobby count down before match starts

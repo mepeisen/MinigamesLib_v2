@@ -92,6 +92,27 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
     boolean isPlayPreMatchCountdownSound();
     
     /**
+     * Returns the post match countdown in seconds
+     * 
+     * @return the postMatchCountdown
+     */
+    int getPostMatchCountdown();
+    
+    /**
+     * Returns the sound to play for post match countdown.
+     * 
+     * @return sound to play for post match countdown.
+     */
+    Sound getPostMatchCountdownSound();
+    
+    /**
+     * Returns the flag to play for post match countdown.
+     * 
+     * @return flag to play for post match countdown.
+     */
+    boolean isPlayPostMatchCountdownSound();
+    
+    /**
      * Sets the min and max players
      * 
      * @param minPlayers
@@ -157,7 +178,36 @@ public interface BasicMatchRuleInterface extends ArenaRuleSetInterface
      * @throws McException
      *             thrown if the config is invalid or if arena is not in maintenance mode
      */
-    void setPreMatchLobbyCountdownSound(boolean flag) throws McException;
+    void setPlayPreMatchCountdownSound(boolean flag) throws McException;
+    
+    /**
+     * Sets the post match countdown
+     * 
+     * @param seconds
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPostMatchCountdown(int seconds) throws McException;
+    
+    /**
+     * Sets the sound to play for post match countdown.
+     * 
+     * @param sound
+     *            sound to play for post match countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPostMatchCountdownSound(Sound sound) throws McException;
+    
+    /**
+     * Returns the flag to play for post match countdown.
+     * 
+     * @param flag
+     *            flag to play for post match countdown.
+     * @throws McException
+     *             thrown if the config is invalid or if arena is not in maintenance mode
+     */
+    void setPlayPostMatchCountdownSound(boolean flag) throws McException;
     
     /**
      * The initial movement speed.

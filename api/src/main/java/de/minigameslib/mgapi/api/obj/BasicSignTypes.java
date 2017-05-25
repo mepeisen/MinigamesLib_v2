@@ -36,13 +36,13 @@ public enum BasicSignTypes implements SignTypeId
     
     /**
      * A join sign
-     * @see JoinSignInterface
+     * @see JoinSignHandler
      */
     Join,
     
     /**
      * A leave sign
-     * @see LeaveSignInterface
+     * @see LeaveSignHandler
      */
     Leave,
     
@@ -51,5 +51,17 @@ public enum BasicSignTypes implements SignTypeId
      * @see GenericSignHandler
      */
     Generic,
+    
+    /**
+     * A sign holding statistic information.
+     * @see StatisticSignHandler
+     */
+    Statistic,
+    
+    /**
+     * A sign holding leaderboard info.
+     * @see LeaderSignHandler
+     */
+    Leader,
     
 }

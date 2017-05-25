@@ -22,17 +22,18 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.stat;
+
+import de.minigameslib.mclib.api.enums.McUniqueEnumInterface;
 
 /**
- * The generic arena sign.
+ * Interface for persistent statistic enumerations
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface PlayerStatisticId extends McUniqueEnumInterface
 {
-
-    // marker only
+    
+    // marker interface
     
 }

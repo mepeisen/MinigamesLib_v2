@@ -49,6 +49,8 @@ import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetInterface;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
@@ -189,6 +191,16 @@ public interface MinigamesLibInterface
      * @param creator
      */
     void registerRuleset(Plugin plugin, ArenaRuleSetType ruleset, McBiFunction<ArenaRuleSetType, ArenaInterface, ArenaRuleSetInterface> creator);
+    
+    /**
+     * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the
+     * underlying object lives or as long as it is not removed.
+     * 
+     * @param plugin
+     * @param ruleset
+     * @param creator
+     */
+    void registerRuleset(Plugin plugin, ClassRuleSetType ruleset, McBiFunction<ClassRuleSetType, ArenaPlayerInterface, ClassRuleSetInterface> creator);
     
     /**
      * Registers a new rule set to be used with minigames library; once a rule set is applied or changed the creator is asked to create a new rule set instance. The instance lives as long as the

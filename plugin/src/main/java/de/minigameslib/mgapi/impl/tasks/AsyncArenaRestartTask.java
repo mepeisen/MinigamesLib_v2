@@ -24,7 +24,11 @@
 
 package de.minigameslib.mgapi.impl.tasks;
 
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.impl.arena.ArenaImpl;
 
 /**
@@ -46,19 +50,34 @@ public class AsyncArenaRestartTask extends AbstractAsyncArenaTask
     @Override
     public void run() throws McException
     {
-        if (this.arena.isDisabled())
-        {
-            this.arena.setDisabled0();
-        }
-        else if (this.arena.isMaintenance())
-        {
-            this.arena.setMaintenance0();
-        }
-        else
-        {
-            this.arena.setJoin0();
-        }
-        // TODO invoke state change event in bukkit
+        // TODO Perform smart reset
+        
+        new BukkitRunnable() {
+            
+            @Override
+            public void run()
+            {
+                try
+                {
+                    if (AsyncArenaRestartTask.this.arena.isDisabled())
+                    {
+                        AsyncArenaRestartTask.this.arena.setDisabled0();
+                    }
+                    else if (AsyncArenaRestartTask.this.arena.isMaintenance())
+                    {
+                        AsyncArenaRestartTask.this.arena.setMaintenance0();
+                    }
+                    else
+                    {
+                        AsyncArenaRestartTask.this.arena.setJoin0();
+                    }
+                }
+                catch (McException ex)
+                {
+                    // TODO Logging
+                }
+            }
+        }.runTaskLater((Plugin) MinigamesLibInterface.instance(), 1);
     }
     
 }

@@ -44,7 +44,7 @@ public interface ArenaRuleSetInterface extends RuleSetInterface<ArenaRuleSetType
     ArenaInterface getArena();
     
     /**
-     * Check the arena setup and report errors, warnings of informational messages.
+     * Check the arena setup and report errors, warnings or informational messages.
      * 
      * @return list of check failures (maybe errors, warnings or informational messages.)
      */

@@ -36,6 +36,7 @@ import de.minigameslib.mclib.api.util.function.McSupplier;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
+import de.minigameslib.mgapi.impl.arena.ArenaMatchImpl;
 
 /**
  * An internal plugin interface
@@ -71,20 +72,31 @@ public interface MinigamesPluginInterface
     
     /**
      * Returns the plugin logger
+     * 
      * @return plugin logger
      */
     Logger getLogger();
     
     /**
      * Returns the java plugin.
+     * 
      * @return java plugin
      */
     Plugin getPlugin();
     
     /**
      * Returns the data folder.
+     * 
      * @return data folder.
      */
     File getDataFolder();
+    
+    /**
+     * Calculate match statistics and add it to persistent statistic service.
+     * 
+     * @param match
+     *            played arena match.
+     */
+    void calcStatistics(ArenaMatchImpl match);
     
 }

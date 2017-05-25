@@ -28,7 +28,7 @@ import de.minigameslib.mclib.api.config.ConfigComment;
 import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
-import de.minigameslib.mclib.api.config.ValidateLMin;
+import de.minigameslib.mclib.api.validate.ValidateLMin;
 
 /**
  * heal configurations

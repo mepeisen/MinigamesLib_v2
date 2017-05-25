@@ -22,17 +22,46 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.stat;
+
+import java.util.List;
+
+import de.minigameslib.mgapi.api.match.MatchStatisticId;
+import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
- * The generic arena sign.
+ * A player participating in a match.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface MatchStatisticTeamInterface
 {
-
-    // marker only
+    
+    /**
+     * Returns the team id.
+     * 
+     * @return team id.
+     */
+    TeamIdType getTeamId();
+    
+    /**
+     * Statistic function
+     * @param statistic
+     * @return current statistic
+     */
+    int getStatistic(MatchStatisticId statistic);
+    
+    /**
+     * Returns the available statistics for this team.
+     * @return statistics.
+     */
+    List<MatchStatisticId> getStatistics();
+    
+    /**
+     * Returns the statistic for this player and given statistic id.
+     * @param statistic
+     * @return the statistic value
+     */
+    long getStatistic(TeamStatisticId statistic);
     
 }

@@ -443,8 +443,28 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
                 this.timerTask = null;
                 try
                 {
-                    this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.Abort));
-                    this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.Abort));
+                    this.arena.getPlayers().forEach(p -> {
+                        try
+                        {
+                            this.arena.leave(p);
+                        }
+                        catch (McException e)
+                        {
+                            // TODO logging
+                        }
+                        p.getMcPlayer().sendMessage(Messages.Abort);
+                    });
+                    this.arena.getSpectators().forEach(p -> {
+                        try
+                        {
+                            this.arena.leave(p);
+                        }
+                        catch (McException e)
+                        {
+                            // TODO logging
+                        }
+                        p.getMcPlayer().sendMessage(Messages.Abort);
+                    });
                     this.arena.abort();
                 }
                 catch (McException e)

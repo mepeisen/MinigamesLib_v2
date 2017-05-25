@@ -336,6 +336,9 @@ public class ArenaEdit implements ClickGuiPageInterface
      */
     private void onStop(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
+        this.arena.getPlayers().forEach(p -> this.arena.kick(p, Messages.KickReasonStopped));
+        this.arena.getSpectators().forEach(p -> this.arena.kick(p, Messages.KickReasonStopped));
+        
         this.arena.abort();
         this.onRefresh(player, session, gui);
     }
@@ -788,6 +791,13 @@ public class ArenaEdit implements ClickGuiPageInterface
                 @Argument("arena long description"),
                 })
         InfoOutput,
+        
+        /**
+         * Kick reason: Arena match was stopped by admin
+         */
+        @LocalizedMessage(defaultMessage = "Arena match was stopped by admin")
+        @MessageComment({"Kick reason: arena match was stoppedby admin"})
+        KickReasonStopped,
     }
     
 }

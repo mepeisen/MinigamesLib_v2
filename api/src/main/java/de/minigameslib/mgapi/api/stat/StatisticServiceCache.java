@@ -22,17 +22,32 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.stat;
+
+import org.bukkit.Bukkit;
 
 /**
- * The generic arena sign.
+ * Helper to cache the statistic services.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+class StatisticServiceCache
 {
-
-    // marker only
+    
+    /** the statistic services. */
+    private static StatisticServiceInterface SERVICES;
+    
+    /**
+     * Returns the statistic services instance.
+     * @return statistic services instance.
+     */
+    static StatisticServiceInterface get()
+    {
+        if (SERVICES == null)
+        {
+            SERVICES = Bukkit.getServicesManager().load(StatisticServiceInterface.class);
+        }
+        return SERVICES;
+    }
     
 }

@@ -82,4 +82,11 @@ public enum BasicZoneRuleSets implements ZoneRuleSetType
     @RuleSetConfigurable(config = PointsForDamageConfig.class)
     PointsForDamage,
     
+    /**
+     * Scoreboard used in this zone.
+     * @see ScoreboardRuleInterface
+     */
+    @RuleSetConfigurable(config = ScoreboardConfig.class)
+    Scoreboard,
+    
 }

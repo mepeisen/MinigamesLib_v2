@@ -22,16 +22,16 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.rules;
 
 /**
- * A leave sign.
+ * A rule set for classes identified by enumeration values.
  * 
  * @author mepeisen
  */
-public interface LeaveSignInterface extends ArenaSignHandler
+public interface ClassRuleSetType extends RuleSetType
 {
-
+    
     // marker only
     
 }

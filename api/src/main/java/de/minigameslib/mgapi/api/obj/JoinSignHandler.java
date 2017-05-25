@@ -25,12 +25,11 @@
 package de.minigameslib.mgapi.api.obj;
 
 /**
- * The generic arena sign.
+ * A join sign.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface JoinSignHandler extends ArenaSignHandler
 {
 
     // marker only

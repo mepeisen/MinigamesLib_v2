@@ -49,7 +49,7 @@ import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
+import de.minigameslib.mgapi.api.match.MatchResult;
 import de.minigameslib.mgapi.api.match.MatchStatisticId;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.team.CommonTeams;
@@ -399,7 +399,7 @@ public class ArenaMatchImplTest
         assertEquals(7, spmatch.getResultCount());
         assertEquals(7, spmatch.getResults().size());
         
-        ArenaMatchInterface.MatchResult result = spmatch.getResult(1);
+        MatchResult result = spmatch.getResult(1);
         assertTrue(result.isWin());
         assertEquals(1, result.getPlace());
         assertEquals(1, result.getPlayers().size());
@@ -502,7 +502,7 @@ public class ArenaMatchImplTest
         assertEquals(7, teamMatch.getResultCount());
         assertEquals(7, teamMatch.getResults().size());
         
-        ArenaMatchInterface.MatchResult result = teamMatch.getResult(1);
+        MatchResult result = teamMatch.getResult(1);
         assertTrue(result.isWin());
         assertEquals(1, result.getPlace());
         assertEquals(1, result.getPlayers().size());

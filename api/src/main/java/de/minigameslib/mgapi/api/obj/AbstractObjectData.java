@@ -27,7 +27,7 @@ package de.minigameslib.mgapi.api.obj;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.minigameslib.mclib.shared.api.com.AnnotatedDataFragment;
+import de.minigameslib.mclib.api.config.EditableDataFragment;
 import de.minigameslib.mclib.shared.api.com.PersistentField;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
 
@@ -37,7 +37,7 @@ import de.minigameslib.mgapi.api.rules.RuleSetType;
  * @author mepeisen
  * @param <T> 
  */
-public abstract class AbstractObjectData<T extends RuleSetType> extends AnnotatedDataFragment
+public abstract class AbstractObjectData<T extends RuleSetType> extends EditableDataFragment
 {
     
     /**

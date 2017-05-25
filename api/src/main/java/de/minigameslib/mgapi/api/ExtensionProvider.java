@@ -33,10 +33,12 @@ import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.ZoneInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
+import de.minigameslib.mgapi.api.stat.MutableMatchStatisticInterface;
 
 /**
  * A proider to describe an extension.
@@ -48,37 +50,57 @@ public interface ExtensionProvider
     
     /**
      * returns the extensions internal/ technical name.
+     * 
      * @return extension name.
      */
     String getName();
     
     /**
      * Returns a display name for the extension.
+     * 
      * @return extension display name.
      */
     LocalizedMessageInterface getDisplayName();
     
     /**
      * Returns a short single-line description of the extension
+     * 
      * @return short single-line description
      */
     LocalizedMessageInterface getShortDescription();
     
     /**
      * Returns a multi-line description of the extension
+     * 
      * @return multi-line description
      */
     LocalizedMessageInterface getDescription();
     
     /**
      * Returns a how-to-use manual, mainly for administrators
+     * 
      * @return how-to-use manual, mainly for administrators
      */
     LocalizedMessageInterface getManual();
-
+    
+    /**
+     * Processes a match after being played and overtake statistics to become persistent.
+     * 
+     * @param match
+     *            finished arena match
+     * @param stats
+     *            match statistics
+     */
+    default void processMatchStatistics(ArenaMatchInterface match, MutableMatchStatisticInterface stats)
+    {
+        // empty
+    }
+    
     /**
      * Returns the optional arena rules for given type.
-     * @param type arena type
+     * 
+     * @param type
+     *            arena type
      * @return arena rules.
      */
     default Set<ArenaRuleSetType> getOptionalArenaRules(ArenaTypeInterface type)

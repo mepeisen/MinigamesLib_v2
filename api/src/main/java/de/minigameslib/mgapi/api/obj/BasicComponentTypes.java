@@ -64,4 +64,10 @@ public enum BasicComponentTypes implements ComponentTypeId
      */
     Generic,
     
+    /**
+     * A player head taken from player statistics.
+     * @see LeaderHeadHandler
+     */
+    LeaderHead,
+    
 }

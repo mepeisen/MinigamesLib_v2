@@ -84,7 +84,9 @@ import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedSpectatorsEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerLeftEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerLeftSpectatorsEvent;
+import de.minigameslib.mgapi.api.events.ArenaPlayerStatisticEvent;
 import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
+import de.minigameslib.mgapi.api.events.ArenaTeamStatisticEvent;
 import de.minigameslib.mgapi.api.events.ArenaWinEvent;
 import de.minigameslib.mgapi.api.events.MatchStartedEvent;
 import de.minigameslib.mgapi.api.events.MatchStoppedEvent;
@@ -115,6 +117,7 @@ import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.MglibMessages.MglibCoreErrors;
 import de.minigameslib.mgapi.impl.arena.ArenaImpl;
+import de.minigameslib.mgapi.impl.arena.ArenaMatchImpl;
 import de.minigameslib.mgapi.impl.arena.ArenaPlayerImpl;
 import de.minigameslib.mgapi.impl.arena.ArenaPlayerPersistentData;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
@@ -314,6 +317,8 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         McLibInterface.instance().registerEvent(this, ArenaLoseEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaPlayerDieEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaForceStartRequestedEvent.class);
+        McLibInterface.instance().registerEvent(this, ArenaPlayerStatisticEvent.class);
+        McLibInterface.instance().registerEvent(this, ArenaTeamStatisticEvent.class);
         
         this.registerRuleset(this, BasicArenaRuleSets.BasicMatch, BasicMatch::new);
         this.registerRuleset(this, BasicArenaRuleSets.BasicSpawns, BasicSpawns::new);
@@ -339,6 +344,8 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         this.registerRuleset(this, BasicZoneRuleSets.PvPMode, PvPMode::new);
         this.registerRuleset(this, BasicZoneRuleSets.Heal, Heal::new);
         this.registerRuleset(this, BasicZoneRuleSets.PointsForDamage, PointsForDamage::new);
+        this.registerRuleset(this, BasicZoneRuleSets.Scoreboard, Scoreboard::new);
+        this.registerRuleset(this, BasicComponentRuleSets.Hologram, Hologram::new);
         
         try
         {
@@ -347,9 +354,12 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
             this.registerArenaComponent(this, BasicComponentTypes.LobbySpawn, LobbySpawnComponent::new, LobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.MainLobbySpawn, MainLobbySpawnComponent::new, MainLobbySpawnComponent.class);
             this.registerArenaComponent(this, BasicComponentTypes.SpectatorSpawn, SpectatorSpawnComponent::new, SpectatorSpawnComponent.class);
+            this.registerArenaComponent(this, BasicComponentTypes.LeaderHead, LeaderHeadComponent::new, LeaderHeadComponent.class);
             this.registerArenaSign(this, BasicSignTypes.Generic, GenericSign::new, GenericSign.class);
             this.registerArenaSign(this, BasicSignTypes.Join, JoinSign::new, JoinSign.class);
             this.registerArenaSign(this, BasicSignTypes.Leave, LeaveSign::new, LeaveSign.class);
+            this.registerArenaSign(this, BasicSignTypes.Statistic, StatisticSign::new, StatisticSign.class);
+            this.registerArenaSign(this, BasicSignTypes.Leader, LeaderSign::new, LeaderSign.class);
             this.registerArenaZone(this, BasicZoneTypes.Generic, GenericZone::new, GenericZone.class);
             this.registerArenaZone(this, BasicZoneTypes.Battle, BattleZone::new, BattleZone.class);
             this.registerArenaZone(this, BasicZoneTypes.Join, JoinZone::new, JoinZone.class);
@@ -1017,6 +1027,16 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
             result.addAll(ext.getOptionalRuleSets(arena, component));
         }
         return result;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.impl.MinigamesPluginInterface#calcStatistics(de.minigameslib.mgapi.impl.arena.ArenaMatchImpl)
+     */
+    @Override
+    public void calcStatistics(ArenaMatchImpl match)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
 }

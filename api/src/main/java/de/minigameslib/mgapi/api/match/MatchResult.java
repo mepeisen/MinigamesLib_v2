@@ -22,17 +22,37 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.match;
+
+import java.util.Collection;
+import java.util.UUID;
 
 /**
- * The generic arena sign.
+ * Match result interface.
  * 
- * @author mepeisen
- *
+ * Each invocation of {@link ArenaMatchInterface#setWinner(UUID...)} or {@link ArenaMatchInterface#setLoser(UUID...)} will create a new place
+ * and match result. The first winner will be on place #1 followed by later on winners and the first loser will be on last place preceded by
+ * later losers.
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface MatchResult
 {
-
-    // marker only
+    
+    /**
+     * Returns the place number
+     * @return the place starting with 1 for the best winner
+     */
+    int getPlace();
+    
+    /**
+     * Players sharing this place
+     * @return the players sharing this place
+     */
+    Collection<UUID> getPlayers();
+    
+    /**
+     * Returns {@code true} for a winning place
+     * @return {@code true} for winning place.
+     */
+    boolean isWin();
     
 }

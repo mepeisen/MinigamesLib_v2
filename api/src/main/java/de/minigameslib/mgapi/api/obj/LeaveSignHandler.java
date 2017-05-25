@@ -25,12 +25,11 @@
 package de.minigameslib.mgapi.api.obj;
 
 /**
- * The generic arena sign.
+ * A leave sign.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface LeaveSignHandler extends ArenaSignHandler
 {
 
     // marker only

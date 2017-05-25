@@ -92,6 +92,11 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     private int        preMatchCountdown;
     
     /**
+     * Post match countdown in seconds
+     */
+    private int        postMatchCountdown;
+    
+    /**
      * The countdown timer
      */
     private int        countdownTimer;
@@ -100,6 +105,11 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
      * The pre match countdown timer
      */
     private int        preMatchCountdownTimer;
+    
+    /**
+     * The post match countdown timer
+     */
+    private int        postMatchCountdownTimer;
     
     /**
      * The fly speed.
@@ -131,6 +141,11 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
      */
     private BukkitTask preMatchCountdownTask;
     
+    /**
+     * The post match countdown task
+     */
+    private BukkitTask postMatchCountdownTask;
+    
     /** the sound to play for ticks. */
     private Sound               lobbySound;
     
@@ -142,6 +157,12 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     
     /** flag to control sound. */
     private boolean             playPreMatchSound;
+    
+    /** the sound to play for ticks. */
+    private Sound               postMatchSound;
+    
+    /** flag to control sound. */
+    private boolean             playPostMatchSound;
     
     /**
      * @param type
@@ -158,22 +179,32 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             this.maxPlayers = BasicMatchConfig.MaxPlayers.getInt();
             this.lobbyCountdown = BasicMatchConfig.LobbyCountdown.getInt();
             this.preMatchCountdown = BasicMatchConfig.PreMatchCountdown.getInt();
+            this.postMatchCountdown = BasicMatchConfig.PostMatchCountdown.getInt();
             this.flySpeed = BasicMatchConfig.FlySpeed.getFloat();
             this.moveSpeed = BasicMatchConfig.MovementSpeed.getFloat();
             this.maxHealth = BasicMatchConfig.MaxHealth.getDouble();
             this.health = BasicMatchConfig.Health.getDouble();
+            
             this.lobbySound = BasicMatchConfig.LobbyCountdownSound.getJavaEnum(Sound.class);
             if (this.lobbySound == null)
             {
                 this.lobbySound = Sound.BLOCK_GRASS_HIT; // TODO check if this exists in 1.8
             }
             this.playLobbySound = BasicMatchConfig.LobbyCountdownPlaySound.getBoolean();
+            
             this.preMatchSound = BasicMatchConfig.PreMatchCountdownSound.getJavaEnum(Sound.class);
             if (this.preMatchSound == null)
             {
                 this.preMatchSound = Sound.BLOCK_GRASS_HIT; // TODO From v1: SUCCESSFUL_HIT but this does not exist any more
             }
             this.playPreMatchSound = BasicMatchConfig.PreMatchCountdownPlaySound.getBoolean();
+            
+            this.postMatchSound = BasicMatchConfig.PostMatchCountdownSound.getJavaEnum(Sound.class);
+            if (this.postMatchSound == null)
+            {
+                this.postMatchSound = Sound.BLOCK_GRASS_HIT; // TODO From v1: SUCCESSFUL_HIT but this does not exist any more
+            }
+            this.playPostMatchSound = BasicMatchConfig.PostMatchCountdownPlaySound.getBoolean();
         });
     }
     
@@ -234,6 +265,10 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         {
             startPreMatchCountdown();
         }
+        else if (evt.getNewState() == ArenaState.PostMatch)
+        {
+            startPostMatchCountdown();
+        }
     }
     
     /**
@@ -289,7 +324,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     @SuppressWarnings("deprecation")
     private void startPreMatchCountdown()
     {
-        // start pre lobby lobby countdown
+        // start pre match countdown
         this.preMatchCountdownTimer = this.preMatchCountdown - 1;
         this.preMatchCountdownTask = McLibInterface.instance().runTaskTimer(MinigamesPlugin.instance().getPlugin(), 20, 20, this::onPreMatchCountdown);
         
@@ -311,6 +346,25 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             p.getBukkitPlayer().setHealthScale(this.maxHealth);
             p.getBukkitPlayer().setHealth(this.health);
         });
+    }
+    
+    /**
+     * Starts game countdown
+     */
+    private void startPostMatchCountdown()
+    {
+        // start post match countdown
+        this.postMatchCountdownTimer = this.postMatchCountdown - 1;
+        this.postMatchCountdownTask = McLibInterface.instance().runTaskTimer(MinigamesPlugin.instance().getPlugin(), 20, 20, this::onPostMatchCountdown);
+        
+        // notify all players
+        this.arena.getPlayers().forEach(p -> p.getMcPlayer().sendMessage(Messages.PostMatchCountdownStarted, this.postMatchCountdown));
+        this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.PostMatchCountdownStarted, this.postMatchCountdown));
+        
+        // freeze players
+        final ArenaMatchInterface match = this.arena.getCurrentMatch();
+        this.arena.getSpectators().forEach(ArenaPlayerInterface::lockMovement);
+        this.arena.getPlayers().forEach(ArenaPlayerInterface::lockMovement);
     }
     
     /**
@@ -348,6 +402,58 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         
         // port back to main lobby
         evt.getArena().teleportRandom(evt.getArenaPlayer(), evt.getArena().getComponents(BasicComponentTypes.MainLobbySpawn));
+    }
+    
+    /**
+     * On lobby countdown
+     * 
+     * @param task
+     */
+    private void onPostMatchCountdown(BukkitTask task)
+    {
+        if (this.postMatchCountdownTimer <= 0)
+        {
+            this.postMatchCountdownTask.cancel();
+            this.postMatchCountdownTask = null;
+            
+            this.arena.getPlayers().forEach(p -> {
+                p.allowMovement();
+                this.arena.teleportRandom(p, this.arena.getComponents(BasicComponentTypes.MainLobbySpawn));
+            });
+            this.arena.getSpectators().forEach(p -> {
+                p.allowMovement();
+                this.arena.teleportRandom(p, this.arena.getComponents(BasicComponentTypes.MainLobbySpawn));
+            });
+            
+            try
+            {
+                this.arena.finish();
+            }
+            catch (McException e)
+            {
+                this.arena.getLogger().log(Level.WARNING, "Problems finishing arena match", e); //$NON-NLS-1$
+            }
+        }
+        
+        if (this.postMatchCountdownTimer <= 10 || this.postMatchCountdownTimer % 10 == 0)
+        {
+            this.arena.getPlayers().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.PostMatchCountdownTick, this.postMatchCountdownTimer);
+                if (this.playPostMatchSound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.postMatchSound, 1F, 0F);
+                }
+            });
+            this.arena.getSpectators().forEach(p -> {
+                p.getMcPlayer().sendMessage(Messages.PostMatchCountdownTick, this.postMatchCountdownTimer);
+                if (this.playPostMatchSound)
+                {
+                    p.getBukkitPlayer().playSound(p.getBukkitPlayer().getLocation(), this.postMatchSound, 1F, 0F);
+                }
+            });
+        }
+        
+        this.postMatchCountdownTimer--;
     }
     
     /**
@@ -464,6 +570,12 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     }
     
     @Override
+    public int getPostMatchCountdown()
+    {
+        return this.postMatchCountdown;
+    }
+    
+    @Override
     public void setPlayers(int minPlayers, int maxPlayers) throws McException
     {
         this.arena.checkModifications();
@@ -523,6 +635,26 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         });
         this.arena.reconfigureRuleSets(this.type);
     }
+    
+    @Override
+    public void setPostMatchCountdown(int preMatchCountdown) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.PostMatchCountdown.setInt(preMatchCountdown);
+            try
+            {
+                BasicMatchConfig.PostMatchCountdown.verifyConfig();
+                BasicMatchConfig.PostMatchCountdown.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.PostMatchCountdown.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
 
     @Override
     public Sound getLobbyCountdownSound()
@@ -546,6 +678,18 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     public boolean isPlayPreMatchCountdownSound()
     {
         return this.playPreMatchSound;
+    }
+
+    @Override
+    public Sound getPostMatchCountdownSound()
+    {
+        return this.postMatchSound;
+    }
+
+    @Override
+    public boolean isPlayPostMatchCountdownSound()
+    {
+        return this.playPostMatchSound;
     }
 
     @Override
@@ -609,7 +753,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     }
 
     @Override
-    public void setPreMatchLobbyCountdownSound(boolean flag) throws McException
+    public void setPlayPreMatchCountdownSound(boolean flag) throws McException
     {
         this.arena.checkModifications();
         this.runInCopiedContext(() -> {
@@ -622,6 +766,46 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
             catch (McException ex)
             {
                 BasicMatchConfig.PreMatchCountdownPlaySound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public void setPostMatchCountdownSound(Sound sound) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.PostMatchCountdownSound.setJavaEnum(sound);
+            try
+            {
+                BasicMatchConfig.PostMatchCountdownSound.verifyConfig();
+                BasicMatchConfig.PostMatchCountdownSound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.PostMatchCountdownSound.rollbackConfig();
+                throw ex;
+            }
+        });
+        this.arena.reconfigureRuleSets(this.type);
+    }
+
+    @Override
+    public void setPlayPostMatchCountdownSound(boolean flag) throws McException
+    {
+        this.arena.checkModifications();
+        this.runInCopiedContext(() -> {
+            BasicMatchConfig.PostMatchCountdownPlaySound.setBoolean(flag);
+            try
+            {
+                BasicMatchConfig.PostMatchCountdownPlaySound.verifyConfig();
+                BasicMatchConfig.PostMatchCountdownPlaySound.saveConfig();
+            }
+            catch (McException ex)
+            {
+                BasicMatchConfig.PostMatchCountdownPlaySound.rollbackConfig();
                 throw ex;
             }
         });
@@ -803,6 +987,20 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         @LocalizedMessage(defaultMessage = "Match will start in " + LocalizedMessage.CODE_COLOR + "%1$d " + LocalizedMessage.INFORMATION_COLOR + "seconds.", severity = MessageSeverityType.Information)
         @MessageComment(value = { "countdown tick" }, args = { @Argument(type = "Numeric", value = "countdown seconds") })
         PreMatchCountdownTick,
+        
+        /**
+         * Post Match countdown started
+         */
+        @LocalizedMessage(defaultMessage = "Match ended. You will be ported back in " + LocalizedMessage.CODE_COLOR + "%1$d " + LocalizedMessage.INFORMATION_COLOR + "seconds.", severity = MessageSeverityType.Information)
+        @MessageComment(value = { "Post Match countdown started" }, args = { @Argument(type = "Numeric", value = "countdown seconds") })
+        PostMatchCountdownStarted,
+        
+        /**
+         * Pre Match countdown tick
+         */
+        @LocalizedMessage(defaultMessage = "You will be ported back in " + LocalizedMessage.CODE_COLOR + "%1$d " + LocalizedMessage.INFORMATION_COLOR + "seconds.", severity = MessageSeverityType.Information)
+        @MessageComment(value = { "countdown tick" }, args = { @Argument(type = "Numeric", value = "countdown seconds") })
+        PostMatchCountdownTick,
         
         /**
          * Countdown started

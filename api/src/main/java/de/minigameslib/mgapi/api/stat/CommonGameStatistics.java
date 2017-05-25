@@ -22,17 +22,17 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.api.stat;
 
 /**
- * The generic arena sign.
+ * Common game statistics.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public enum CommonGameStatistics implements TeamStatisticId
 {
 
-    // marker only
+    /** Number of played matches. */
+    MatchesPlayed,
     
 }

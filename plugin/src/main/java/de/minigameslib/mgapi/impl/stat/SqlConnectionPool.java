@@ -22,17 +22,26 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.impl.stat;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * The generic arena sign.
+ * Standard sql connection pool.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface SqlConnectionPool
 {
-
-    // marker only
+    
+    /**
+     * Creates a connection from connection pool.
+     * 
+     * @return sql connection
+     * @throws SQLException
+     *             thrown for database connection problems.
+     */
+    Connection getConnection() throws SQLException;
     
 }

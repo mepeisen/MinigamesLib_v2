@@ -32,6 +32,11 @@ package de.minigameslib.mgapi.api.rules;
 public enum BasicComponentRuleSets implements ComponentRuleSetType
 {
     
-    // no default rules yet
+    /**
+     * A hologram displaying above a component.
+     * @see HologramRuleInterface
+     */
+    @RuleSetConfigurable(config = HologramConfig.class)
+    Hologram,
     
 }

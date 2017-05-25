@@ -32,14 +32,14 @@ import de.minigameslib.mclib.api.event.McListener;
 import de.minigameslib.mclib.api.event.McPlayerInteractEvent;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.obj.AbstractArenaSignHandler;
-import de.minigameslib.mgapi.api.obj.JoinSignInterface;
+import de.minigameslib.mgapi.api.obj.JoinSignHandler;
 import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements JoinSignInterface, McListener
+public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements JoinSignHandler, McListener
 {
     
     // TODO clear out what variables will be shown on signs.

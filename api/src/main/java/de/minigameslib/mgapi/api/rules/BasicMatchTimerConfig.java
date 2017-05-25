@@ -32,8 +32,8 @@ import de.minigameslib.mclib.api.config.ConfigurationInt;
 import de.minigameslib.mclib.api.config.ConfigurationJavaEnum;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
-import de.minigameslib.mclib.api.config.ValidateLMax;
-import de.minigameslib.mclib.api.config.ValidateLMin;
+import de.minigameslib.mclib.api.validate.ValidateLMax;
+import de.minigameslib.mclib.api.validate.ValidateLMin;
 
 /**
  * Basic match timer configurations

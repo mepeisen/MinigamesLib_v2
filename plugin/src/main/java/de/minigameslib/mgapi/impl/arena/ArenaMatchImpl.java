@@ -56,6 +56,7 @@ import de.minigameslib.mgapi.api.events.ArenaPlayerLeftTeamEvent;
 import de.minigameslib.mgapi.api.events.ArenaWinEvent;
 import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.match.MatchPlayerInterface;
+import de.minigameslib.mgapi.api.match.MatchResult;
 import de.minigameslib.mgapi.api.match.MatchStatisticId;
 import de.minigameslib.mgapi.api.match.MatchTeamInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
