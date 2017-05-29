@@ -60,22 +60,4 @@ public abstract class AbstractPage<T> extends PagableClickGuiPage<T>
         return ClickGuiPageInterface.withFillers(super.getItems(), 6);
     }
     
-    /**
-     * prev page icon
-     * @return prev page icon
-     */
-    public ClickGuiItem itemPrevPage()
-    {
-        return this.page() > 1 ? Main.itemPrevPage(this::onPrevPage) : null;
-    }
-    
-    /**
-     * next page icon
-     * @return next page icon
-     */
-    public ClickGuiItem itemNextPage()
-    {
-        return this.page() < this.totalPages() ? Main.itemNextPage(this::onNextPage) : null;
-    }
-    
 }
