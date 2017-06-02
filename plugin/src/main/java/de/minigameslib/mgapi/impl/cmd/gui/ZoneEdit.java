@@ -43,6 +43,7 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;

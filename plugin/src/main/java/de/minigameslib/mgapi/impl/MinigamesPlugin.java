@@ -45,6 +45,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import de.minigameslib.mclib.api.CommonMessages;
 import de.minigameslib.mclib.api.McException;
@@ -106,6 +107,8 @@ import de.minigameslib.mgapi.api.rules.BasicLosingRuleSets;
 import de.minigameslib.mgapi.api.rules.BasicSignRuleSets;
 import de.minigameslib.mgapi.api.rules.BasicWinningRuleSets;
 import de.minigameslib.mgapi.api.rules.BasicZoneRuleSets;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetInterface;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
@@ -208,6 +211,11 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
      * The rule sets per plugin.
      */
     private final Map<String, Set<RuleSetType>>                                                                                   ruleSetsPerPlugin     = new HashMap<>();
+    
+    /**
+     * The creator func by arena rule set type
+     */
+    private final Map<ClassRuleSetType, McBiFunction<ClassRuleSetType, ArenaPlayerInterface, ClassRuleSetInterface>>              classRuleSetTypes     = new HashMap<>();
     
     /**
      * The creator func by arena rule set type
