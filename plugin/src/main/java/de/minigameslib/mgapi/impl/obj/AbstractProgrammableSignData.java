@@ -22,26 +22,35 @@
 
 */
 
-package de.minigameslib.mgapi.impl.stat;
+package de.minigameslib.mgapi.impl.obj;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.minigameslib.mclib.shared.api.com.PersistentField;
+import de.minigameslib.mgapi.api.obj.AbstractObjectData;
+import de.minigameslib.mgapi.api.obj.LineConfig;
+import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 
 /**
- * Standard sql connection pool.
- * 
  * @author mepeisen
+ *
  */
-public interface SqlConnectionPool
+public abstract class AbstractProgrammableSignData extends AbstractObjectData<SignRuleSetType>
 {
-    
+
     /**
-     * Creates a connection from connection pool.
-     * 
-     * @return sql connection
-     * @throws SQLException
-     *             thrown for database connection problems.
+     * the lines.
      */
-    Connection getConnection() throws SQLException;
+    @PersistentField
+    protected List<LineConfig> lines = new ArrayList<>();
+
+    /**
+     * @return the lines
+     */
+    public List<LineConfig> getLines()
+    {
+        return this.lines;
+    }
     
 }

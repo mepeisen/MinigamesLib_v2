@@ -24,30 +24,43 @@
 
 package de.minigameslib.mgapi.api.obj;
 
-import java.util.Collection;
-
-import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
+import de.minigameslib.mclib.shared.api.com.PersistentField;
+import de.minigameslib.mgapi.api.arena.ArenaState;
 
 /**
- * The generic arena sign.
+ * the line config.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public class LineConfig extends LocalizedConfigLine
 {
-
-    /**
-     * Returns the lines.
-     * @return lines.
-     */
-    Collection<LineConfig> getLines();
     
     /**
-     * Sets the line config with given state in {@link LineConfig#getState()}.
-     * @param config config
-     * @throws McException thrown if there are problems saving the config 
+     * serial version uid.
      */
-    void setLine(LineConfig config) throws McException;
+    private static final long serialVersionUID = 8085073904696520257L;
+    
+    /**
+     * the arena state this line is used for.
+     */
+    @PersistentField
+    protected ArenaState state = ArenaState.Booting;
+
+    /**
+     * @return the state
+     */
+    public ArenaState getState()
+    {
+        return this.state;
+    }
+
+    /**
+     * @param state the state to set
+     */
+    public void setState(ArenaState state)
+    {
+        this.state = state;
+    }
     
 }

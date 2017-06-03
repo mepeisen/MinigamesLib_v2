@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.api.stat;
 import java.util.List;
 import java.util.UUID;
 
+import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
@@ -54,8 +55,9 @@ public interface StatisticInterface
      * @param limit
      *            limit
      * @return list of match statistics
+     * @throws McException thrown if there are problems fetching the data.
      */
-    List<MatchStatisticInterface> getMatches(int start, int limit);
+    List<MatchStatisticInterface> getMatches(int start, int limit) throws McException;
     
     // player statistics
     
@@ -64,9 +66,10 @@ public interface StatisticInterface
      * 
      * @param playerUuid
      *            player uuid.
-     * @return best place.
+     * @return best place; {@code -1} if player did not play a match
+     * @throws McException thrown if there are problems fetching the data.
      */
-    int getBestPlace(UUID playerUuid);
+    int getBestPlace(UUID playerUuid) throws McException;
     
     /**
      * Returns the best value in one match for given player.
@@ -74,9 +77,10 @@ public interface StatisticInterface
      * @param playerUuid
      *            player uuid.
      * @param statistic
-     * @return best value.
+     * @return best value; {@code null} if player was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getBestValue(UUID playerUuid, PlayerStatisticId statistic);
+    Long getBestValue(UUID playerUuid, PlayerStatisticId statistic) throws McException;
     
     /**
      * Returns the best value in one match for given player.
@@ -84,26 +88,29 @@ public interface StatisticInterface
      * @param playerUuid
      *            player uuid.
      * @param statistic
-     * @return worst value.
+     * @return worst value; {@code null} if player was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getWorstValue(UUID playerUuid, PlayerStatisticId statistic);
+    Long getWorstValue(UUID playerUuid, PlayerStatisticId statistic) throws McException;
     
     /**
-     * Statistic function
+     * Statistic function by adding all player values.
      * 
      * @param playerUuid
      * @param statistic
-     * @return current statistic
+     * @return current statistic; {@code null} if player was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getStatistic(UUID playerUuid, PlayerStatisticId statistic);
+    Long getStatistic(UUID playerUuid, PlayerStatisticId statistic) throws McException;
     
     /**
      * Returns the number of players having statistics.
      * 
      * @param statistic
      * @return number of players
+     * @throws McException thrown if there are problems fetching the data.
      */
-    int getPlayerCount(PlayerStatisticId statistic);
+    int getPlayerCount(PlayerStatisticId statistic) throws McException;
     
     /**
      * Returns the place of given player with given statistics.
@@ -114,8 +121,9 @@ public interface StatisticInterface
      * @param ascending
      *            {@true} for returning the players with less points at first.
      * @return place (starting with 1); -1 for unknown place
+     * @throws McException thrown if there are problems fetching the data.
      */
-    int getPlace(UUID player, PlayerStatisticId statistic, boolean ascending);
+    int getPlace(UUID player, PlayerStatisticId statistic, boolean ascending) throws McException;
     
     /**
      * Returns the players by position
@@ -129,8 +137,9 @@ public interface StatisticInterface
      * @param ascending
      *            {@true} for returning the players with less points at first.
      * @return player list in order
+     * @throws McException thrown if there are problems fetching the data.
      */
-    List<UUID> getPlayerLeaders(PlayerStatisticId statistic, int start, int limit, boolean ascending);
+    List<UUID> getPlayerLeaders(PlayerStatisticId statistic, int start, int limit, boolean ascending) throws McException;
     
     // team statistics
     
@@ -139,35 +148,39 @@ public interface StatisticInterface
      * 
      * @param team
      * @param statistic
-     * @return best value.
+     * @return best value; {@code null} if team was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getBestValue(TeamIdType team, PlayerStatisticId statistic);
+    Long getBestValue(TeamIdType team, TeamStatisticId statistic) throws McException;
     
     /**
      * Returns the best value in one match for given team.
      * 
      * @param team
      * @param statistic
-     * @return worst value.
+     * @return worst value; {@code null} if team was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getWorstValue(TeamIdType team, PlayerStatisticId statistic);
+    Long getWorstValue(TeamIdType team, TeamStatisticId statistic) throws McException;
     
     /**
-     * Statistic function
+     * Statistic function by adding all player values.
      * 
      * @param team
      * @param statistic
-     * @return current statistic
+     * @return current statistic; {@code null} if team was not playing
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getStatistic(TeamIdType team, TeamStatisticId statistic);
+    Long getStatistic(TeamIdType team, TeamStatisticId statistic) throws McException;
     
     /**
      * Returns the number of teams having statistics.
      * 
      * @param statistic
      * @return number of teams
+     * @throws McException thrown if there are problems fetching the data.
      */
-    int getTeamCount(TeamStatisticId statistic);
+    int getTeamCount(TeamStatisticId statistic) throws McException;
     
     /**
      * Returns the place of given team with given statistics.
@@ -178,8 +191,9 @@ public interface StatisticInterface
      * @param ascending
      *            {@true} for returning the teams with less points at first.
      * @return place (starting with 1); -1 for unknown place
+     * @throws McException thrown if there are problems fetching the data.
      */
-    int getPlace(TeamIdType team, TeamStatisticId statistic, boolean ascending);
+    int getPlace(TeamIdType team, TeamStatisticId statistic, boolean ascending) throws McException;
     
     /**
      * Returns the teams by position
@@ -193,17 +207,37 @@ public interface StatisticInterface
      * @param ascending
      *            {@true} for returning the teams with less points at first.
      * @return team list in order
+     * @throws McException thrown if there are problems fetching the data.
      */
-    List<TeamIdType> getTeamLeaders(TeamStatisticId statistic, int start, int limit, boolean ascending);
+    List<TeamIdType> getTeamLeaders(TeamStatisticId statistic, int start, int limit, boolean ascending) throws McException;
     
     // game statistics
     
     /**
-     * Statistic function
+     * Statistic function by adding all values.
      * 
      * @param statistic
-     * @return current statistic
+     * @return current statistic; {@code null} if statistic was not used
+     * @throws McException thrown if there are problems fetching the data.
      */
-    long getStatistic(GameStatisticId statistic);
+    Long getStatistic(GameStatisticId statistic) throws McException;
+    
+    /**
+     * Returns the best value in one match.
+     * 
+     * @param statistic
+     * @return current statistic; {@code null} if statistic was not used
+     * @throws McException thrown if there are problems fetching the data.
+     */
+    Long getBestValue(GameStatisticId statistic) throws McException;
+    
+    /**
+     * Returns the worst value in one match for given team.
+     * 
+     * @param statistic
+     * @return current statistic; {@code null} if statistic was not used
+     * @throws McException thrown if there are problems fetching the data.
+     */
+    Long getWorstValue(GameStatisticId statistic) throws McException;
     
 }

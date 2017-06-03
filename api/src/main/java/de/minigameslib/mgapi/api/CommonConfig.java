@@ -13,7 +13,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.github.mce.minigames.api.config;
+package de.minigameslib.mgapi.api;
 
 import de.minigameslib.mclib.api.config.ConfigurationBool;
 import de.minigameslib.mclib.api.config.ConfigurationString;
@@ -21,13 +21,15 @@ import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValues;
 
 /**
- * Common permissions within minigames lib.
+ * Common config within minigames lib.
  * 
  * @author mepeisen
  */
 @ConfigurationValues(path = "config")
 public enum CommonConfig implements ConfigurationValueInterface
 {
+    
+    // TODO implement configurations
     
     // command options
     

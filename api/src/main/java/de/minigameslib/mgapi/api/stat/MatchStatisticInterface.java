@@ -174,8 +174,57 @@ public interface MatchStatisticInterface
     /**
      * Returns the statistic for the game and given statistic id.
      * @param statistic
-     * @return the statistic value
+     * @return the statistic value; {@code null} if statistic was not set
      */
-    long getStatistic(GameStatisticId statistic);
+    Long getStatistic(GameStatisticId statistic);
+    
+    /**
+     * Returns the place of given player
+     * @param playerUuid
+     * @return place or {@code -1} if the player did not play this match
+     */
+    default int getPlace(UUID playerUuid)
+    {
+        for (final MatchResult result : this.getResults(0, this.getResultCount()))
+        {
+            if (result.getPlayers().contains(playerUuid))
+            {
+                return result.getPlace();
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns a player statistic value.
+     * @param playerUuid
+     * @param stat
+     * @return player statistic value; {@code null} if statistic was not set
+     */
+    default Long getPlayerStat(UUID playerUuid, PlayerStatisticId stat)
+    {
+        final MatchStatisticPlayerInterface pstat = this.getPlayer(playerUuid);
+        if (pstat != null)
+        {
+            return pstat.getStatistic(stat);
+        }
+        return null;
+    }
+    
+    /**
+     * Returns a team statistic value.
+     * @param team
+     * @param stat
+     * @return teamr statistic value; {@code null} if statistic was not set
+     */
+    default Long getTeamStat(TeamIdType team, TeamStatisticId stat)
+    {
+        final MatchStatisticTeamInterface tstat = this.getTeam(team);
+        if (tstat != null)
+        {
+            return tstat.getStatistic(stat);
+        }
+        return null;
+    }
     
 }

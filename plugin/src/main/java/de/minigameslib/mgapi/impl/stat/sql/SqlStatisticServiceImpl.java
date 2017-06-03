@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.stat;
+package de.minigameslib.mgapi.impl.stat.sql;
 
 import java.time.LocalDate;
 import java.time.YearMonth;

@@ -24,27 +24,56 @@
 
 package de.minigameslib.mgapi.impl.obj;
 
-import org.bukkit.plugin.Plugin;
-
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mclib.api.event.McListener;
 import de.minigameslib.mclib.api.event.McPlayerInteractEvent;
+import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
+import de.minigameslib.mclib.api.locale.LocalizedMessageList;
+import de.minigameslib.mclib.api.locale.LocalizedMessages;
+import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
-import de.minigameslib.mgapi.api.obj.AbstractArenaSignHandler;
+import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.obj.JoinSignHandler;
-import de.minigameslib.mgapi.impl.MinigamesPlugin;
 
 /**
  * @author mepeisen
  *
  */
-public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements JoinSignHandler, McListener
+public class JoinSign extends AbstractProgrammableSign<JoinSignData> implements JoinSignHandler, McListener
 {
     
     // TODO clear out what variables will be shown on signs.
     // TODO clear out what events will be caught to update signs
     // TODO change the code of other signs as well
+
+    @Override
+    protected LocalizedMessageInterface getDefault(ArenaState state)
+    {
+        switch (state)
+        {
+            case Booting:
+                return Messages.DefaultBooting;
+            default:
+            case Disabled:
+                return Messages.DefaultDisabled;
+            case Join:
+                return Messages.DefaultJoin;
+            case Maintenance:
+                return Messages.DefaultMaintenance;
+            case Match:
+                return Messages.DefaultMatch;
+            case PostMatch:
+                return Messages.DefaultPostMatch;
+            case PreMatch:
+                return Messages.DefaultPreMatch;
+            case Restarting:
+                return Messages.DefaultRestarting;
+            case Starting:
+                return Messages.DefaultStarting;
+        }
+    }
     
     /**
      * right click event
@@ -62,17 +91,6 @@ public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements 
             evt.getPlayer().sendMessage(ex.getErrorMessage(), ex.getArgs());
         }
     }
-    
-    @Override
-    protected String[] getLines()
-    {
-        return new String[]{
-                this.parseLine(this.data.getLine1(), "%arena.name%"), //$NON-NLS-1$
-                this.parseLine(this.data.getLine2(), "-~"), //$NON-NLS-1$
-                this.parseLine(this.data.getLine3(), "JOIN SIGN"), //$NON-NLS-1$
-                this.parseLine(this.data.getLine4(), "%sys.datetime%") //$NON-NLS-1$
-        };
-    }
 
     @Override
     protected Class<JoinSignData> getDataClass()
@@ -85,11 +103,89 @@ public class JoinSign extends AbstractArenaSignHandler<JoinSignData> implements 
     {
         return new JoinSignData();
     }
-
-    @Override
-    protected Plugin getPlugin()
+    
+    /**
+     * The common messages.
+     * 
+     * @author mepeisen
+     */
+    @LocalizedMessages(value = "signs.join")
+    public enum Messages implements LocalizedMessageInterface
     {
-        return MinigamesPlugin.instance().getPlugin();
+        
+        /** Default text for booting arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "is booting"
+            }, severity = MessageSeverityType.Warning)
+        @MessageComment({"Default text for booting arena."})
+        DefaultBooting,
+        
+        /** Default text for disabled arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "is disabled"
+            }, severity = MessageSeverityType.Error)
+        @MessageComment({"Default text for disabled arena."})
+        DefaultDisabled,
+        
+        /** Default text for starting arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "is starting"
+            }, severity = MessageSeverityType.Warning)
+        @MessageComment({"Default text for starting arena."})
+        DefaultStarting,
+        
+        /** Default text for join arena. */
+        @LocalizedMessageList(value = {
+                "JOIN",
+                "{mg2_arena_name}",
+                "{mg2_arena_curplayers}/{mg2_arena_maxplayers} players"
+            }, severity = MessageSeverityType.Success)
+        @MessageComment({"Default text for join arena."})
+        DefaultJoin,
+        
+        /** Default text for pre-match arena. */
+        @LocalizedMessageList(value = {
+                "JOIN",
+                "{mg2_arena_name}",
+                "{mg2_arena_curplayers}/{mg2_arena_maxplayers} players"
+            }, severity = MessageSeverityType.Winner)
+        @MessageComment({"Default text for pre-match arena."})
+        DefaultPreMatch,
+        
+        /** Default text for match arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "runs a match"
+            }, severity = MessageSeverityType.Winner)
+        @MessageComment({"Default text for match arena."})
+        DefaultMatch,
+        
+        /** Default text for post-match arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "stops a match"
+            }, severity = MessageSeverityType.Winner)
+        @MessageComment({"Default text for post-match arena."})
+        DefaultPostMatch,
+        
+        /** Default text for restarting arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "is restarting"
+            }, severity = MessageSeverityType.Warning)
+        @MessageComment({"Default text for restarting arena."})
+        DefaultRestarting,
+        
+        /** Default text for maintenance arena. */
+        @LocalizedMessageList(value = {
+                "{mg2_arena_name}",
+                "under maintenance"
+            }, severity = MessageSeverityType.Error)
+        @MessageComment({"Default text for maintenance arena."})
+        DefaultMaintenance,
     }
     
 }

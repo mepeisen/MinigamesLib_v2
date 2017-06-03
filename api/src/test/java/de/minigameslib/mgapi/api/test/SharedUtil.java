@@ -13,7 +13,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.github.mce.minigames.api.test;
+package de.minigameslib.mgapi.api.test;
 
 /**
  * Some shared test utility.

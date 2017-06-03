@@ -80,6 +80,9 @@ import de.minigameslib.mgapi.impl.cmd.SpectateCommand;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorProvider;
 import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
 import de.minigameslib.mgapi.impl.obj.BattleZone;
+import de.minigameslib.mgapi.impl.obj.GenericSign;
+import de.minigameslib.mgapi.impl.obj.JoinSign;
+import de.minigameslib.mgapi.impl.obj.LeaveSign;
 import de.minigameslib.mgapi.impl.obj.LobbySpawnComponent;
 import de.minigameslib.mgapi.impl.obj.LobbyZone;
 import de.minigameslib.mgapi.impl.obj.MainZone;
@@ -168,6 +171,9 @@ import de.minigameslib.mgapi.impl.rules.BasicSpectator;
     LobbyZone.Messages.class,
     SpectatorZone.Messages.class,
     MainZone.Messages.class,
+    GenericSign.Messages.class,
+    LeaveSign.Messages.class,
+    JoinSign.Messages.class,
 })
 public enum MglibMessages implements LocalizedMessageInterface
 {

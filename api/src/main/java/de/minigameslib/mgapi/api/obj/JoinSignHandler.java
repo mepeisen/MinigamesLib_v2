@@ -24,6 +24,10 @@
 
 package de.minigameslib.mgapi.api.obj;
 
+import java.util.Collection;
+
+import de.minigameslib.mclib.api.McException;
+
 /**
  * A join sign.
  * 
@@ -32,6 +36,17 @@ package de.minigameslib.mgapi.api.obj;
 public interface JoinSignHandler extends ArenaSignHandler
 {
 
-    // marker only
+    /**
+     * Returns the lines.
+     * @return lines.
+     */
+    Collection<LineConfig> getLines();
+    
+    /**
+     * Sets the line config with given state in {@link LineConfig#getState()}.
+     * @param config config
+     * @throws McException thrown if there are problems saving the config 
+     */
+    void setLine(LineConfig config) throws McException;
     
 }

@@ -47,9 +47,9 @@ public interface MatchStatisticTeamInterface
     /**
      * Statistic function
      * @param statistic
-     * @return current statistic
+     * @return current statistic; {@code null} if statistic was not used
      */
-    int getStatistic(MatchStatisticId statistic);
+    Integer getStatistic(MatchStatisticId statistic);
     
     /**
      * Returns the available statistics for this team.
@@ -60,8 +60,8 @@ public interface MatchStatisticTeamInterface
     /**
      * Returns the statistic for this player and given statistic id.
      * @param statistic
-     * @return the statistic value
+     * @return the statistic value;  {@code null} if statistic was not used
      */
-    long getStatistic(TeamStatisticId statistic);
+    Long getStatistic(TeamStatisticId statistic);
     
 }

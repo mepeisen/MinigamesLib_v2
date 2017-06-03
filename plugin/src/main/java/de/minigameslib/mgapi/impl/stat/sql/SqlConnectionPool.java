@@ -22,32 +22,26 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.impl.stat.sql;
 
-import java.util.Collection;
-
-import de.minigameslib.mclib.api.McException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * The generic arena sign.
+ * Standard sql connection pool.
  * 
  * @author mepeisen
- *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public interface SqlConnectionPool
 {
-
-    /**
-     * Returns the lines.
-     * @return lines.
-     */
-    Collection<LineConfig> getLines();
     
     /**
-     * Sets the line config with given state in {@link LineConfig#getState()}.
-     * @param config config
-     * @throws McException thrown if there are problems saving the config 
+     * Creates a connection from connection pool.
+     * 
+     * @return sql connection
+     * @throws SQLException
+     *             thrown for database connection problems.
      */
-    void setLine(LineConfig config) throws McException;
+    Connection getConnection() throws SQLException;
     
 }

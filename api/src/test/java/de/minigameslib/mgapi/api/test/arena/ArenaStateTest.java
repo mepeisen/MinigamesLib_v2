@@ -13,18 +13,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.github.mce.minigames.api.test;
+package de.minigameslib.mgapi.api.test.arena;
 
 import org.junit.Test;
 
-import com.github.mce.minigames.api.config.CommonConfig;
+import de.minigameslib.mgapi.api.arena.ArenaState;
+import de.minigameslib.mgapi.api.test.SharedUtil;
 
 /**
- * test case for {@link CommonConfig}
+ * test case for {@link ArenaState}
  * 
  * @author mepeisen
  */
-public class CommonConfigTest
+public class ArenaStateTest
 {
     
     /**
@@ -33,7 +34,7 @@ public class CommonConfigTest
     @Test
     public void enumTest()
     {
-        SharedUtil.testEnumClass(CommonConfig.class);
+        SharedUtil.testEnumClass(ArenaState.class);
     }
     
 }

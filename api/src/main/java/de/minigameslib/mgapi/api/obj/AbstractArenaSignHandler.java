@@ -26,7 +26,6 @@ package de.minigameslib.mgapi.api.obj;
 
 import java.io.File;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -155,14 +154,14 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
      * 
      * @return sign text
      */
-    protected abstract String[] getLines();
+    protected abstract Serializable[] getCurrentLines();
     
     /**
      * Updates the sign text.
      */
     protected void updateSign()
     {
-        final String[] lines = this.getLines();
+        final Serializable[] lines = this.getCurrentLines();
         for (int i = 0; i < 4; i++)
         {
             if (i < lines.length)
@@ -405,58 +404,6 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
         }
         
         return result;
-    }
-    
-    /**
-     * Parses given line, replaces variables and returns a line to be used by signs.
-     * 
-     * @param lineFromConfig
-     *            the line stored in config data.
-     * @param defaultValue
-     *            the default value to be used for this line.
-     * @return the resulting line text.
-     */
-    protected String parseLine(String lineFromConfig, String defaultValue)
-    {
-        // TODO move to mclib, a generic lightweight placeholder api
-        final String src = lineFromConfig == null ? defaultValue : lineFromConfig;
-        if ("~".equals(src)) return "----------"; //$NON-NLS-1$ //$NON-NLS-2$
-        int pos = 0;
-        int len = src.length();
-        final StringBuilder result = new StringBuilder();
-        while (pos < len)
-        {
-            char c = src.charAt(pos);
-            pos++;
-            switch (c)
-            {
-                case '%':
-                    int indexOf = src.indexOf('%', pos);
-                    if (indexOf == -1)
-                    {
-                        indexOf = src.length();
-                    }
-                    final String var = src.substring(pos, indexOf);
-                    pos = indexOf + 1;
-                    switch (var)
-                    {
-                        case "arena.name": //$NON-NLS-1$
-                            result.append(this.getArena().getDisplayName());
-                            break;
-                        case "sys.datetime": //$NON-NLS-1$
-                            result.append(LocalDateTime.now().toString());
-                            break;
-                        default:
-                            result.append('?').append(var).append('?');
-                            break;
-                    }
-                    break;
-                default:
-                    result.append(c);
-                    break;
-            }
-        }
-        return result.toString();
     }
     
     /**

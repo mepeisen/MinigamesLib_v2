@@ -24,9 +24,19 @@
 
 package de.minigameslib.mgapi.impl.stat.file;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
+import com.google.common.cache.LoadingCache;
+
+import de.minigameslib.mclib.api.CommonMessages;
+import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.util.function.McFunctionUtils;
 import de.minigameslib.mgapi.api.stat.GameStatisticId;
 import de.minigameslib.mgapi.api.stat.MatchStatisticInterface;
 import de.minigameslib.mgapi.api.stat.PlayerStatisticId;
@@ -41,173 +51,411 @@ import de.minigameslib.mgapi.api.team.TeamIdType;
 public class FileStatisticImpl implements StatisticInterface
 {
     
+    /** the entries for this statistics. */
+    private final List<FileStatRegistryEntry> entries;
+    
+    /**
+     * file cache.
+     */
+    private LoadingCache<FileStatRegistryEntry, FileMatchStatisticImpl> fileCache;
+    
     /**
      * Constructor.
-     * @param collect
+     * @param fileCache 
+     * @param entries
      */
-    public FileStatisticImpl(List<FileStatRegistryEntry> collect)
+    public FileStatisticImpl(LoadingCache<FileStatRegistryEntry, FileMatchStatisticImpl> fileCache, List<FileStatRegistryEntry> entries)
     {
-        // TODO Auto-generated constructor stub
+        this.entries = entries;
+        this.fileCache = fileCache;
     }
 
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getMatchCount()
-     */
     @Override
     public int getMatchCount()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return this.entries.size();
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getMatches(int, int)
+    /**
+     * mapping for reading entry from cache.
+     * @param e entry
+     * @return match statistics
+     * @throws McException
      */
-    @Override
-    public List<MatchStatisticInterface> getMatches(int start, int limit)
+    private MatchStatisticInterface map(FileStatRegistryEntry e) throws McException
     {
-        // TODO Auto-generated method stub
-        return null;
+        try
+        {
+            return this.fileCache.get(e);
+        }
+        catch (ExecutionException ex)
+        {
+            throw new McException(CommonMessages.InternalError, ex, ex.getMessage());
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getBestPlace(java.util.UUID)
-     */
     @Override
-    public int getBestPlace(UUID playerUuid)
+    public List<MatchStatisticInterface> getMatches(int start, int limit) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().skip(start).limit(limit).map(McFunctionUtils.wrap(this::map)).collect(Collectors.toList());
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getBestValue(java.util.UUID, de.minigameslib.mgapi.api.stat.PlayerStatisticId)
-     */
     @Override
-    public long getBestValue(UUID playerUuid, PlayerStatisticId statistic)
+    public int getBestPlace(UUID playerUuid) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getPlace(playerUuid))
+                    .reduce(-1, (a, b) -> {
+                        if (a == -1) return b;
+                        if (b == -1) return a;
+                        return Math.min(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getWorstValue(java.util.UUID, de.minigameslib.mgapi.api.stat.PlayerStatisticId)
-     */
     @Override
-    public long getWorstValue(UUID playerUuid, PlayerStatisticId statistic)
+    public Long getBestValue(UUID playerUuid, PlayerStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getPlayerStat(playerUuid, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.max(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getStatistic(java.util.UUID, de.minigameslib.mgapi.api.stat.PlayerStatisticId)
-     */
     @Override
-    public long getStatistic(UUID playerUuid, PlayerStatisticId statistic)
+    public Long getWorstValue(UUID playerUuid, PlayerStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getPlayerStat(playerUuid, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.min(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getPlayerCount(de.minigameslib.mgapi.api.stat.PlayerStatisticId)
-     */
     @Override
-    public int getPlayerCount(PlayerStatisticId statistic)
+    public Long getStatistic(UUID playerUuid, PlayerStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getPlayerStat(playerUuid, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == -1) return b;
+                        if (b == -1) return a;
+                        return a + b;
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getPlace(java.util.UUID, de.minigameslib.mgapi.api.stat.PlayerStatisticId, boolean)
-     */
     @Override
-    public int getPlace(UUID player, PlayerStatisticId statistic, boolean ascending)
+    public int getPlayerCount(PlayerStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return getPlayers(statistic).size();
+    }
+
+    /**
+     * @param statistic
+     * @return players using given statistics
+     * @throws McException
+     */
+    private Set<UUID> getPlayers(PlayerStatisticId statistic) throws McException
+    {
+        try
+        {
+            final Set<UUID> result = new HashSet<>();
+            this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .forEach(stat -> stat.getPlayers(0, Integer.MAX_VALUE).forEach(pstat -> {
+                        if (pstat.getStatistic(statistic) != null)
+                        {
+                            result.add(pstat.getPlayerUUID());
+                        }
+                    }));
+            return result;
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getPlayerLeaders(de.minigameslib.mgapi.api.stat.PlayerStatisticId, int, int, boolean)
-     */
     @Override
-    public List<UUID> getPlayerLeaders(PlayerStatisticId statistic, int start, int limit, boolean ascending)
+    public int getPlace(UUID player, PlayerStatisticId statistic, boolean ascending) throws McException
     {
-        // TODO Auto-generated method stub
-        return null;
+        final Long value = this.getStatistic(player, statistic);
+        int place = 1;
+        for (final UUID p : this.getPlayers(statistic))
+        {
+            final Long v2 = this.getStatistic(p, statistic);
+            if (ascending && v2 < value)
+            {
+                place++;
+            }
+            else if (!ascending && v2 > value)
+            {
+                place++;
+            }
+        }
+        return place;
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getBestValue(de.minigameslib.mgapi.api.team.TeamIdType, de.minigameslib.mgapi.api.stat.PlayerStatisticId)
+    /**
+     * statistic helper.
+     * @param <T> key class
      */
-    @Override
-    public long getBestValue(TeamIdType team, PlayerStatisticId statistic)
+    private static final class StatHelper<T>
     {
-        // TODO Auto-generated method stub
-        return 0;
+        /** the key. */
+        T key;
+        /** the value. */
+        Long value;
+        /**
+         * @param key
+         * @param value
+         */
+        public StatHelper(T key, Long value)
+        {
+            this.key = key;
+            this.value = value;
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getWorstValue(de.minigameslib.mgapi.api.team.TeamIdType, de.minigameslib.mgapi.api.stat.PlayerStatisticId)
-     */
     @Override
-    public long getWorstValue(TeamIdType team, PlayerStatisticId statistic)
+    public List<UUID> getPlayerLeaders(PlayerStatisticId statistic, int start, int limit, boolean ascending) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        final TreeSet<StatHelper<UUID>> board = new TreeSet<>((a, b) -> {
+            int result = a.value.compareTo(b.value);
+            if (result == 0)
+            {
+                result = a.key.compareTo(b.key);
+            }
+            return ascending ? result : 0-result;
+        });
+        for (final UUID p : this.getPlayers(statistic))
+        {
+            final Long v2 = this.getStatistic(p, statistic);
+            board.add(new StatHelper<>(p, v2));
+        }
+        return board.stream().skip(start).limit(limit).map(s -> s.key).collect(Collectors.toList());
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getStatistic(de.minigameslib.mgapi.api.team.TeamIdType, de.minigameslib.mgapi.api.stat.TeamStatisticId)
-     */
     @Override
-    public long getStatistic(TeamIdType team, TeamStatisticId statistic)
+    public Long getBestValue(TeamIdType team, TeamStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getTeamStat(team, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.max(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getTeamCount(de.minigameslib.mgapi.api.stat.TeamStatisticId)
-     */
     @Override
-    public int getTeamCount(TeamStatisticId statistic)
+    public Long getWorstValue(TeamIdType team, TeamStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getTeamStat(team, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.min(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getPlace(de.minigameslib.mgapi.api.team.TeamIdType, de.minigameslib.mgapi.api.stat.TeamStatisticId, boolean)
-     */
     @Override
-    public int getPlace(TeamIdType team, TeamStatisticId statistic, boolean ascending)
+    public Long getStatistic(TeamIdType team, TeamStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getTeamStat(team, statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == -1) return b;
+                        if (b == -1) return a;
+                        return a + b;
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getTeamLeaders(de.minigameslib.mgapi.api.stat.TeamStatisticId, int, int, boolean)
-     */
     @Override
-    public List<TeamIdType> getTeamLeaders(TeamStatisticId statistic, int start, int limit, boolean ascending)
+    public int getTeamCount(TeamStatisticId statistic) throws McException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return getTeams(statistic).size();
+    }
+
+    /**
+     * @param statistic
+     * @return teams using given statistics
+     * @throws McException
+     */
+    private Set<TeamIdType> getTeams(TeamStatisticId statistic) throws McException
+    {
+        try
+        {
+            final Set<TeamIdType> result = new HashSet<>();
+            this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .forEach(stat -> stat.getTeams(0, Integer.MAX_VALUE).forEach(tstat -> {
+                        if (tstat.getStatistic(statistic) != null)
+                        {
+                            result.add(tstat.getTeamId());
+                        }
+                    }));
+            return result;
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticInterface#getStatistic(de.minigameslib.mgapi.api.stat.GameStatisticId)
-     */
     @Override
-    public long getStatistic(GameStatisticId statistic)
+    public int getPlace(TeamIdType team, TeamStatisticId statistic, boolean ascending) throws McException
     {
-        // TODO Auto-generated method stub
-        return 0;
+        final Long value = this.getStatistic(team, statistic);
+        int place = 1;
+        for (final TeamIdType p : this.getTeams(statistic))
+        {
+            final Long v2 = this.getStatistic(p, statistic);
+            if (ascending && v2 < value)
+            {
+                place++;
+            }
+            else if (!ascending && v2 > value)
+            {
+                place++;
+            }
+        }
+        return place;
+    }
+    
+    @Override
+    public List<TeamIdType> getTeamLeaders(TeamStatisticId statistic, int start, int limit, boolean ascending) throws McException
+    {
+        final TreeSet<StatHelper<TeamIdType>> board = new TreeSet<>((a, b) -> {
+            int result = a.value.compareTo(b.value);
+            if (result == 0)
+            {
+                result = (a.key.getPluginName() + ":" + a.key.name()).compareTo(b.key.getPluginName() + ":" + b.key.name()); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            return ascending ? result : 0-result;
+        });
+        for (final TeamIdType p : this.getTeams(statistic))
+        {
+            final Long v2 = this.getStatistic(p, statistic);
+            board.add(new StatHelper<>(p, v2));
+        }
+        return board.stream().skip(start).limit(limit).map(s -> s.key).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Long getStatistic(GameStatisticId statistic) throws McException
+    {
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getStatistic(statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == -1) return b;
+                        if (b == -1) return a;
+                        return a + b;
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
+    }
+
+    @Override
+    public Long getBestValue(GameStatisticId statistic) throws McException
+    {
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getStatistic(statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.max(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
+    }
+
+    @Override
+    public Long getWorstValue(GameStatisticId statistic) throws McException
+    {
+        try
+        {
+            return this.entries.stream().map(McFunctionUtils.wrap(this::map))
+                    .map(stat -> stat.getStatistic(statistic))
+                    .reduce((Long) null, (a, b) -> {
+                        if (a == null) return b;
+                        if (b == null) return a;
+                        return Math.min(a, b);
+                    });
+        }
+        catch (McFunctionUtils.WrappedException ex)
+        {
+            throw (McException) ex.getCause();
+        }
     }
     
 }

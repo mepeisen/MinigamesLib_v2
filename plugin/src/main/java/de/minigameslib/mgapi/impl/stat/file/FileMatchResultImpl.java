@@ -22,32 +22,58 @@
 
 */
 
-package de.minigameslib.mgapi.api.obj;
+package de.minigameslib.mgapi.impl.stat.file;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
-import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.shared.api.com.AnnotatedDataFragment;
+import de.minigameslib.mclib.shared.api.com.PersistentField;
+import de.minigameslib.mgapi.api.match.MatchResult;
 
 /**
- * The generic arena sign.
- * 
  * @author mepeisen
  *
  */
-public interface GenericSignHandler extends ArenaSignHandler
+public class FileMatchResultImpl extends AnnotatedDataFragment implements MatchResult
 {
-
-    /**
-     * Returns the lines.
-     * @return lines.
-     */
-    Collection<LineConfig> getLines();
     
     /**
-     * Sets the line config with given state in {@link LineConfig#getState()}.
-     * @param config config
-     * @throws McException thrown if there are problems saving the config 
+     * the place.
      */
-    void setLine(LineConfig config) throws McException;
+    @PersistentField
+    protected int place;
+    
+    /**
+     * the players.
+     */
+    @PersistentField
+    protected List<UUID> players = new ArrayList<>();
+    
+    /**
+     * winning flag.
+     */
+    @PersistentField
+    protected boolean isWin;
+    
+    @Override
+    public int getPlace()
+    {
+        return this.place;
+    }
+    
+    @Override
+    public Collection<UUID> getPlayers()
+    {
+        return new ArrayList<>(this.players);
+    }
+    
+    @Override
+    public boolean isWin()
+    {
+        return this.isWin;
+    }
     
 }

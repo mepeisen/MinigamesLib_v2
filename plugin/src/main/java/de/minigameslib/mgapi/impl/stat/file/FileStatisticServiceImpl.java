@@ -31,9 +31,15 @@ import java.time.MonthDay;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
@@ -52,7 +58,7 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
     /**
      * folder to store statistics.
      */
-    private File folder;
+    protected File folder;
     
     /**
      * the registry file.
@@ -63,6 +69,25 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
      * file statistics registry.
      */
     private FileStatRegistry statRegistry;
+    
+    // TODO put maximumSize to config.
+    // TODO put expireAfterAccess to config.
+    /**
+     * file cache.
+     */
+    private LoadingCache<FileStatRegistryEntry, FileMatchStatisticImpl> fileCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterAccess(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<FileStatRegistryEntry, FileMatchStatisticImpl>() {
+                @Override
+                public FileMatchStatisticImpl load(FileStatRegistryEntry key) throws Exception
+                {
+                    final File file = new File(
+                            FileStatisticServiceImpl.this.folder,
+                            key.getMatchDate().getYear() + "/" + key.getMatchDate().getMonthValue() + "/" + key.getMatchDate().getDayOfMonth() + "/" + key.getMatchId() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                    final FileMatchStatisticImpl result = new FileMatchStatisticImpl();
+                    result.read(McLibInterface.instance().readYmlFile(file));
+                    return result;
+                }
+            });
 
     /**
      * Statistics
@@ -94,6 +119,7 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
     public StatisticInterface getAllTimeStatistic(ArenaInterface arena)
     {
         return new FileStatisticImpl(
+                this.fileCache,
                 this.statRegistry.getEntries().stream()
                     .filter(p -> p.getArenaName().equals(arena.getInternalName()) && p.getArenaType().equals(arena.getType().name()) && p.getArenaPlugin().equals(arena.getType().getPluginName()))
                     .collect(Collectors.toList())
@@ -111,7 +137,7 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
                     .filter(p -> p.getArenaName().equals(arena.getInternalName()) && p.getArenaType().equals(arena.getType().name()) && p.getArenaPlugin().equals(arena.getType().getPluginName()))
                     .forEach(entries::add));
         }
-        return new FileStatisticImpl(entries);
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
     @Override
@@ -129,23 +155,41 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
                     .forEach(entries::add);
             }
         }
-        return new FileStatisticImpl(entries);
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticServiceInterface#getRecentStatistic(de.minigameslib.mgapi.api.arena.ArenaInterface, int)
-     */
     @Override
     public StatisticInterface getRecentStatistic(ArenaInterface arena, int count)
     {
-        // TODO Auto-generated method stub
-        return null;
+        final List<FileStatRegistryEntry> entries = new ArrayList<>();
+        final TreeMap<YearMonth, TreeMap<MonthDay, TreeSet<FileStatRegistryEntry>>> map = this.statRegistry.getEntriesByDate();
+        Map.Entry<YearMonth, TreeMap<MonthDay, TreeSet<FileStatRegistryEntry>>> month = map.lastEntry();
+        while (month != null && count < entries.size())
+        {
+            Map.Entry<MonthDay, TreeSet<FileStatRegistryEntry>> day = month.getValue().lastEntry();
+            while (day != null && count < entries.size())
+            {
+                FileStatRegistryEntry p = day.getValue().last();
+                while (p != null && count < entries.size())
+                {
+                    if (p.getArenaName().equals(arena.getInternalName()) && p.getArenaType().equals(arena.getType().name()) && p.getArenaPlugin().equals(arena.getType().getPluginName()))
+                    {
+                        entries.add(p);
+                    }
+                    p = day.getValue().lower(p);
+                }
+                day = month.getValue().lowerEntry(day.getKey());
+            }
+            month = map.lowerEntry(month.getKey());
+        }
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
     @Override
     public StatisticInterface getAllTimeStatistic(ArenaTypeInterface type)
     {
         return new FileStatisticImpl(
+                this.fileCache,
                 this.statRegistry.getEntries().stream()
                     .filter(p -> p.getArenaType().equals(type.name()) && p.getArenaPlugin().equals(type.getPluginName()))
                     .collect(Collectors.toList())
@@ -163,7 +207,7 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
                     .filter(p -> p.getArenaType().equals(type.name()) && p.getArenaPlugin().equals(type.getPluginName()))
                     .forEach(entries::add));
         }
-        return new FileStatisticImpl(entries);
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
     @Override
@@ -181,17 +225,34 @@ public class FileStatisticServiceImpl implements StatisticServiceInterface
                     .forEach(entries::add);
             }
         }
-        return new FileStatisticImpl(entries);
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.api.stat.StatisticServiceInterface#getRecentStatistic(de.minigameslib.mgapi.api.arena.ArenaTypeInterface, int)
-     */
     @Override
     public StatisticInterface getRecentStatistic(ArenaTypeInterface type, int count)
     {
-        // TODO Auto-generated method stub
-        return null;
+        final List<FileStatRegistryEntry> entries = new ArrayList<>();
+        final TreeMap<YearMonth, TreeMap<MonthDay, TreeSet<FileStatRegistryEntry>>> map = this.statRegistry.getEntriesByDate();
+        Map.Entry<YearMonth, TreeMap<MonthDay, TreeSet<FileStatRegistryEntry>>> month = map.lastEntry();
+        while (month != null && count < entries.size())
+        {
+            Map.Entry<MonthDay, TreeSet<FileStatRegistryEntry>> day = month.getValue().lastEntry();
+            while (day != null && count < entries.size())
+            {
+                FileStatRegistryEntry p = day.getValue().last();
+                while (p != null && count < entries.size())
+                {
+                    if (p.getArenaType().equals(type.name()) && p.getArenaPlugin().equals(type.getPluginName()))
+                    {
+                        entries.add(p);
+                    }
+                    p = day.getValue().lower(p);
+                }
+                day = month.getValue().lowerEntry(day.getKey());
+            }
+            month = map.lowerEntry(month.getKey());
+        }
+        return new FileStatisticImpl(this.fileCache, entries);
     }
     
 }

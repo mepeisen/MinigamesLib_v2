@@ -116,6 +116,7 @@ import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
+import de.minigameslib.mgapi.api.stat.StatisticServiceInterface;
 import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.MglibMessages.MglibCoreErrors;
@@ -166,6 +167,7 @@ import de.minigameslib.mgapi.impl.rules.PointsForDamage;
 import de.minigameslib.mgapi.impl.rules.PointsForDeath;
 import de.minigameslib.mgapi.impl.rules.PointsForKill;
 import de.minigameslib.mgapi.impl.rules.PvPMode;
+import de.minigameslib.mgapi.impl.stat.NullStatisticImpl;
 import de.minigameslib.mgapi.impl.tasks.InitTask;
 
 /**
@@ -307,6 +309,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         
         Bukkit.getServicesManager().register(MinigamesLibInterface.class, this, this, ServicePriority.Highest);
         Bukkit.getServicesManager().register(TaskManager.class, new TaskManager(), this, ServicePriority.Highest);
+        Bukkit.getServicesManager().register(StatisticServiceInterface.class, new NullStatisticImpl(), this, ServicePriority.Highest); // TODO let us configure the statistic service that will be used
         
         McLibInterface.instance().registerEvent(this, ArenaCreatedEvent.class);
         McLibInterface.instance().registerEvent(this, ArenaCreateEvent.class);
@@ -813,6 +816,20 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
             return folder;
         });
     }
+
+    @Override
+    public void registerRuleset(Plugin plugin, ClassRuleSetType ruleset, McBiFunction<ClassRuleSetType, ArenaPlayerInterface, ClassRuleSetInterface> creator)
+    {
+        this.ruleSetsPerPlugin.computeIfAbsent(plugin.getName(), k -> new HashSet<>()).add(ruleset);
+        this.classRuleSetTypes.put(ruleset, creator);
+        final String pluginName = ruleset.getPluginName();
+        final String ruleSetName = ruleset.name();
+        this.registerConfigEnum(plugin, ruleset, () -> {
+            final ArenaInterface arena = McLibInterface.instance().getContext(ArenaInterface.class);
+            final File folder = new File(this.getDataFolder(), "arenas/" + arena.getInternalName() + "/classrule-" + pluginName + "-" + ruleSetName); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return folder;
+        });
+    }
     
     /**
      * registers config from rule set
@@ -1037,14 +1054,10 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see de.minigameslib.mgapi.impl.MinigamesPluginInterface#calcStatistics(de.minigameslib.mgapi.impl.arena.ArenaMatchImpl)
-     */
     @Override
     public void calcStatistics(ArenaMatchImpl match)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO implement calculating statistics
     }
     
 }
