@@ -174,7 +174,8 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
                 text,
                 () -> {player.openClickGui(new Main(this.prev));},
                 (s) -> this.onName(player, session, gui, type, s),
-                player.encodeMessage(Messages.TextDescription)));
+                player.encodeMessage(Messages.TextDescription),
+                true));
     }
     
     /**

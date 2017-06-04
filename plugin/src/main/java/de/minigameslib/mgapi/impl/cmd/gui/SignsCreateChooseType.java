@@ -181,7 +181,8 @@ public class SignsCreateChooseType extends AbstractPage<SignTypeId>
                 text,
                 () -> {player.openClickGui(new Main(this.prev));},
                 (s) -> this.onName(player, session, gui, type, s),
-                player.encodeMessage(Messages.TextDescription)));
+                player.encodeMessage(Messages.TextDescription),
+                true));
     }
     
     /**

@@ -53,12 +53,6 @@ public enum BasicSignTypes implements SignTypeId
     Generic,
     
     /**
-     * A sign holding statistic information.
-     * @see StatisticSignHandler
-     */
-    Statistic,
-    
-    /**
      * A sign holding leaderboard info.
      * @see LeaderSignHandler
      */

@@ -33,7 +33,7 @@ import de.minigameslib.mgapi.api.obj.LineConfig;
  * @author mepeisen
  *
  */
-public interface HologramRuleInterface extends ArenaRuleSetInterface
+public interface HologramRuleInterface extends ComponentRuleSetInterface
 {
     
     /**

@@ -134,7 +134,8 @@ public class ComponentEdit implements ClickGuiPageInterface
                 this.component.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
-                player.encodeMessage(Messages.NameDescription)));
+                player.encodeMessage(Messages.NameDescription),
+                false));
     }
     
     /**

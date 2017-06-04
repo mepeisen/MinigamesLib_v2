@@ -29,12 +29,15 @@ import java.util.Collection;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
+import de.minigameslib.mclib.api.config.ConfigServiceInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.items.CommonItems;
 import de.minigameslib.mclib.api.items.ItemServiceInterface;
+import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
+import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessageList;
@@ -90,11 +93,11 @@ public class ArenaEdit implements ClickGuiPageInterface
             },
             null,
             {
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Info), Messages.IconInfo, this::onInfo), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Text), Messages.IconDisplayName, this::onDisplayName), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Text), Messages.IconShortDescription, this::onShortDescription), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Text), Messages.IconLongDescription, this::onLongDescription), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Text), Messages.IconManual, this::onManual), 
+                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Info), Messages.IconInfo, this::onInfo),  
+                localeItem(Messages.IconDisplayName, this.arena.getDisplayName()),
+                localeItem(Messages.IconShortDescription, this.arena.getDescription()),
+                localeItem(Messages.IconLongDescription, this.arena.getDescription()),
+                localeItem(Messages.IconManual, this.arena.getManual()), 
             },
             {
                 this.arena.isDisabled() || this.arena.isMaintenance() ? new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Question), Messages.IconCheck, this::onCheck) : null, 
@@ -127,6 +130,72 @@ public class ArenaEdit implements ClickGuiPageInterface
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Key), Messages.IconSecurity, this::onSecurity),
             }
         }, 6);
+    }
+    
+    /**
+     * locale item
+     * @param title 
+     * @param cfg
+     * @return item
+     */
+    private ClickGuiItem localeItem(Messages title, LocalizedConfigString cfg)
+    {
+        try
+        {
+            return ConfigServiceInterface.instance().createGuiEditorItem(
+                    title,
+                    cfg,
+                    () -> {
+                        try
+                        {
+                            this.arena.saveData();
+                        }
+                        catch (McException e)
+                        {
+                            // TODO logging
+                        }
+                    },
+                    (c, s, g) -> s.setNewPage(this),
+                    (c, s, g) -> s.setNewPage(new Main()));
+        }
+        catch (McException e)
+        {
+            // TODO logging
+            return null;
+        }
+    }
+    
+    /**
+     * locale item
+     * @param title 
+     * @param cfg
+     * @return item
+     */
+    private ClickGuiItem localeItem(Messages title, LocalizedConfigLine cfg)
+    {
+        try
+        {
+            return ConfigServiceInterface.instance().createGuiEditorItem(
+                    title,
+                    cfg,
+                    () -> {
+                        try
+                        {
+                            this.arena.saveData();
+                        }
+                        catch (McException e)
+                        {
+                            // TODO logging
+                        }
+                    },
+                    (c, s, g) -> s.setNewPage(this),
+                    (c, s, g) -> s.setNewPage(new Main()));
+        }
+        catch (McException e)
+        {
+            // TODO logging
+            return null;
+        }
     }
     
     /**
@@ -421,62 +490,6 @@ public class ArenaEdit implements ClickGuiPageInterface
     {
         final Collection<CheckFailure> checks = this.arena.check();
         session.setNewPage(new ChecksPage(player, this.arena, this, checks));
-    }
-    
-    /**
-     * edit manual
-     * @param player
-     * @param session
-     * @param gui
-     */
-    private void onManual(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
-    {
-        session.setNewPage(new LocalizedLinesList(
-                Messages.IconManual,
-                this.arena.getManual(), (s) -> { this.arena.saveData(); },
-                this));
-    }
-    
-    /**
-     * edit long description
-     * @param player
-     * @param session
-     * @param gui
-     */
-    private void onLongDescription(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
-    {
-        session.setNewPage(new LocalizedLinesList(
-                Messages.IconLongDescription,
-                this.arena.getDescription(), (s) -> { this.arena.saveData(); },
-                this));
-    }
-    
-    /**
-     * edit short description
-     * @param player
-     * @param session
-     * @param gui
-     */
-    private void onShortDescription(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
-    {
-        session.setNewPage(new LocalizedStringList(
-                Messages.IconShortDescription,
-                this.arena.getShortDescription(), (s) -> { this.arena.saveData(); },
-                this));
-    }
-    
-    /**
-     * edit display name
-     * @param player
-     * @param session
-     * @param gui
-     */
-    private void onDisplayName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
-    {
-        session.setNewPage(new LocalizedStringList(
-                Messages.IconDisplayName,
-                this.arena.getDisplayName(), (s) -> { this.arena.saveData(); },
-                this));
     }
     
     /**

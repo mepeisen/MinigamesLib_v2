@@ -137,7 +137,8 @@ public class SignEdit implements ClickGuiPageInterface
                 this.sign.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
-                player.encodeMessage(Messages.NameDescription)));
+                player.encodeMessage(Messages.NameDescription),
+                false));
     }
     
     /**

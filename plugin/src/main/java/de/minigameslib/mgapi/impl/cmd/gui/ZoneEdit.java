@@ -144,7 +144,8 @@ public class ZoneEdit implements ClickGuiPageInterface
                 this.zone.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
-                player.encodeMessage(Messages.NameDescription)));
+                player.encodeMessage(Messages.NameDescription),
+                false));
     }
     
     /**

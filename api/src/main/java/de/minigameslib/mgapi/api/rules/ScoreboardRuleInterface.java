@@ -33,7 +33,7 @@ import de.minigameslib.mgapi.api.obj.LineConfig;
  * @author mepeisen
  *
  */
-public interface ScoreboardRuleInterface extends ArenaRuleSetInterface
+public interface ScoreboardRuleInterface extends ZoneRuleSetInterface
 {
     
     /**

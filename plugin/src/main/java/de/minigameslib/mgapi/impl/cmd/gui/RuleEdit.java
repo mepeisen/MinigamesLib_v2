@@ -135,6 +135,8 @@ public class RuleEdit<T extends RuleSetType, Q extends RuleSetInterface<T>> exte
                             LOGGER.log(Level.WARNING, "problems while reconfigure rule " + this.rule, e); //$NON-NLS-1$
                         }
                     },
+                    (c, s, g) -> s.setNewPage(this),
+                    (c, s, g) -> s.setNewPage(new Main()),
                     this.contextProvider);
         }
         catch (McException e)

@@ -24,22 +24,16 @@
 
 package de.minigameslib.mgapi.api.obj;
 
-import java.util.Collection;
-import java.util.UUID;
-
 import de.minigameslib.mclib.api.McException;
-import de.minigameslib.mgapi.api.stat.GameStatisticId;
 import de.minigameslib.mgapi.api.stat.PlayerStatisticId;
-import de.minigameslib.mgapi.api.stat.TeamStatisticId;
-import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
- * The statistic sign.
+ * The leader head.
  * 
  * @author mepeisen
  *
  */
-public interface StatisticSignHandler extends ArenaSignHandler
+public interface LeaderHeadComponentHandler extends ArenaComponentHandler
 {
     
     /**
@@ -83,19 +77,6 @@ public interface StatisticSignHandler extends ArenaSignHandler
     }
     
     /**
-     * The type of statistic to display.
-     */
-    enum StatisticType
-    {
-        /** some game statistics. */
-        Game,
-        /** a player statistic. */
-        Player,
-        /** a team statistic. */
-        Team
-    }
-    
-    /**
      * Returns the count of matches for {@link StatisticInterval#Recent}.
      * 
      * @return count of matches.
@@ -103,64 +84,96 @@ public interface StatisticSignHandler extends ArenaSignHandler
     int getRecentCount();
     
     /**
+     * Sets the count of matches for {@link StatisticInterval#Recent}.
+     * 
+     * @param count
+     *            count of matches.
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setRecentCount(int count) throws McException;
+    
+    /**
      * Returns the statistic scope.
+     * 
      * @return statistic scope.
      */
     StatisticScope getScope();
     
     /**
+     * Returns the statistic scope.
+     * 
+     * @param scope
+     *            statistic scope.
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setScope(StatisticScope scope) throws McException;
+    
+    /**
      * returns the statistic interval.
+     * 
      * @return statistic interval.
      */
     StatisticInterval getInterval();
     
     /**
-     * Returns the statistic type.
-     * @return statistic type.
+     * returns the statistic interval.
+     * 
+     * @param interval statistic interval.
+     * 
+     * @throws McException thrown if config cannot be saved.
      */
-    StatisticType getType();
-    
-    /**
-     * Returns the game statistic id.
-     * @return game statistic to use.
-     */
-    GameStatisticId getGameStatisticId();
+    void setInterval(StatisticInterval interval) throws McException;
     
     /**
      * Returns the player statistic id.
+     * 
      * @return player statistic to use.
      */
     PlayerStatisticId getPlayerStatisticId();
     
     /**
-     * Returns the team statistic id.
-     * @return team statistic to use.
+     * Returns the player statistic id.
+     * 
+     * @param statistic player statistic to use.
+     * 
+     * @throws McException thrown if config cannot be saved.
      */
-    TeamStatisticId getTeamStatisticId();
+    void setPlayerStatisticId(PlayerStatisticId statistic) throws McException;
     
     /**
-     * The player to be used for statistics.
-     * @return player uuid.
+     * Returns the place to display.
+     * 
+     * @return place
      */
-    UUID getPlayer();
+    int place();
     
     /**
-     * The team to be used for statistics.
-     * @return team uuid.
+     * Returns the place to display.
+     * 
+     * @param place place
+     * 
+     * @throws McException thrown if config cannot be saved.
      */
-    TeamIdType getTeam();
-
-    /**
-     * Returns the lines.
-     * @return lines.
-     */
-    Collection<LineConfig> getLines();
+    void setPlace(int place) throws McException;
     
     /**
-     * Sets the line config with given state in {@link LineConfig#getState()}.
-     * @param config config
-     * @throws McException thrown if there are problems saving the config 
+     * Returns the ascending flag.
+     * 
+     * @return ascending flag.
      */
-    void setLine(LineConfig config) throws McException;
+    boolean isAscending();
+    
+    /**
+     * Returns the ascending flag.
+     * 
+     * @param flg ascending flag.
+     * 
+     * @throws McException thrown if config cannot be saved.
+     */
+    void setIsAscending(boolean flg) throws McException;
     
 }

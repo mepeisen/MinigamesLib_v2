@@ -362,7 +362,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
         this.arena.getSpectators().forEach(p -> p.getMcPlayer().sendMessage(Messages.PostMatchCountdownStarted, this.postMatchCountdown));
         
         // freeze players
-        final ArenaMatchInterface match = this.arena.getCurrentMatch();
+        // final ArenaMatchInterface match = this.arena.getCurrentMatch();
         this.arena.getSpectators().forEach(ArenaPlayerInterface::lockMovement);
         this.arena.getPlayers().forEach(ArenaPlayerInterface::lockMovement);
     }

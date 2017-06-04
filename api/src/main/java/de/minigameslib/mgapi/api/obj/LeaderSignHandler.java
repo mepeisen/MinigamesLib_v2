@@ -24,6 +24,7 @@
 
 package de.minigameslib.mgapi.api.obj;
 
+import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mgapi.api.stat.PlayerStatisticId;
 
 /**
@@ -83,33 +84,100 @@ public interface LeaderSignHandler extends ArenaSignHandler
     int getRecentCount();
     
     /**
+     * Sets the count of matches for {@link StatisticInterval#Recent}.
+     * 
+     * @param count
+     *            count of matches.
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setRecentCount(int count) throws McException;
+    
+    /**
      * Returns the statistic scope.
+     * 
      * @return statistic scope.
      */
     StatisticScope getScope();
     
     /**
+     * Returns the statistic scope.
+     * 
+     * @param scope
+     *            statistic scope.
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setScope(StatisticScope scope) throws McException;
+    
+    /**
      * returns the statistic interval.
+     * 
      * @return statistic interval.
      */
     StatisticInterval getInterval();
     
     /**
+     * returns the statistic interval.
+     * 
+     * @param interval statistic interval.
+     * 
+     * @throws McException thrown if config cannot be saved.
+     */
+    void setInterval(StatisticInterval interval) throws McException;
+    
+    /**
      * Returns the player statistic id.
+     * 
      * @return player statistic to use.
      */
     PlayerStatisticId getPlayerStatisticId();
     
     /**
+     * Returns the player statistic id.
+     * 
+     * @param statistic player statistic to use.
+     * 
+     * @throws McException thrown if config cannot be saved.
+     */
+    void setPlayerStatisticId(PlayerStatisticId statistic) throws McException;
+    
+    /**
      * Returns the place to display.
+     * 
      * @return place
      */
     int place();
     
     /**
+     * Returns the place to display.
+     * 
+     * @param place
+     *            place
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setPlace(int place) throws McException;
+    
+    /**
      * Returns the ascending flag.
+     * 
      * @return ascending flag.
      */
     boolean isAscending();
+    
+    /**
+     * Returns the ascending flag.
+     * 
+     * @param flg
+     *            ascending flag.
+     * 
+     * @throws McException
+     *             thrown if config cannot be saved.
+     */
+    void setIsAscending(boolean flg) throws McException;
     
 }
