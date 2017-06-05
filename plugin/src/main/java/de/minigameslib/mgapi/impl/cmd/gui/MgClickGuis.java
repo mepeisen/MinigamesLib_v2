@@ -26,6 +26,26 @@ package de.minigameslib.mgapi.impl.cmd.gui;
 
 import de.minigameslib.mclib.api.enums.ChildEnum;
 import de.minigameslib.mclib.api.gui.ClickGuiId;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ArenaCreateChooseArenaType;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ArenaCreateChooseMinigame;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ArenasPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ChecksPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ArenaEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ComponentEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ComponentsCreateChooseType;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ComponentsPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.RuleEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.RulesPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.SelectMarkerPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.SignEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.SignsCreateChooseType;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.SignsPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ZoneEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ZonesCreateChooseType;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ZonesPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.wizard.AbstractWizard;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.wizard.arenacreate.ArenaCreateWizard;
 
 /**
  * Enumeration to identify guis.
@@ -58,6 +78,9 @@ import de.minigameslib.mclib.api.gui.ClickGuiId;
     ZonesCreateChooseType.Messages.class,
     
     ChecksPage.Messages.class,
+    
+    AbstractWizard.Messages.class,
+    ArenaCreateWizard.Messages.class,
 })
 public enum MgClickGuis implements ClickGuiId
 {

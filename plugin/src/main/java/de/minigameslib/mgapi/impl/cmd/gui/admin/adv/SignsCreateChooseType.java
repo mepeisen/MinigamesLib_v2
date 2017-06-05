@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import de.minigameslib.mclib.api.McException;
@@ -39,31 +40,31 @@ import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
-import de.minigameslib.mclib.api.items.CommonItems;
-import de.minigameslib.mclib.api.items.ItemServiceInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessageList;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
-import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.util.function.McBiConsumer;
 import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
+import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
- * Page with arena components; choose type for new component
+ * Page with arena signs; choose type for new sign
  * 
  * @author mepeisen
  */
-public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
+public class SignsCreateChooseType extends AbstractPage<SignTypeId>
 {
     
     /** the arena */
-    private McBiConsumer<ComponentTypeId, String> onSave;
+    private McBiConsumer<SignTypeId, String> onSave;
     
     /** previous page */
     private ClickGuiPageInterface prev;
@@ -76,7 +77,7 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
      * @param onSave
      * @param prev
      */
-    public ComponentsCreateChooseType(ArenaInterface arena, McBiConsumer<ComponentTypeId, String> onSave, ClickGuiPageInterface prev)
+    public SignsCreateChooseType(ArenaInterface arena, McBiConsumer<SignTypeId, String> onSave, ClickGuiPageInterface prev)
     {
         this.arena = arena;
         this.onSave = onSave;
@@ -92,24 +93,24 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
     @Override
     protected int count()
     {
-        return EnumServiceInterface.instance().getEnumValues(ComponentTypeId.class).size();
+        return EnumServiceInterface.instance().getEnumValues(SignTypeId.class).size();
     }
     
     /**
-     * Converts component type to string
-     * @param compType
-     * @return component type
+     * Converts sign type to string
+     * @param signType
+     * @return sign type
      */
-    private String toString(ComponentTypeId compType)
+    private String toString(SignTypeId signType)
     {
-        return compType.getPluginName() + "/" + compType.name(); //$NON-NLS-1$
+        return signType.getPluginName() + "/" + signType.name(); //$NON-NLS-1$
     }
 
     @Override
-    protected List<ComponentTypeId> getElements(int start, int limit)
+    protected List<SignTypeId> getElements(int start, int limit)
     {
-        final Set<ComponentTypeId> result = new TreeSet<>((a, b) -> toString(a).compareTo(toString(b)));
-        result.addAll(EnumServiceInterface.instance().getEnumValues(ComponentTypeId.class));
+        final Set<SignTypeId> result = new TreeSet<>((a, b) -> toString(a).compareTo(toString(b)));
+        result.addAll(EnumServiceInterface.instance().getEnumValues(SignTypeId.class));
         return result.
                 stream().
                 skip(start).limit(limit).
@@ -117,10 +118,10 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
     }
 
     @Override
-    protected ClickGuiItem map(int line, int col, int index, ComponentTypeId elm)
+    protected ClickGuiItem map(int line, int col, int index, SignTypeId elm)
     {
-        final ItemStack item = ItemServiceInterface.instance().createItem(CommonItems.App_Component);
-        return new ClickGuiItem(item, Messages.IconComponent, (p, s, g) -> this.onChoose(p, s, g, elm), toString(elm));
+        final ItemStack item = new ItemStack(Material.SIGN);
+        return new ClickGuiItem(item, Messages.IconSign, (p, s, g) -> this.onChoose(p, s, g, elm), toString(elm));
     }
 
     @Override
@@ -152,8 +153,8 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
             final String name = i == 1 ? prefix : prefix + "-" + i; //$NON-NLS-1$
 
             @SuppressWarnings("cast")
-            final Optional<ArenaComponentHandler> handler = this.arena.getComponents().stream().
-                    map(s -> (ArenaComponentHandler) this.arena.getHandler(s)).
+            final Optional<ArenaSignHandler> handler = this.arena.getSigns().stream().
+                    map(s -> (ArenaSignHandler) this.arena.getHandler(s)).
                     filter(s -> name.equals(s.getName())).
                     findFirst();
             
@@ -174,7 +175,7 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
      * @param type
      * @throws McException 
      */
-    private void onChoose(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ComponentTypeId type) throws McException
+    private void onChoose(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, SignTypeId type) throws McException
     {
         final String text = this.getFreeName(type.name().toLowerCase());
 
@@ -195,7 +196,7 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
      * @param name 
      * @throws McException 
      */
-    private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ComponentTypeId type, String name) throws McException
+    private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, SignTypeId type, String name) throws McException
     {
         this.onSave.accept(type, name);
     }
@@ -205,14 +206,14 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "admingui.component_create_choose_type")
+    @LocalizedMessages(value = "admingui.sign_create_choose_type")
     public enum Messages implements LocalizedMessageInterface
     {
         /**
-         * Gui title (component types page)
+         * Gui title (sign types page)
          */
-        @LocalizedMessage(defaultMessage = "Type for new component in arena %1$s (page %2$d from %3$d)")
-        @MessageComment(value = {"Gui title (component types page)"}, args = {@Argument("arena name"), @Argument("page number"), @Argument("total pages")})
+        @LocalizedMessage(defaultMessage = "Type for new sign in arena %1$s (page %2$d from %3$d)")
+        @MessageComment(value = {"Gui title (sign types page)"}, args = {@Argument("arena name"), @Argument("page number"), @Argument("total pages")})
         Title,
         
         /**
@@ -223,17 +224,17 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
         IconCancel,
         
         /**
-         * The component icon
+         * The sign icon
          */
         @LocalizedMessage(defaultMessage = "type %1$s")
-        @MessageComment(value = {"component type icon"}, args=@Argument("type name"))
-        IconComponent,
+        @MessageComment(value = {"sign type icon"}, args=@Argument("type name"))
+        IconSign,
         
         /**
          * Text description
          */
-        @LocalizedMessageList({"Enter the name of the new component.", "The name is only used internal."})
-        @MessageComment("Text description for component name")
+        @LocalizedMessageList({"Enter the name of the new sign.", "The name is only used internal."})
+        @MessageComment("Text description for sign name")
         TextDescription,
     }
     

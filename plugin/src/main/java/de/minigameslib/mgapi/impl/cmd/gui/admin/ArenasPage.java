@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin;
 
 import java.io.Serializable;
 import java.util.List;
@@ -42,6 +42,9 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.adv.ArenaEdit;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.wizard.arenacreate.ArenaCreateWizard;
 
 /**
  * Page with arena options
@@ -138,7 +141,7 @@ public class ArenasPage extends AbstractPage<ArenaInterface>
                 arena.setAdminsEnabled(true);
                 arena.addAdmin(player.getPlayerUUID());
                 arena.saveData();
-                player.openClickGui(new Main(new ArenaEdit(arena, this)));
+                player.openClickGui(new Main(new ArenaCreateWizard(player, arena)));
             },this));
     }
     

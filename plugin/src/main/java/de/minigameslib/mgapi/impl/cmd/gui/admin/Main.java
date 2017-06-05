@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin;
 
 import java.io.Serializable;
 
@@ -48,6 +48,7 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.ExtensionInterface;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.impl.cmd.gui.MgClickGuis;
 
 /**
  * The main menu.

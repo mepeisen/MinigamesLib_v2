@@ -48,6 +48,7 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.objects.ZoneTypeId;
 import de.minigameslib.mclib.api.util.function.McConsumer;
+import de.minigameslib.mclib.api.util.function.McFunction;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
@@ -326,7 +327,6 @@ public class AdminToolHelper
      * @param finish the finish action
      * @throws McException 
      */
-    @SuppressWarnings("deprecation")
     private static void onCreateSign(McPlayerInteractEvent evt, McPlayerInterface player, ArenaInterface arena, String name, SignTypeId type, McConsumer<ArenaSignHandler> finish) throws McException
     {
         // security checks
@@ -339,6 +339,25 @@ public class AdminToolHelper
             throw new McException(MinigameMessages.ModificationWrongState);
         }
         
+        final ArenaSignHandler result = getSignSupplierFromEvent(evt, player, type).apply(arena);
+        result.setName(name);
+        player.sendMessage(Messages.CreateSign_Created);
+        if (finish != null)
+        {
+            finish.accept(result);
+        }
+    }
+    
+    /**
+     * Sign supplier from click event.
+     * @param evt
+     * @param player
+     * @param type 
+     * @return sign supplier.
+     * @throws McException 
+     */
+    public static McFunction<ArenaInterface, ArenaSignHandler> getSignSupplierFromEvent(McPlayerInteractEvent evt, McPlayerInterface player, SignTypeId type) throws McException
+    {
         Block target = null;
         byte opposite;
         switch (evt.getBukkitEvent().getBlockFace())
@@ -399,25 +418,24 @@ public class AdminToolHelper
             throw new McException(Messages.CreateSign_CannotCreateBlocked);
         }
         
-        if (evt.getBukkitEvent().getBlockFace() == BlockFace.UP)
-        {
-            target.setType(Material.SIGN_POST);
-            target.setData(opposite);
-        }
-        else
-        {
-            target.setType(Material.WALL_SIGN);
-            target.setData(opposite);
-        }
+        final Block target2 = target;
         
-        final Sign sign = (Sign) target.getState();
-        final ArenaSignHandler result = arena.createSign(sign, type);
-        result.setName(name);
-        player.sendMessage(Messages.CreateSign_Created);
-        if (finish != null)
-        {
-            finish.accept(result);
-        }
+        return arena -> {
+            if (evt.getBukkitEvent().getBlockFace() == BlockFace.UP)
+            {
+                target2.setType(Material.SIGN_POST);
+                target2.setData(opposite);
+            }
+            else
+            {
+                target2.setType(Material.WALL_SIGN);
+                target2.setData(opposite);
+            }
+            
+            final Sign sign = (Sign) target2.getState();
+            final ArenaSignHandler result = arena.createSign(sign, type);
+            return result;
+        };
     }
     
     /**

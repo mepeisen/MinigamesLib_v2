@@ -22,10 +22,11 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 import org.bukkit.inventory.ItemStack;
 
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.enums.EnumServiceInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
@@ -46,37 +48,39 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mclib.api.objects.ZoneTypeId;
 import de.minigameslib.mclib.api.util.function.McBiConsumer;
 import de.minigameslib.mclib.impl.gui.cfg.QueryText;
-import de.minigameslib.mgapi.api.MinigameInterface;
-import de.minigameslib.mgapi.api.MinigamesLibInterface;
-import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
+import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
- * Page with arena type; choose type for new arena
+ * Page with arena zones; choose type for new zones
  * 
  * @author mepeisen
  */
-public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
+public class ZonesCreateChooseType extends AbstractPage<ZoneTypeId>
 {
-
+    
     /** the arena */
-    private McBiConsumer<ArenaTypeInterface, String> onSave;
+    private McBiConsumer<ZoneTypeId, String> onSave;
     
     /** previous page */
     private ClickGuiPageInterface prev;
 
-    /** the underlying minigame. */
-    private MinigameInterface minigame;
+    /** the underlying arena. */
+    private ArenaInterface arena;
 
     /**
-     * @param minigame 
+     * @param arena 
      * @param onSave
      * @param prev
      */
-    public ArenaCreateChooseArenaType(MinigameInterface minigame, McBiConsumer<ArenaTypeInterface, String> onSave, ClickGuiPageInterface prev)
+    public ZonesCreateChooseType(ArenaInterface arena, McBiConsumer<ZoneTypeId, String> onSave, ClickGuiPageInterface prev)
     {
-        this.minigame = minigame;
+        this.arena = arena;
         this.onSave = onSave;
         this.prev = prev;
     }
@@ -84,30 +88,30 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
     @Override
     public Serializable getPageName()
     {
-        return Messages.Title.toArg(this.minigame.getName(), this.page(), this.totalPages());
+        return Messages.Title.toArg(this.arena.getInternalName(), this.page(), this.totalPages());
     }
 
     @Override
     protected int count()
     {
-        return this.minigame.getTypeCount();
+        return EnumServiceInterface.instance().getEnumValues(ZoneTypeId.class).size();
     }
     
     /**
-     * Converts arena type to string
-     * @param compType
-     * @return arena type
+     * Converts zone type to string
+     * @param zoneType
+     * @return zone type
      */
-    private String toString(ArenaTypeInterface compType)
+    private String toString(ZoneTypeId zoneType)
     {
-        return compType.getPluginName() + "/" + compType.name(); //$NON-NLS-1$
+        return zoneType.getPluginName() + "/" + zoneType.name(); //$NON-NLS-1$
     }
 
     @Override
-    protected List<ArenaTypeInterface> getElements(int start, int limit)
+    protected List<ZoneTypeId> getElements(int start, int limit)
     {
-        final Set<ArenaTypeInterface> result = new TreeSet<>((a, b) -> toString(a).compareTo(toString(b)));
-        result.addAll(this.minigame.getTypes(0, Integer.MAX_VALUE));
+        final Set<ZoneTypeId> result = new TreeSet<>((a, b) -> toString(a).compareTo(toString(b)));
+        result.addAll(EnumServiceInterface.instance().getEnumValues(ZoneTypeId.class));
         return result.
                 stream().
                 skip(start).limit(limit).
@@ -115,10 +119,10 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
     }
 
     @Override
-    protected ClickGuiItem map(int line, int col, int index, ArenaTypeInterface elm)
+    protected ClickGuiItem map(int line, int col, int index, ZoneTypeId elm)
     {
-        final ItemStack item = ItemServiceInterface.instance().createItem(CommonItems.App_Component);
-        return new ClickGuiItem(item, Messages.IconComponent, (p, s, g) -> this.onChoose(p, s, g, elm), toString(elm));
+        final ItemStack item = ItemServiceInterface.instance().createItem(CommonItems.App_Globe);
+        return new ClickGuiItem(item, Messages.IconZone, (p, s, g) -> this.onChoose(p, s, g, elm), toString(elm));
     }
 
     @Override
@@ -149,7 +153,13 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
         {
             final String name = i == 1 ? prefix : prefix + "-" + i; //$NON-NLS-1$
 
-            if (MinigamesLibInterface.instance().getArena(name) == null)
+            @SuppressWarnings("cast")
+            final Optional<ArenaZoneHandler> handler = this.arena.getZones().stream().
+                    map(s -> (ArenaZoneHandler) this.arena.getHandler(s)).
+                    filter(s -> name.equals(s.getName())).
+                    findFirst();
+            
+            if (!handler.isPresent())
             {
                 return name;
             }
@@ -166,7 +176,7 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
      * @param type
      * @throws McException 
      */
-    private void onChoose(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ArenaTypeInterface type) throws McException
+    private void onChoose(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ZoneTypeId type) throws McException
     {
         final String text = this.getFreeName(type.name().toLowerCase());
 
@@ -187,7 +197,7 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
      * @param name 
      * @throws McException 
      */
-    private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ArenaTypeInterface type, String name) throws McException
+    private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ZoneTypeId type, String name) throws McException
     {
         this.onSave.accept(type, name);
     }
@@ -197,14 +207,14 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "admingui.arena_create_choose_type")
+    @LocalizedMessages(value = "admingui.zone_create_choose_type")
     public enum Messages implements LocalizedMessageInterface
     {
         /**
-         * Gui title (arena types page)
+         * Gui title (zone types page)
          */
-        @LocalizedMessage(defaultMessage = "Type for new %1$s arena (page %2$d from %3$d)")
-        @MessageComment(value = {"Gui title (arena types page)"}, args = {@Argument("minigame name"), @Argument("page number"), @Argument("total pages")})
+        @LocalizedMessage(defaultMessage = "Type for new zone in arena %1$s (page %2$d from %3$d)")
+        @MessageComment(value = {"Gui title (zone types page)"}, args = {@Argument("arena name"), @Argument("page number"), @Argument("total pages")})
         Title,
         
         /**
@@ -215,17 +225,17 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
         IconCancel,
         
         /**
-         * The component icon
+         * The zone icon
          */
         @LocalizedMessage(defaultMessage = "type %1$s")
-        @MessageComment(value = {"component type icon"}, args=@Argument("type name"))
-        IconComponent,
+        @MessageComment(value = {"zone type icon"}, args=@Argument("type name"))
+        IconZone,
         
         /**
          * Text description
          */
-        @LocalizedMessageList({"Enter the name of the new arena.", "The name is only used internal."})
-        @MessageComment("Text description for arena name")
+        @LocalizedMessageList({"Enter the name of the new zone.", "The name is only used internal."})
+        @MessageComment("Text description for zone name")
         TextDescription,
     }
     

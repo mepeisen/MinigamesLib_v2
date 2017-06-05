@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -46,19 +46,17 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaZoneHandler;
-import de.minigameslib.mgapi.api.rules.ZoneRuleSetInterface;
+import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
+import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
-import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorInterface;
-import de.minigameslib.mgapi.impl.cmd.tool.AdminToolHelper;
-import de.minigameslib.mgapi.impl.cmd.tool.MarkerToolHelper;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
- * Click gui for editing zones.
+ * Click gui for editing components.
  * 
  * @author mepeisen
  */
-public class ZoneEdit implements ClickGuiPageInterface
+public class ComponentEdit implements ClickGuiPageInterface
 {
 
     /** arena to be edited. */
@@ -67,18 +65,18 @@ public class ZoneEdit implements ClickGuiPageInterface
     /** previous page. */
     private ClickGuiPageInterface prevPage;
 
-    /** zone to be edited. */
-    private ArenaZoneHandler zone;
+    /** component to be edited. */
+    private ArenaComponentHandler component;
 
     /**
      * @param arena
-     * @param zone
+     * @param component
      * @param prevPage
      */
-    public ZoneEdit(ArenaInterface arena, ArenaZoneHandler zone, ClickGuiPageInterface prevPage)
+    public ComponentEdit(ArenaInterface arena, ArenaComponentHandler component, ClickGuiPageInterface prevPage)
     {
         this.arena = arena;
-        this.zone = zone;
+        this.component = component;
         this.prevPage = prevPage;
     }
 
@@ -102,16 +100,9 @@ public class ZoneEdit implements ClickGuiPageInterface
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Info), Messages.IconInfo, this::onInfo), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Text), Messages.IconName, this::onName), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Target), Messages.IconDisplayMarker, this::onDisplayMarker), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Trackback), Messages.IconTeleportLower, this::onTeleportLower), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Trackback), Messages.IconTeleportHigher, this::onTeleportHigher),
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Pinion), Messages.IconRelocateLower, this::onRelocateLower), 
-                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Pinion), Messages.IconRelocateHigher, this::onRelocateHigher),
-                null,
+                new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Trackback), Messages.IconTeleport, this::onTeleport), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Script), Messages.IconRules, this::onRules)
             }
-            // TODO export/import zones
-            // TODO copy&paste zones
-            // TODO move zones with content/ without content
         }, 6);
     }
     
@@ -126,9 +117,9 @@ public class ZoneEdit implements ClickGuiPageInterface
         player.sendMessage(Messages.InfoOutput,
                 this.arena.getDisplayName().toArg(),
                 this.arena.getShortDescription().toArg(),
-                this.zone.getName(),
-                this.zone.getZone().getTypeId().getPluginName(),
-                this.zone.getZone().getTypeId().name());
+                this.component.getName(),
+                this.component.getComponent().getTypeId().getPluginName(),
+                this.component.getComponent().getTypeId().name());
     }
     
     /**
@@ -141,7 +132,7 @@ public class ZoneEdit implements ClickGuiPageInterface
     private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
         player.openAnvilGui(new QueryText(
-                this.zone.getName(),
+                this.component.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
                 player.encodeMessage(Messages.NameDescription),
@@ -158,15 +149,15 @@ public class ZoneEdit implements ClickGuiPageInterface
      */
     private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, String name) throws McException
     {
-        if (name.equals(this.zone.getName()))
+        if (name.equals(this.component.getName()))
         {
             player.openClickGui(new Main(this));
             return;
         }
         
         @SuppressWarnings("cast")
-        final Optional<ArenaZoneHandler> handler = this.arena.getZones().stream().
-                map(s -> (ArenaZoneHandler) this.arena.getHandler(s)).
+        final Optional<ArenaComponentHandler> handler = this.arena.getComponents().stream().
+                map(s -> (ArenaComponentHandler) this.arena.getHandler(s)).
                 filter(s -> name.equals(s.getName())).
                 findFirst();
         if (handler.isPresent())
@@ -178,8 +169,8 @@ public class ZoneEdit implements ClickGuiPageInterface
             throw new McException(MinigameMessages.ModificationWrongState);
         }
         
-        this.zone.setName(name);
-        this.zone.getZone().saveConfig();
+        this.component.setName(name);
+        this.component.getComponent().saveConfig();
         player.openClickGui(new Main(this));
     }
     
@@ -197,68 +188,8 @@ public class ZoneEdit implements ClickGuiPageInterface
         }
         else
         {
-            session.setNewPage(new SelectMarkerPage(player, this.zone.getZone(), this));
+            session.setNewPage(new SelectMarkerPage(player, this.component.getComponent(), this));
         }
-    }
-    
-    /**
-     * relocate
-     * @param player
-     * @param session
-     * @param gui
-     * @throws McException 
-     */
-    private void onRelocateLower(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
-    {
-        if (!this.arena.isMaintenance())
-        {
-            throw new McException(MinigameMessages.ModificationWrongState);
-        }
-        session.close();
-        AdminToolHelper.onRelocateZoneLower(player, this.zone, z -> {
-            // change (=re-create) marker if displayed
-            if (player.hasSmartGui())
-            {
-                final MarkerToolHelper helper = MarkerToolHelper.instance(player);
-                final MarkerColorInterface color = helper.getColor(z.getZone());
-                if (color != null)
-                {
-                    helper.clearMarker(z.getZone());
-                    helper.createMarker(z.getZone(), color);
-                }
-            }
-            player.openClickGui(new Main(this));
-        });
-    }
-    
-    /**
-     * relocate
-     * @param player
-     * @param session
-     * @param gui
-     * @throws McException 
-     */
-    private void onRelocateHigher(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
-    {
-        if (!this.arena.isMaintenance())
-        {
-            throw new McException(MinigameMessages.ModificationWrongState);
-        }
-        session.close();
-        AdminToolHelper.onRelocateZoneHigher(player, this.zone, z -> {
-            // change (=re-create) marker if displayed
-            if (player.hasSmartGui())
-            {
-                final MarkerToolHelper helper = MarkerToolHelper.instance(player);
-                final MarkerColorInterface color = helper.getColor(z.getZone());
-                if (color != null)
-                {
-                    helper.clearMarker(z.getZone());
-                    helper.createMarker(z.getZone(), color);
-                }
-            }
-            player.openClickGui(new Main(this));
-        });
     }
     
     /**
@@ -268,22 +199,9 @@ public class ZoneEdit implements ClickGuiPageInterface
      * @param gui
      * @throws McException 
      */
-    private void onTeleportLower(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
+    private void onTeleport(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
-        player.getBukkitPlayer().teleport(this.zone.getZone().getCuboid().getLowLoc());
-        player.openClickGui(new Main(this));
-    }
-    
-    /**
-     * teleport
-     * @param player
-     * @param session
-     * @param gui
-     * @throws McException 
-     */
-    private void onTeleportHigher(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
-    {
-        player.getBukkitPlayer().teleport(this.zone.getZone().getCuboid().getHighLoc());
+        player.getBukkitPlayer().teleport(this.component.getComponent().getLocation());
         player.openClickGui(new Main(this));
     }
     
@@ -295,10 +213,10 @@ public class ZoneEdit implements ClickGuiPageInterface
      */
     private void onRules(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        session.setNewPage(new RulesPage<>(this.getPageName(), this.zone, this, rt -> {
+        session.setNewPage(new RulesPage<>(this.getPageName(), this.component, this, rt -> {
             McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaZoneHandler.class, this.zone);
-            McLibInterface.instance().setContext(ZoneRuleSetInterface.class, this.zone.getRuleSet(rt));
+            McLibInterface.instance().setContext(ArenaComponentHandler.class, this.component);
+            McLibInterface.instance().setContext(ComponentRuleSetInterface.class, this.component.getRuleSet(rt));
         }));
     }
     
@@ -315,7 +233,7 @@ public class ZoneEdit implements ClickGuiPageInterface
         {
             throw new McException(MinigameMessages.ModificationWrongState);
         }
-        this.zone.getZone().delete();
+        this.component.getComponent().delete();
         session.setNewPage(this.prevPage);
     }
     
@@ -333,43 +251,43 @@ public class ZoneEdit implements ClickGuiPageInterface
     @Override
     public Serializable getPageName()
     {
-        return Messages.Title.toArg(this.arena.getInternalName(), this.zone.getName());
+        return Messages.Title.toArg(this.arena.getInternalName(), this.component.getName());
     }
     
     /**
-     * The zone create messages.
+     * The component create messages.
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "admingui.zones_edit")
+    @LocalizedMessages(value = "admingui.components_edit")
     public enum Messages implements LocalizedMessageInterface
     {
         /**
-         * Gui title (zone edit page)
+         * Gui title (component edit page)
          */
-        @LocalizedMessage(defaultMessage = "Zone %1$s - %2$s")
-        @MessageComment(value = {"Gui title (zone edit)"}, args = {@Argument("arena internal name"), @Argument("zone name")})
+        @LocalizedMessage(defaultMessage = "Component %1$s - %2$s")
+        @MessageComment(value = {"Gui title (component edit)"}, args = {@Argument("arena internal name"), @Argument("component name")})
         Title,
         
         /**
          * back to arenas
          */
-        @LocalizedMessage(defaultMessage = "Back to zones list")
-        @MessageComment({"back to zones"})
+        @LocalizedMessage(defaultMessage = "Back to components list")
+        @MessageComment({"back to components"})
         IconBack,
         
         /**
          * info
          */
-        @LocalizedMessage(defaultMessage = "Zone info")
+        @LocalizedMessage(defaultMessage = "Component info")
         @MessageComment({"info"})
         IconInfo,
         
         /**
          * name
          */
-        @LocalizedMessage(defaultMessage = "Zone name")
-        @MessageComment({"zone name"})
+        @LocalizedMessage(defaultMessage = "Component name")
+        @MessageComment({"component name"})
         IconName,
         
         /**
@@ -382,30 +300,9 @@ public class ZoneEdit implements ClickGuiPageInterface
         /**
          * teleport
          */
-        @LocalizedMessage(defaultMessage = "Teleport to zone (lower bounds)")
+        @LocalizedMessage(defaultMessage = "Teleport to component")
         @MessageComment({"teleport"})
-        IconTeleportLower,
-        
-        /**
-         * teleport
-         */
-        @LocalizedMessage(defaultMessage = "Teleport to zone (higher bounds)")
-        @MessageComment({"teleport"})
-        IconTeleportHigher,
-        
-        /**
-         * relocate
-         */
-        @LocalizedMessage(defaultMessage = "Relocate lower bounds")
-        @MessageComment({"relocate"})
-        IconRelocateLower,
-        
-        /**
-         * relocate
-         */
-        @LocalizedMessage(defaultMessage = "Relocate higher bounds")
-        @MessageComment({"relocate"})
-        IconRelocateHigher,
+        IconTeleport,
         
         /**
          * delete
@@ -426,25 +323,25 @@ public class ZoneEdit implements ClickGuiPageInterface
          */
         @LocalizedMessageList({
             "arena: %1$s - %2$s",
-            "zone-name: %3$s",
-            "zone-type: %4$s/%5$s"
+            "component-name: %3$s",
+            "component-type: %4$s/%5$s"
         })
         @MessageComment(value = {
             "The info"
         },args = {
                 @Argument("arena display name"),
                 @Argument("arena short description"),
-                @Argument("zone name"),
-                @Argument("zone type plugin"),
-                @Argument("zone type name"),
+                @Argument("component name"),
+                @Argument("component type plugin"),
+                @Argument("component type name"),
                 })
         InfoOutput,
         
         /**
          * Name description
          */
-        @LocalizedMessageList({"Enter the name of the zone.", "The name is only used internal."})
-        @MessageComment("Text description for zone name")
+        @LocalizedMessageList({"Enter the name of the component.", "The name is only used internal."})
+        @MessageComment("Text description for component name")
         NameDescription,
     }
     

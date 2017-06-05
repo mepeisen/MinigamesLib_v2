@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -46,6 +46,7 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
 
 /**
  * @author mepeisen

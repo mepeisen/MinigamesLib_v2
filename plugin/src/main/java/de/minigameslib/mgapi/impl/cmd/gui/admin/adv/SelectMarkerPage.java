@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.List;
@@ -48,6 +48,8 @@ import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.ZoneInterface;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorInterface;
 import de.minigameslib.mgapi.impl.cmd.marker.MarkerColorProvider;
 import de.minigameslib.mgapi.impl.cmd.tool.MarkerToolHelper;

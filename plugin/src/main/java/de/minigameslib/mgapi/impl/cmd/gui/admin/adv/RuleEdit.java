@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +48,8 @@ import de.minigameslib.mclib.api.util.function.McRunnable;
 import de.minigameslib.mgapi.api.rules.RuleSetContainerInterface;
 import de.minigameslib.mgapi.api.rules.RuleSetInterface;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
  * Click gui for editing rules.

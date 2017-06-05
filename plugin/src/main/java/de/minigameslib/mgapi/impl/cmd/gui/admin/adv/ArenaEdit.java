@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -51,6 +51,9 @@ import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetInterface;
 import de.minigameslib.mgapi.impl.cmd.ArenaCommand;
+import de.minigameslib.mgapi.impl.cmd.gui.YesNoQuestion;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ChecksPage;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
  * Click gui for editing arenas.

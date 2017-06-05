@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin;
 
 import java.io.Serializable;
 import java.util.List;
@@ -45,6 +45,7 @@ import de.minigameslib.mclib.api.util.function.McBiConsumer;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
+import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
 
 /**
  * Page with minigames; choose minigame for new arena

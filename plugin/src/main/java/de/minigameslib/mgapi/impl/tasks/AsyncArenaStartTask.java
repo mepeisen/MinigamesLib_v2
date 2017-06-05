@@ -35,7 +35,7 @@ import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
 import de.minigameslib.mgapi.impl.arena.ArenaImpl;
-import de.minigameslib.mgapi.impl.cmd.gui.ChecksPage.Messages;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.ChecksPage.Messages;
 
 /**
  * A task to check and start a arena.

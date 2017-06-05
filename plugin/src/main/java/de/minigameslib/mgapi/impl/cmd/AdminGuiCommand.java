@@ -36,7 +36,7 @@ import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mgapi.impl.MglibPerms;
-import de.minigameslib.mgapi.impl.cmd.gui.Main;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
  * @author mepeisen

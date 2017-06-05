@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.cmd.gui;
+package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -46,16 +46,17 @@ import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
-import de.minigameslib.mgapi.api.rules.ComponentRuleSetInterface;
+import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
+import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
 import de.minigameslib.mgapi.impl.cmd.Mg2Command;
+import de.minigameslib.mgapi.impl.cmd.gui.admin.Main;
 
 /**
- * Click gui for editing components.
+ * Click gui for editing signs.
  * 
  * @author mepeisen
  */
-public class ComponentEdit implements ClickGuiPageInterface
+public class SignEdit implements ClickGuiPageInterface
 {
 
     /** arena to be edited. */
@@ -64,18 +65,18 @@ public class ComponentEdit implements ClickGuiPageInterface
     /** previous page. */
     private ClickGuiPageInterface prevPage;
 
-    /** component to be edited. */
-    private ArenaComponentHandler component;
+    /** sign to be edited. */
+    private ArenaSignHandler sign;
 
     /**
      * @param arena
-     * @param component
+     * @param sign
      * @param prevPage
      */
-    public ComponentEdit(ArenaInterface arena, ArenaComponentHandler component, ClickGuiPageInterface prevPage)
+    public SignEdit(ArenaInterface arena, ArenaSignHandler sign, ClickGuiPageInterface prevPage)
     {
         this.arena = arena;
-        this.component = component;
+        this.sign = sign;
         this.prevPage = prevPage;
     }
 
@@ -102,6 +103,9 @@ public class ComponentEdit implements ClickGuiPageInterface
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Trackback), Messages.IconTeleport, this::onTeleport), 
                 new ClickGuiItem(ItemServiceInterface.instance().createItem(CommonItems.App_Script), Messages.IconRules, this::onRules)
             }
+            // TODO export/import signs
+            // TODO copy&paste signs
+            // TODO move/relocate signs with content (destroy original)/ without content (leave original untouched)
         }, 6);
     }
     
@@ -116,9 +120,9 @@ public class ComponentEdit implements ClickGuiPageInterface
         player.sendMessage(Messages.InfoOutput,
                 this.arena.getDisplayName().toArg(),
                 this.arena.getShortDescription().toArg(),
-                this.component.getName(),
-                this.component.getComponent().getTypeId().getPluginName(),
-                this.component.getComponent().getTypeId().name());
+                this.sign.getName(),
+                this.sign.getSign().getTypeId().getPluginName(),
+                this.sign.getSign().getTypeId().name());
     }
     
     /**
@@ -131,7 +135,7 @@ public class ComponentEdit implements ClickGuiPageInterface
     private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
         player.openAnvilGui(new QueryText(
-                this.component.getName(),
+                this.sign.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
                 player.encodeMessage(Messages.NameDescription),
@@ -148,15 +152,15 @@ public class ComponentEdit implements ClickGuiPageInterface
      */
     private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, String name) throws McException
     {
-        if (name.equals(this.component.getName()))
+        if (name.equals(this.sign.getName()))
         {
             player.openClickGui(new Main(this));
             return;
         }
         
         @SuppressWarnings("cast")
-        final Optional<ArenaComponentHandler> handler = this.arena.getComponents().stream().
-                map(s -> (ArenaComponentHandler) this.arena.getHandler(s)).
+        final Optional<ArenaSignHandler> handler = this.arena.getSigns().stream().
+                map(s -> (ArenaSignHandler) this.arena.getHandler(s)).
                 filter(s -> name.equals(s.getName())).
                 findFirst();
         if (handler.isPresent())
@@ -168,8 +172,8 @@ public class ComponentEdit implements ClickGuiPageInterface
             throw new McException(MinigameMessages.ModificationWrongState);
         }
         
-        this.component.setName(name);
-        this.component.getComponent().saveConfig();
+        this.sign.setName(name);
+        this.sign.getSign().saveConfig();
         player.openClickGui(new Main(this));
     }
     
@@ -187,7 +191,7 @@ public class ComponentEdit implements ClickGuiPageInterface
         }
         else
         {
-            session.setNewPage(new SelectMarkerPage(player, this.component.getComponent(), this));
+            session.setNewPage(new SelectMarkerPage(player, this.sign.getSign(), this));
         }
     }
     
@@ -200,7 +204,7 @@ public class ComponentEdit implements ClickGuiPageInterface
      */
     private void onTeleport(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
-        player.getBukkitPlayer().teleport(this.component.getComponent().getLocation());
+        player.getBukkitPlayer().teleport(this.sign.getSign().getLocation());
         player.openClickGui(new Main(this));
     }
     
@@ -212,10 +216,10 @@ public class ComponentEdit implements ClickGuiPageInterface
      */
     private void onRules(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        session.setNewPage(new RulesPage<>(this.getPageName(), this.component, this, rt -> {
+        session.setNewPage(new RulesPage<>(this.getPageName(), this.sign, this, rt -> {
             McLibInterface.instance().setContext(ArenaInterface.class, this.arena);
-            McLibInterface.instance().setContext(ArenaComponentHandler.class, this.component);
-            McLibInterface.instance().setContext(ComponentRuleSetInterface.class, this.component.getRuleSet(rt));
+            McLibInterface.instance().setContext(ArenaSignHandler.class, this.sign);
+            McLibInterface.instance().setContext(SignRuleSetInterface.class, this.sign.getRuleSet(rt));
         }));
     }
     
@@ -232,7 +236,7 @@ public class ComponentEdit implements ClickGuiPageInterface
         {
             throw new McException(MinigameMessages.ModificationWrongState);
         }
-        this.component.getComponent().delete();
+        this.sign.getSign().delete();
         session.setNewPage(this.prevPage);
     }
     
@@ -250,43 +254,43 @@ public class ComponentEdit implements ClickGuiPageInterface
     @Override
     public Serializable getPageName()
     {
-        return Messages.Title.toArg(this.arena.getInternalName(), this.component.getName());
+        return Messages.Title.toArg(this.arena.getInternalName(), this.sign.getName());
     }
     
     /**
-     * The component create messages.
+     * The sign create messages.
      * 
      * @author mepeisen
      */
-    @LocalizedMessages(value = "admingui.components_edit")
+    @LocalizedMessages(value = "admingui.signs_edit")
     public enum Messages implements LocalizedMessageInterface
     {
         /**
-         * Gui title (component edit page)
+         * Gui title (sign edit page)
          */
-        @LocalizedMessage(defaultMessage = "Component %1$s - %2$s")
-        @MessageComment(value = {"Gui title (component edit)"}, args = {@Argument("arena internal name"), @Argument("component name")})
+        @LocalizedMessage(defaultMessage = "Sign %1$s - %2$s")
+        @MessageComment(value = {"Gui title (sign edit)"}, args = {@Argument("arena internal name"), @Argument("sign name")})
         Title,
         
         /**
          * back to arenas
          */
-        @LocalizedMessage(defaultMessage = "Back to components list")
-        @MessageComment({"back to components"})
+        @LocalizedMessage(defaultMessage = "Back to signs list")
+        @MessageComment({"back to signs"})
         IconBack,
         
         /**
          * info
          */
-        @LocalizedMessage(defaultMessage = "Component info")
+        @LocalizedMessage(defaultMessage = "Sign info")
         @MessageComment({"info"})
         IconInfo,
         
         /**
          * name
          */
-        @LocalizedMessage(defaultMessage = "Component name")
-        @MessageComment({"component name"})
+        @LocalizedMessage(defaultMessage = "Sign name")
+        @MessageComment({"sign name"})
         IconName,
         
         /**
@@ -299,7 +303,7 @@ public class ComponentEdit implements ClickGuiPageInterface
         /**
          * teleport
          */
-        @LocalizedMessage(defaultMessage = "Teleport to component")
+        @LocalizedMessage(defaultMessage = "Teleport to sign")
         @MessageComment({"teleport"})
         IconTeleport,
         
@@ -322,25 +326,25 @@ public class ComponentEdit implements ClickGuiPageInterface
          */
         @LocalizedMessageList({
             "arena: %1$s - %2$s",
-            "component-name: %3$s",
-            "component-type: %4$s/%5$s"
+            "sign-name: %3$s",
+            "sign-type: %4$s/%5$s"
         })
         @MessageComment(value = {
             "The info"
         },args = {
                 @Argument("arena display name"),
                 @Argument("arena short description"),
-                @Argument("component name"),
-                @Argument("component type plugin"),
-                @Argument("component type name"),
+                @Argument("sign name"),
+                @Argument("sign type plugin"),
+                @Argument("sign type name"),
                 })
         InfoOutput,
         
         /**
          * Name description
          */
-        @LocalizedMessageList({"Enter the name of the component.", "The name is only used internal."})
-        @MessageComment("Text description for component name")
+        @LocalizedMessageList({"Enter the name of the sign.", "The name is only used internal."})
+        @MessageComment("Text description for sign name")
         NameDescription,
     }
     
