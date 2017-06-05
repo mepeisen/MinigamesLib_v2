@@ -53,6 +53,7 @@ import de.minigameslib.mclib.api.cmd.CommandImpl;
 import de.minigameslib.mclib.api.config.ConfigServiceInterface;
 import de.minigameslib.mclib.api.config.ConfigurationValueInterface;
 import de.minigameslib.mclib.api.enums.EnumServiceInterface;
+import de.minigameslib.mclib.api.locale.MessageServiceInterface;
 import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
@@ -144,6 +145,7 @@ import de.minigameslib.mgapi.impl.obj.MainZone;
 import de.minigameslib.mgapi.impl.obj.SpawnComponent;
 import de.minigameslib.mgapi.impl.obj.SpectatorSpawnComponent;
 import de.minigameslib.mgapi.impl.obj.SpectatorZone;
+import de.minigameslib.mgapi.impl.placeholder.Mg2Placeholder;
 import de.minigameslib.mgapi.impl.rules.BasicMatch;
 import de.minigameslib.mgapi.impl.rules.BasicMatchTimer;
 import de.minigameslib.mgapi.impl.rules.BasicSpawns;
@@ -309,6 +311,8 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         
         EnumServiceInterface.instance().registerEnumClass(this, CommonTeams.class);
         EnumServiceInterface.instance().registerEnumClass(this, CommonMatchStatistics.class);
+        
+        MessageServiceInterface.instance().registerPlaceholders(this, "mg2", new Mg2Placeholder()); //$NON-NLS-1$
         
         Bukkit.getServicesManager().register(MinigamesLibInterface.class, this, this, ServicePriority.Highest);
         Bukkit.getServicesManager().register(TaskManager.class, new TaskManager(), this, ServicePriority.Highest);
