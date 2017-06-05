@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
+import de.minigameslib.mclib.api.locale.MessageServiceInterface;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.events.ArenaPlayerStatisticEvent;
@@ -169,6 +170,12 @@ class MatchPlayer implements MatchPlayerInterface
         
         final ArenaPlayerStatisticEvent event = new ArenaPlayerStatisticEvent(this.arena, this.player, statistic, oldValue, newValue);
         Bukkit.getPluginManager().callEvent(event);
+        
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+            {"mg2", "mpstat", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleada", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleadd", statistic.getPluginName(), statistic.name()} //$NON-NLS-1$ //$NON-NLS-2$
+            });
     }
     
     @Override
@@ -180,6 +187,12 @@ class MatchPlayer implements MatchPlayerInterface
         
         final ArenaPlayerStatisticEvent event = new ArenaPlayerStatisticEvent(this.arena, this.player, statistic, oldValue, newValue);
         Bukkit.getPluginManager().callEvent(event);
+        
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+            {"mg2", "mpstat", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleada", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleadd", statistic.getPluginName(), statistic.name()} //$NON-NLS-1$ //$NON-NLS-2$
+            });
         
         return newValue;
     }
@@ -193,6 +206,12 @@ class MatchPlayer implements MatchPlayerInterface
         
         final ArenaPlayerStatisticEvent event = new ArenaPlayerStatisticEvent(this.arena, this.player, statistic, oldValue, newValue);
         Bukkit.getPluginManager().callEvent(event);
+        
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+            {"mg2", "mpstat", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleada", statistic.getPluginName(), statistic.name()}, //$NON-NLS-1$ //$NON-NLS-2$
+            {"mg2", "mpleadd", statistic.getPluginName(), statistic.name()} //$NON-NLS-1$ //$NON-NLS-2$
+            });
         
         return newValue;
     }

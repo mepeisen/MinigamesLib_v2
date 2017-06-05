@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
 import de.minigameslib.mclib.api.McException;
+import de.minigameslib.mclib.api.locale.MessageServiceInterface;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.events.ArenaLoseEvent;
@@ -386,6 +388,10 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                     Bukkit.getPluginManager().callEvent(leftEvent);
                 }
             }
+            
+            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+                {"mg2", "arena", "curplayers"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                });
         }
         else
         {
@@ -452,6 +458,10 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         
         final ArenaPlayerJoinedTeamEvent join2Event = new ArenaPlayerJoinedTeamEvent(this.getArena(), player, mplayer.getTeam());
         Bukkit.getPluginManager().callEvent(join2Event);
+        
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+            {"mg2", "arena", "curplayers"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
     }
     
     /**
@@ -1095,6 +1105,68 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             return this.isWin;
         }
         
+    }
+    
+    /**
+     * statistic helper.
+     * @param <T> key class
+     */
+    private static final class StatHelper<T>
+    {
+        /** the key. */
+        T key;
+        /** the value. */
+        Integer value;
+        /**
+         * @param key
+         * @param value
+         */
+        public StatHelper(T key, Integer value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    @Override
+    public UUID getStatisticLeader(MatchStatisticId statistic, int place, boolean ascending)
+    {
+        final TreeSet<StatHelper<UUID>> board = new TreeSet<>((a, b) -> {
+            int result = a.value.compareTo(b.value);
+            if (result == 0)
+            {
+                result = a.key.compareTo(b.key);
+            }
+            return ascending ? result : 0-result;
+        });
+        for (final MatchPlayer p : this.players.values())
+        {
+            int value = p.getStatistic(statistic);
+            board.add(new StatHelper<>(p.getPlayer(), value));
+        }
+        final Optional<UUID> result = board.stream().skip(place - 1).limit(1).map(s -> s.key).findFirst();
+        return result.isPresent() ? result.get() : null;
+    }
+
+    @Override
+    public TeamIdType getStatisticLeadingTeam(MatchStatisticId statistic, int place, boolean ascending)
+    {
+        final TreeSet<StatHelper<TeamIdType>> board = new TreeSet<>((a, b) -> {
+            int result = a.value.compareTo(b.value);
+            if (result == 0)
+            {
+                result = (a.key.getPluginName() + ":" + a.key.name()).compareTo(b.key.getPluginName() + ":" + b.key.name()); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            return ascending ? result : 0-result;
+        });
+        for (final MatchTeam t : this.teams.values())
+        {
+            if (t.getTeamId().isSpecial()) continue;
+            int value = t.getStatistic(statistic);
+            board.add(new StatHelper<>(t.getTeamId(), value));
+        }
+        final Optional<TeamIdType> result = board.stream().skip(place - 1).limit(1).map(s -> s.key).findFirst();
+        return result.isPresent() ? result.get() : null;
     }
     
 }

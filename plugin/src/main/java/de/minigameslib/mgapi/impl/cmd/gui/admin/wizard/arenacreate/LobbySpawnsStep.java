@@ -285,7 +285,7 @@ public class LobbySpawnsStep implements WizardStepInterface<ArenaInterface>
     @Override
     public void onActivate(AbstractWizard<ArenaInterface> wizard, McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        // ignore
+        player.sendMessage(Messages.Help);
     }
     
     /**
@@ -307,14 +307,14 @@ public class LobbySpawnsStep implements WizardStepInterface<ArenaInterface>
         /**
          * new spawn button
          */
-        @LocalizedMessageList({"Create lobby spawn #%1$d"})
+        @LocalizedMessage(defaultMessage = "Create lobby spawn #%1$d")
         @MessageComment({"New spawn button"})
         NewSpawn,
         
         /**
          * spawn button
          */
-        @LocalizedMessageList({"Change lobby spawn #%1$d"})
+        @LocalizedMessage(defaultMessage = "Change lobby spawn #%1$d")
         @MessageComment({"spawn button"})
         Spawn,
         

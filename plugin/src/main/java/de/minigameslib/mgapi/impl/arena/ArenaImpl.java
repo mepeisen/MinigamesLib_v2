@@ -59,6 +59,7 @@ import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessageList;
 import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
+import de.minigameslib.mclib.api.locale.MessageServiceInterface;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
@@ -477,6 +478,12 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
             throw new McException(Messages.InvalidArenaType);
         }
         saveDataInternal();
+        
+        // TODO better detection if the given variables changed.
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
+            {"mg2", "arena", "name"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            {"mg2", "arena", "maxplayers"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
     }
 
     /**

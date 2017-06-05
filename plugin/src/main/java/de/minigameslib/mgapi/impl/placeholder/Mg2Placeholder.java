@@ -28,12 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mclib.api.enums.EnumServiceInterface;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mclib.api.locale.MessageServiceInterface.Placeholder;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
+import de.minigameslib.mclib.api.objects.ObjectServiceInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.match.MatchStatisticId;
@@ -53,12 +55,17 @@ public class Mg2Placeholder implements Placeholder
         if (placeholder != null && placeholder.length > 0)
         {
             final List<String> args = new ArrayList<>(Arrays.asList(placeholder));
+            args.remove(0); // "mg2"
             switch (args.remove(0))
             {
                 case "arena": //$NON-NLS-1$
                     return resolveArena(locale, args);
                 case "mpstat": //$NON-NLS-1$
                     return resolveMpstat(locale, args);
+                case "mpleada": //$NON-NLS-1$
+                    return resolveMpleada(locale, args);
+                case "mpleadd": //$NON-NLS-1$
+                    return resolveMpleadd(locale, args);
                 default:
                     // ignore
                     break;
@@ -66,6 +73,32 @@ public class Mg2Placeholder implements Placeholder
         }
         return null;
     }
+    
+    // Player Leaders for current match (descending)
+
+    /**
+     * @param locale
+     * @param args
+     * @return result
+     */
+    private String resolveMpleadd(Locale locale, List<String> args)
+    {
+        return resolveMplead(args, false);
+    }
+    
+    // Player Leaders for current match (ascending)
+
+    /**
+     * @param locale
+     * @param args
+     * @return result
+     */
+    private String resolveMpleada(Locale locale, List<String> args)
+    {
+        return resolveMplead(args, true);
+    }
+    
+    // Player Statistics for current match
 
     /**
      * @param locale
@@ -87,6 +120,52 @@ public class Mg2Placeholder implements Placeholder
         }
         return null;
     }
+    
+    // Player Leaders for current match
+
+    /**
+     * @param args
+     * @param ascending
+     * @return mplead
+     */
+    private String resolveMplead(List<String> args, boolean ascending)
+    {
+        final ArenaInterface arena = McLibInterface.instance().getContext(ArenaInterface.class);
+        final ArenaMatchInterface match = arena == null ? null : arena.getCurrentMatch();
+        if (match != null && args.size() >= 4)
+        {
+            final MatchStatisticId statid = EnumServiceInterface.instance().getEnumValue(MatchStatisticId.class, args.remove(0), args.remove(1));
+            if (statid != null)
+            {
+                try
+                {
+                    final int place = Integer.parseInt(args.remove(0));
+                    final UUID uuid = match.getStatisticLeader(statid, place, ascending);
+                    final McPlayerInterface player = uuid == null ? null : ObjectServiceInterface.instance().getPlayer(uuid);
+                    if (player != null)
+                    {
+                        switch (args.remove(0))
+                        {
+                            case "name": //$NON-NLS-1$
+                                return player.getDisplayName();
+                            case "value": //$NON-NLS-1$
+                                return String.valueOf(match.getStatistic(uuid, statid));
+                            default:
+                                // ignore
+                                break;
+                        }
+                    }
+                }
+                catch (@SuppressWarnings("unused") NumberFormatException ex)
+                {
+                    // ignore
+                }
+            }
+        }
+        return null;
+    }
+    
+    // Arena
 
     /**
      * @param locale

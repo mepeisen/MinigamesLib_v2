@@ -182,7 +182,7 @@ public class JoinSign extends AbstractProgrammableSign<JoinSignData> implements 
         /** Default text for maintenance arena. */
         @LocalizedMessageList(value = {
                 "{mg2_arena_name}",
-                "under maintenance"
+                "in maintenance"
             }, severity = MessageSeverityType.Error)
         @MessageComment({"Default text for maintenance arena."})
         DefaultMaintenance,

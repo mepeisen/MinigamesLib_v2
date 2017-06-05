@@ -283,6 +283,24 @@ public interface ArenaMatchInterface
     // match statistics
     
     /**
+     * Returns the match statistic leader and statistic id.
+     * @param statistic
+     * @param place
+     * @param ascending
+     * @return statistics number
+     */
+    UUID getStatisticLeader(MatchStatisticId statistic, int place, boolean ascending);
+    
+    /**
+     * Returns the match statistic leader and statistic id.
+     * @param statistic
+     * @param place
+     * @param ascending
+     * @return statistics number
+     */
+    TeamIdType getStatisticLeadingTeam(MatchStatisticId statistic, int place, boolean ascending);
+    
+    /**
      * Returns the match statistic for given player and statistic id.
      * @param player
      * @param statistic

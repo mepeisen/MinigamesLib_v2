@@ -91,7 +91,7 @@ public class FinishStep implements WizardStepInterface<ArenaInterface>
     @Override
     public void onActivate(AbstractWizard<ArenaInterface> wizard, McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        // ignore
+        player.sendMessage(Messages.Help);
     }
     
     /**

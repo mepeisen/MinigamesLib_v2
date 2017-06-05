@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.bukkit.plugin.Plugin;
 
@@ -103,7 +105,8 @@ public abstract class AbstractProgrammableSign<D extends AbstractProgrammableSig
         return McLibInterface.instance().calculateInCopiedContextUnchecked(() -> {
             McLibInterface.instance().setContext(ArenaInterface.class, this.getArena());
             McLibInterface.instance().setContext(ArenaSignHandler.class, this);
-            return (LocalizedMessageInterface.DynamicArg) (locale, isAdmin) -> {
+            final Function<Supplier<String>, String> func = McLibInterface.instance().createContextSupplier();
+            return (LocalizedMessageInterface.DynamicArg) (locale, isAdmin) -> func.apply(() -> {
                 final ArenaState state = this.getArena().getState();
                 final LineConfig config = this.getConfig(state);
                 String[] result = null;
@@ -117,8 +120,8 @@ public abstract class AbstractProgrammableSign<D extends AbstractProgrammableSig
                 }
                 if (result.length <= index)
                     return ""; //$NON-NLS-1$
-                return result[0];
-            };
+                return result[index];
+            });
         });
     }
     

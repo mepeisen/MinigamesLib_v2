@@ -154,7 +154,7 @@ public class GenericSign extends AbstractProgrammableSign<GenericSignData> imple
         /** Default text for maintenance arena. */
         @LocalizedMessageList(value = {
                 "{mg2_arena_name}",
-                "under maintenance"
+                "in maintenance"
             }, severity = MessageSeverityType.Error)
         @MessageComment({"Default text for maintenance arena."})
         DefaultMaintenance,

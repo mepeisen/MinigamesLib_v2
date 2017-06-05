@@ -230,7 +230,14 @@ public class SpawnsStep implements WizardStepInterface<ArenaInterface>
     {
         this.spawns.add(evt.getBukkitEvent().getClickedBlock().getLocation());
         player.openClickGui(new SimpleClickGui(MgClickGuis.Main, wizard, 6));
-        checkSpawns(wizard);
+        try
+        {
+            checkSpawns(wizard);
+        }
+        catch (McException ex)
+        {
+            player.sendMessage(ex.getErrorMessage(), ex.getArgs());
+        }
     }
     
     @Override
@@ -292,7 +299,7 @@ public class SpawnsStep implements WizardStepInterface<ArenaInterface>
     @Override
     public void onActivate(AbstractWizard<ArenaInterface> wizard, McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        // ignore
+        player.sendMessage(Messages.Help);
     }
     
     /**
@@ -314,14 +321,14 @@ public class SpawnsStep implements WizardStepInterface<ArenaInterface>
         /**
          * new spawn button
          */
-        @LocalizedMessageList({"Create spawn for player #%1$d out of %2$d"})
+        @LocalizedMessage(defaultMessage = "Create spawn for player #%1$d out of %2$d")
         @MessageComment({"New spawn button"})
         NewSpawn,
         
         /**
          * spawn button
          */
-        @LocalizedMessageList({"Change spawn #%1$d"})
+        @LocalizedMessage(defaultMessage = "Change spawn #%1$d")
         @MessageComment({"spawn button"})
         Spawn,
         
