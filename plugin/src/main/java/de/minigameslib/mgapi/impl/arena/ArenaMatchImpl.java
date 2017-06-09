@@ -45,6 +45,8 @@ import org.bukkit.GameMode;
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.locale.MessageServiceInterface;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
+import de.minigameslib.mgapi.api.MinigamesLibInterface;
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.events.ArenaLoseEvent;
 import de.minigameslib.mgapi.api.events.ArenaPlayerJoinEvent;
@@ -62,6 +64,7 @@ import de.minigameslib.mgapi.api.match.MatchResult;
 import de.minigameslib.mgapi.api.match.MatchStatisticId;
 import de.minigameslib.mgapi.api.match.MatchTeamInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
 import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.arena.ArenaData.TeamData;
@@ -75,45 +78,46 @@ import de.minigameslib.mgapi.impl.arena.ArenaImpl.Messages;
 public class ArenaMatchImpl implements ArenaMatchInterface
 {
     
-    // TODO fire bukkit events for statistics
-    
     /** creation timestamp. */
-    private final LocalDateTime         created = LocalDateTime.now();
+    private final LocalDateTime            created = LocalDateTime.now();
     
     /** match start timestamp. */
-    private LocalDateTime               started;
+    private LocalDateTime                  started;
     
     /** match finish timestamp. */
-    private LocalDateTime               finished;
+    private LocalDateTime                  finished;
     
     /** aborted flag. */
-    private boolean                     aborted;
+    private boolean                        aborted;
     
     /** players. */
-    private Map<UUID, MatchPlayer>      players = new HashMap<>();
+    private Map<UUID, MatchPlayer>         players = new HashMap<>();
+    
+    /** classes. */
+    private Map<UUID, ArenaClassInterface> classes = new HashMap<>();
     
     /** teams. */
-    private Map<TeamIdType, MatchTeam>  teams   = new HashMap<>();
+    private Map<TeamIdType, MatchTeam>     teams   = new HashMap<>();
     
     /**
      * the current results. The first entry represents the first place.
      */
-    private final List<MatchResultImpl> results = new ArrayList<>();
+    private final List<MatchResultImpl>    results = new ArrayList<>();
     
     /**
      * the position of the first loser.
      */
-    private int                         firstLoser;
+    private int                            firstLoser;
     
     /**
      * flag for team match
      */
-    private boolean                     teamMatch;
+    private boolean                        teamMatch;
     
     /**
      * the associated arena
      */
-    private ArenaInterface              arena;
+    private ArenaInterface                 arena;
     
     /**
      * Constructor
@@ -186,6 +190,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(ArenaImpl.Messages.StartWrongState, this.arena.getDisplayName());
         }
         this.started = LocalDateTime.now();
+        
+        // select player classes
+        this.classes.entrySet().forEach(e -> this.setPlayerClass(e.getKey(), e.getValue()));
     }
     
     /**
@@ -289,6 +296,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             throw new McException(Messages.AlreadyInArena, player.getArena().getDisplayName());
         }
         ((ArenaPlayerImpl) player).switchArenaOrMode(this.getArena().getInternalName(), true);
+        // TODO Confused: A line above the arena isset. So this if is always false???
         if (!player.inArena())
         {
             initPlayerForArena(player);
@@ -314,6 +322,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         else
         {
+            this.removePlayerClass(player.getPlayerUUID(), this.classes.get(player.getPlayerUUID()));
+            
             // player was playing within the match
             mplayer.setLeft(LocalDateTime.now());
             mplayer.setPlaying(false);
@@ -349,6 +359,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         {
             if (mplayer.isPlaying() && this.started != null)
             {
+                this.removePlayerClass(player.getPlayerUUID(), this.classes.get(player.getPlayerUUID()));
+                
                 // match was started, mark player as loser
                 final MatchTeam losers = this.teams.get(CommonTeams.Losers);
                 
@@ -389,9 +401,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 }
             }
             
-            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
-                {"mg2", "arena", "curplayers"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                });
+            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
         }
         else
         {
@@ -459,9 +470,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         final ArenaPlayerJoinedTeamEvent join2Event = new ArenaPlayerJoinedTeamEvent(this.getArena(), player, mplayer.getTeam());
         Bukkit.getPluginManager().callEvent(join2Event);
         
-        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][]{
-            {"mg2", "arena", "curplayers"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            });
+        MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        });
     }
     
     /**
@@ -882,7 +892,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     @Override
     public void trackDamageForKill(UUID targetPlayer, UUID damager) throws McException
     {
-        if (targetPlayer.equals(damager)) return;
+        if (targetPlayer.equals(damager))
+            return;
         
         this.checkMatchPending();
         final MatchPlayer p = this.players.get(targetPlayer);
@@ -902,6 +913,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
             for (final UUID uuid : players)
             {
+                this.removePlayerClass(uuid, this.classes.get(uuid));
+                
                 final MatchPlayer p = this.players.get(uuid);
                 if (p != null)
                 {
@@ -935,6 +948,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
             for (final UUID uuid : players)
             {
+                this.removePlayerClass(uuid, this.classes.get(uuid));
+                
                 final MatchPlayer p = this.players.get(uuid);
                 if (p != null)
                 {
@@ -980,6 +995,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
                 for (final UUID uuid : playerSet)
                 {
+                    this.removePlayerClass(uuid, this.classes.get(uuid));
+                    
                     final MatchPlayer p = this.players.get(uuid);
                     if (p != null)
                     {
@@ -1025,6 +1042,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
                 for (final UUID uuid : playerSet)
                 {
+                    this.removePlayerClass(uuid, this.classes.get(uuid));
+                    
                     final MatchPlayer p = this.players.get(uuid);
                     if (p != null)
                     {
@@ -1109,14 +1128,17 @@ public class ArenaMatchImpl implements ArenaMatchInterface
     
     /**
      * statistic helper.
-     * @param <T> key class
+     * 
+     * @param <T>
+     *            key class
      */
     private static final class StatHelper<T>
     {
         /** the key. */
-        T key;
+        T       key;
         /** the value. */
         Integer value;
+        
         /**
          * @param key
          * @param value
@@ -1127,7 +1149,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             this.value = value;
         }
     }
-
+    
     @Override
     public UUID getStatisticLeader(MatchStatisticId statistic, int place, boolean ascending)
     {
@@ -1137,7 +1159,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             {
                 result = a.key.compareTo(b.key);
             }
-            return ascending ? result : 0-result;
+            return ascending ? result : 0 - result;
         });
         for (final MatchPlayer p : this.players.values())
         {
@@ -1147,7 +1169,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         final Optional<UUID> result = board.stream().skip(place - 1).limit(1).map(s -> s.key).findFirst();
         return result.isPresent() ? result.get() : null;
     }
-
+    
     @Override
     public TeamIdType getStatisticLeadingTeam(MatchStatisticId statistic, int place, boolean ascending)
     {
@@ -1157,16 +1179,74 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             {
                 result = (a.key.getPluginName() + ":" + a.key.name()).compareTo(b.key.getPluginName() + ":" + b.key.name()); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            return ascending ? result : 0-result;
+            return ascending ? result : 0 - result;
         });
         for (final MatchTeam t : this.teams.values())
         {
-            if (t.getTeamId().isSpecial()) continue;
+            if (t.getTeamId().isSpecial())
+                continue;
             int value = t.getStatistic(statistic);
             board.add(new StatHelper<>(t.getTeamId(), value));
         }
         final Optional<TeamIdType> result = board.stream().skip(place - 1).limit(1).map(s -> s.key).findFirst();
         return result.isPresent() ? result.get() : null;
+    }
+    
+    @Override
+    public ArenaClassInterface getClass(UUID player)
+    {
+        return this.classes.get(player);
+    }
+    
+    @Override
+    public void selectClass(UUID player, ArenaClassInterface clazz)
+    {
+        if (this.getStarted() != null && this.getFinished() == null)
+        {
+            // player switched class while playing
+            removePlayerClass(player, this.classes.get(player));
+            setPlayerClass(player, clazz);
+            this.classes.put(player, clazz);
+        }
+        this.classes.put(player, clazz);
+    }
+    
+    /**
+     * @param player
+     * @param old
+     */
+    private void removePlayerClass(UUID player, ArenaClassInterface old)
+    {
+        if (old != null)
+        {
+            final ArenaPlayerInterface arenaPlayer = MinigamesLibInterface.instance().getPlayer(player);
+            for (final ClassRuleSetType ruletype : old.getAppliedRuleSetTypes())
+            {
+                old.getRuleSet(ruletype).onRemove(arenaPlayer);
+            }
+        }
+    }
+    
+    /**
+     * @param player
+     * @param clazz
+     */
+    private void setPlayerClass(UUID player, ArenaClassInterface clazz)
+    {
+        if (clazz != null)
+        {
+            final ArenaPlayerInterface arenaPlayer = MinigamesLibInterface.instance().getPlayer(player);
+            for (final ClassRuleSetType ruletype : clazz.getAppliedRuleSetTypes())
+            {
+                clazz.getRuleSet(ruletype).onRemove(arenaPlayer);
+            }
+        }
+    }
+
+    @Override
+    public List<UUID> getPlayers(ArenaClassInterface clazz)
+    {
+        return this.classes.entrySet().stream().filter(e -> e.getValue() == clazz).map(Map.Entry::getKey).collect(Collectors.toList());
     }
     
 }

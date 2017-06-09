@@ -17,6 +17,7 @@ package de.minigameslib.mgapi.api.test;
 
 import org.junit.Test;
 
+import de.minigameslib.mclib.spigottest.CommonTestUtil;
 import de.minigameslib.mgapi.api.CommonConfig;
 
 /**
@@ -33,7 +34,7 @@ public class CommonConfigTest
     @Test
     public void enumTest()
     {
-        SharedUtil.testEnumClass(CommonConfig.class);
+        CommonTestUtil.testEnumClass(CommonConfig.class);
     }
     
 }

@@ -54,10 +54,7 @@ import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.arena.CheckSeverity;
-import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedEvent;
-import de.minigameslib.mgapi.api.events.ArenaPlayerJoinedSpectatorsEvent;
-import de.minigameslib.mgapi.api.events.ArenaPlayerLeftEvent;
-import de.minigameslib.mgapi.api.events.ArenaPlayerLeftSpectatorsEvent;
+import de.minigameslib.mgapi.api.events.ArenaStateChangedEvent;
 import de.minigameslib.mgapi.api.rules.SignRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 
@@ -91,57 +88,13 @@ public abstract class AbstractArenaSignHandler<D extends AbstractObjectData<Sign
         this.updateSign();
     }
     
-    // TODO clear out which events cause a sign update
-    
     /**
      * Player joined event
      * 
      * @param evt
      */
     @McEventHandler
-    public void onPlayerJoin(ArenaPlayerJoinedEvent evt)
-    {
-        if (evt.getArena() == this.getArena())
-        {
-            this.updateSign();
-        }
-    }
-    
-    /**
-     * Player joined event
-     * 
-     * @param evt
-     */
-    @McEventHandler
-    public void onPlayerSpecsJoin(ArenaPlayerJoinedSpectatorsEvent evt)
-    {
-        if (evt.getArena() == this.getArena())
-        {
-            this.updateSign();
-        }
-    }
-    
-    /**
-     * Player left event
-     * 
-     * @param evt
-     */
-    @McEventHandler
-    public void onPlayerLeft(ArenaPlayerLeftEvent evt)
-    {
-        if (evt.getArena() == this.getArena())
-        {
-            this.updateSign();
-        }
-    }
-    
-    /**
-     * Player left event
-     * 
-     * @param evt
-     */
-    @McEventHandler
-    public void onPlayerLeftSpecs(ArenaPlayerLeftSpectatorsEvent evt)
+    public void onStateChanged(ArenaStateChangedEvent evt)
     {
         if (evt.getArena() == this.getArena())
         {

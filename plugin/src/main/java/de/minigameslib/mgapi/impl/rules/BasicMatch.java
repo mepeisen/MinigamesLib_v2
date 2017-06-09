@@ -26,6 +26,7 @@ package de.minigameslib.mgapi.impl.rules;
 
 import java.util.Collection;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitTask;
@@ -164,6 +165,9 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
     /** flag to control sound. */
     private boolean             playPostMatchSound;
     
+    /** logger instance. */
+    private static final Logger LOGGER = Logger.getLogger(BasicMatch.class.getName());
+    
     /**
      * @param type
      * @param arena
@@ -255,7 +259,7 @@ public class BasicMatch extends AbstractArenaRule implements BasicMatchRuleInter
                         }
                         catch (McException e)
                         {
-                            // TODO logging
+                            LOGGER.log(Level.WARNING, "Problems letting the player leave", e); //$NON-NLS-1$
                         }
                     }
                 });

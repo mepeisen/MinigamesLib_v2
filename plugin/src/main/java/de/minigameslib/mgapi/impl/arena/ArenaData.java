@@ -24,7 +24,9 @@
 
 package de.minigameslib.mgapi.impl.arena;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -151,6 +153,12 @@ public class ArenaData extends AnnotatedDataFragment
     /** the teams used in this arena; empty set for non-team mode. */
     @PersistentField
     private Set<TeamData> teams = new HashSet<>();
+    
+    /**
+     * Arena classes.
+     */
+    @PersistentField
+    private Map<String, ArenaClassImpl> classes = new HashMap<>();
     
     /**
      * Constructor
@@ -376,6 +384,14 @@ public class ArenaData extends AnnotatedDataFragment
     public Set<UUID> getAdmins()
     {
         return this.admins;
+    }
+
+    /**
+     * @return the classes
+     */
+    public Map<String, ArenaClassImpl> getClasses()
+    {
+        return this.classes;
     }
 
     /**

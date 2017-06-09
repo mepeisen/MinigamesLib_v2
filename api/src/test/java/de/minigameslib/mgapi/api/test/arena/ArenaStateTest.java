@@ -17,8 +17,8 @@ package de.minigameslib.mgapi.api.test.arena;
 
 import org.junit.Test;
 
+import de.minigameslib.mclib.spigottest.CommonTestUtil;
 import de.minigameslib.mgapi.api.arena.ArenaState;
-import de.minigameslib.mgapi.api.test.SharedUtil;
 
 /**
  * test case for {@link ArenaState}
@@ -34,7 +34,7 @@ public class ArenaStateTest
     @Test
     public void enumTest()
     {
-        SharedUtil.testEnumClass(ArenaState.class);
+        CommonTestUtil.testEnumClass(ArenaState.class);
     }
     
 }

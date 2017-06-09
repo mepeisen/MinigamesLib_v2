@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.api.arena;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -304,9 +305,11 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
     /**
      * Sets given match phase.
      * 
-     * @param state new match phase; one of {@link ArenaState#PreMatch}, {@link ArenaState#Match} and {@link ArenaState#PostMatch}
+     * @param state
+     *            new match phase; one of {@link ArenaState#PreMatch}, {@link ArenaState#Match} and {@link ArenaState#PostMatch}
      * 
-     * @throws McException thrown if arena is not in any match phase
+     * @throws McException
+     *             thrown if arena is not in any match phase
      */
     void setMatchPhase(ArenaState state) throws McException;
     
@@ -976,13 +979,74 @@ public interface ArenaInterface extends RuleSetContainerInterface<ArenaRuleSetTy
      *             thrown if arena is in wrong state
      */
     void setAdminsEnabled(boolean adminsEnabled) throws McException;
-
+    
     /**
      * Kicks a single player with given reason
-     * @param arenaPlayer the player to kick
-     * @param kickReason the kick reason
-     * @param args the message arguments
+     * 
+     * @param arenaPlayer
+     *            the player to kick
+     * @param kickReason
+     *            the kick reason
+     * @param args
+     *            the message arguments
      */
     void kick(ArenaPlayerInterface arenaPlayer, LocalizedMessageInterface kickReason, Serializable... args);
+    
+    // classes
+    
+    /**
+     * Returns the arena classes.
+     * 
+     * @param start
+     *            starting index
+     * @param limit
+     *            maximum number of classes to return.
+     * @return list of arena classes
+     */
+    List<ArenaClassInterface> getArenaClasses(int start, int limit);
+    
+    /**
+     * Returns the amount of arena classes.
+     * 
+     * @return number of arena classes.
+     */
+    int getArenaClassesCount();
+    
+    /**
+     * Returns the arena class by name.
+     * @param name class name
+     * @return arena class or {@code null} if arena class does not exist.
+     */
+    ArenaClassInterface getArenaClass(String name);
+    
+    /**
+     * Returns the default arena class.
+     * @return default arena class.
+     */
+    ArenaClassInterface getDefaultArenaClass();
+    
+    /**
+     * Deletes arena class.
+     * @param clazz class to be deleted
+     * @throws McException thrown if arena is not under maintenance or if the class cannot be deleted (default class).
+     */
+    void deleteArenaClass(ArenaClassInterface clazz) throws McException;
+
+    /**
+     * Creates a new arena class.
+     * @param name name of new class
+     * @return newly created class
+     * @throws McException thrown if arena is not under maintenance or if the name is already taken.
+     */
+    ArenaClassInterface createArenaClass(String name) throws McException;
+
+    /**
+     * Creates a new arena class by copying another one.
+     * @param name name of new class
+     * @param src source class to be copied
+     * @return newly created class
+     * @throws McException thrown if arena is not under maintenance or if the name is already taken.
+     */
+    ArenaClassInterface createArenaClass(String name, ArenaClassInterface src) throws McException;
     
 }

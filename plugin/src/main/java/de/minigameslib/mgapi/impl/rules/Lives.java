@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
@@ -45,9 +48,12 @@ public class Lives extends AbstractArenaRule implements LivesRuleInterface
 {
     
     /**
-     * The number of lives beore lose.
+     * The number of lives before lose.
      */
     private int lives;
+    
+    /** logger. */
+    private static final Logger LOGGER    = Logger.getLogger(Lives.class.getName());
     
     /**
      * @param type
@@ -112,7 +118,7 @@ public class Lives extends AbstractArenaRule implements LivesRuleInterface
                 }
                 catch (McException e)
                 {
-                    // TODO logging
+                    LOGGER.log(Level.WARNING, "Problems setting lives statistic", e); //$NON-NLS-1$
                 }
             });
         }
@@ -133,7 +139,7 @@ public class Lives extends AbstractArenaRule implements LivesRuleInterface
             }
             catch (McException e)
             {
-                // TODO logging
+                LOGGER.log(Level.WARNING, "Problems setting lives statistic", e); //$NON-NLS-1$
             }
         }
     }
@@ -156,7 +162,7 @@ public class Lives extends AbstractArenaRule implements LivesRuleInterface
                 }
                 catch (McException e)
                 {
-                    // TODO logging
+                    LOGGER.log(Level.WARNING, "Problems letting the player lose", e); //$NON-NLS-1$
                 }
             }
         }

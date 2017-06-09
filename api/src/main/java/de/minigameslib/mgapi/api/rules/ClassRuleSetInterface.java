@@ -50,4 +50,16 @@ public interface ClassRuleSetInterface extends RuleSetInterface<ClassRuleSetType
      */
     Collection<CheckFailure> check();
     
+    /**
+     * Invoked as soon as player selects this rule set.
+     * @param player player
+     */
+    void onChoose(ArenaPlayerInterface player);
+    
+    /**
+     * Invoked as soon as player unselects this rule set.
+     * @param player player
+     */
+    void onRemove(ArenaPlayerInterface player);
+    
 }

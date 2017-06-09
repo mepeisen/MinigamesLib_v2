@@ -87,6 +87,7 @@ import de.minigameslib.mclib.shared.api.com.MemoryDataSection;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
@@ -2249,6 +2250,76 @@ public class ArenaImpl implements ArenaInterface, ObjectHandlerInterface
     {
         checkModifications();
         this.arenaData.setAdminsEnabled(adminsEnabled);
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#getArenaClasses(int, int)
+     */
+    @Override
+    public List<ArenaClassInterface> getArenaClasses(int start, int limit)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#getArenaClassesCount()
+     */
+    @Override
+    public int getArenaClassesCount()
+    {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#getArenaClass(java.lang.String)
+     */
+    @Override
+    public ArenaClassInterface getArenaClass(String name)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#getDefaultArenaClass()
+     */
+    @Override
+    public ArenaClassInterface getDefaultArenaClass()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#deleteArenaClass(de.minigameslib.mgapi.api.arena.ArenaClassInterface)
+     */
+    @Override
+    public void deleteArenaClass(ArenaClassInterface clazz) throws McException
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#createArenaClass(java.lang.String)
+     */
+    @Override
+    public ArenaClassInterface createArenaClass(String name) throws McException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaInterface#createArenaClass(java.lang.String, de.minigameslib.mgapi.api.arena.ArenaClassInterface)
+     */
+    @Override
+    public ArenaClassInterface createArenaClass(String name, ArenaClassInterface src) throws McException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }

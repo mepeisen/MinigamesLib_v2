@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
@@ -46,6 +49,9 @@ public class Kills extends AbstractArenaRule implements KillsRuleInterface
      * The number of kills to win.
      */
     private int kills;
+    
+    /** logger. */
+    private static final Logger LOGGER    = Logger.getLogger(Kills.class.getName());
     
     /**
      * @param type
@@ -112,7 +118,7 @@ public class Kills extends AbstractArenaRule implements KillsRuleInterface
                 }
                 catch (McException e)
                 {
-                    // TODO logging
+                    LOGGER.log(Level.WARNING, "Problems letting the player win", e); //$NON-NLS-1$
                 }
             }
         }

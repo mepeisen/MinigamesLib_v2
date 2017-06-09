@@ -26,10 +26,12 @@ package de.minigameslib.mgapi.api.match;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.objects.ComponentIdInterface;
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
@@ -46,30 +48,35 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match created timestamp
+     * 
      * @return match creation timestamp; timestamp the first player joined
      */
     LocalDateTime getCreated();
     
     /**
      * Returns the match started timestamp
+     * 
      * @return match started timestamp; {@code null} for non-started matches.
      */
     LocalDateTime getStarted();
     
     /**
      * Returns the match finished timestamp
+     * 
      * @return match finished timestamp; {@code null} if the match did not finish
      */
     LocalDateTime getFinished();
     
     /**
      * Checks if match was aborted by admins or server crash
+     * 
      * @return {@code true} if match was aborted by admins or server crash
      */
     boolean isAborted();
     
     /**
      * Returns the match player for given player uuid
+     * 
      * @param uuid
      * @return player or {@code null} if player is not registered in match
      */
@@ -79,73 +86,90 @@ public interface ArenaMatchInterface
     
     /**
      * Returns members of given team.
+     * 
      * @param team
      * @return team members.
      */
     Collection<UUID> getTeamMembers(TeamIdType team);
     
     /**
-     * Returns the available teams. Will return {@link CommonTeams#Unknown} for single player arenas.
-     * Will never return {@link CommonTeams#Winners}, {@link CommonTeams#Losers} or {@code CommonTeams#Spectators} because
-     * these are very special teams not representing an "ingame" team.
+     * Returns the available teams. Will return {@link CommonTeams#Unknown} for single player arenas. Will never return {@link CommonTeams#Winners}, {@link CommonTeams#Losers} or
+     * {@code CommonTeams#Spectators} because these are very special teams not representing an "ingame" team.
+     * 
      * @return list of available teams.
      */
     Collection<TeamIdType> getTeams();
     
     /**
-     * Returns a preferred team for new players. The preferred team is chosen for new joining players. 
+     * Returns a preferred team for new players. The preferred team is chosen for new joining players.
+     * 
      * @return the preferred team to join a new user
      */
     TeamIdType getPreferredTeam();
     
     /**
      * Let the given user join the match; on team matches the best team will be selected
+     * 
      * @param player
-     * @throws McException thrown if the current match is already finished
+     * @throws McException
+     *             thrown if the current match is already finished
      */
     void join(ArenaPlayerInterface player) throws McException;
     
     /**
      * Let the given user join the given team; does NOT remove it from previous/current team; will remove from UNKNOWN team
+     * 
      * @param player
-     * @param team the team to join; must not be used with special teams
-     * @throws McException thrown if the current match is not a team match or if match is already finished
+     * @param team
+     *            the team to join; must not be used with special teams
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is already finished
      */
     void join(ArenaPlayerInterface player, TeamIdType team) throws McException;
     
     /**
      * Let the given user leave the given team; will join the UNKNOWN team if the player leaves the last team
+     * 
      * @param player
-     * @param team the team to join; must not be used with special teams
-     * @throws McException thrown if the current match is not a team match or if match is already finished
+     * @param team
+     *            the team to join; must not be used with special teams
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is already finished
      */
     void leave(ArenaPlayerInterface player, TeamIdType team) throws McException;
     
     /**
      * Let the given user join the given team; removes from previous/current team
+     * 
      * @param player
-     * @param team the team to join; must not be used with special teams
-     * @throws McException thrown if the current match is not a team match or if match is already finished
+     * @param team
+     *            the team to join; must not be used with special teams
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is already finished
      */
     void switchTeam(ArenaPlayerInterface player, TeamIdType team) throws McException;
     
     /**
-     * Let the user join spectators. NOTE: Does not mark the player as winner or loser. If the player wins or loses you should
-     * invoke the methods setWinner or setLoser instead.
+     * Let the user join spectators. NOTE: Does not mark the player as winner or loser. If the player wins or loses you should invoke the methods setWinner or setLoser instead.
+     * 
      * @param player
-     * @throws McException thrown if the match is already finished
+     * @throws McException
+     *             thrown if the match is already finished
      */
     void spectate(ArenaPlayerInterface player) throws McException;
     
     /**
      * Let the user leave the match. Player will automatically use when playing and leaving during match
+     * 
      * @param player
-     * @throws McException thrown if the match is already finished
+     * @throws McException
+     *             thrown if the match is already finished
      */
     void leave(ArenaPlayerInterface player) throws McException;
     
     /**
      * Returns {@code true} if this match is a team match
+     * 
      * @return {@code true} for team matches; {@code false} for single player matches
      */
     boolean isTeamMatch();
@@ -159,13 +183,16 @@ public interface ArenaMatchInterface
      * <li>Will return {@link CommonTeams#Losers} if player is already marked as a loser.</li>
      * <li>Will return {@link CommonTeams#Unknown} if the match is pending and the player did not win or lose.</li>
      * </ul>
-     * @param uuid player uuid
+     * 
+     * @param uuid
+     *            player uuid
      * @return team or {@code null} if player is not involved in this match
      */
     TeamIdType getTeam(UUID uuid);
     
     /**
      * Return the match team interface for given team
+     * 
      * @param team
      * @return team or {@code null} if team is not registered in match
      */
@@ -173,9 +200,11 @@ public interface ArenaMatchInterface
     
     /**
      * Get or creates a match player.
+     * 
      * @param team
      * @return match player.
-     * @throws McException thrown if the current match is not a team match or if match is already finished
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is already finished
      */
     MatchTeamInterface getOrCreate(TeamIdType team) throws McException;
     
@@ -183,82 +212,97 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match participants/ active players
+     * 
      * @return match participants/ active players; player uuids
      */
     Collection<UUID> getPlayers();
     
     /**
      * Returns the number of match participants/ active players
+     * 
      * @return match participants count
      */
     int getPlayerCount();
     
     /**
      * Returns the current spectators
+     * 
      * @return spectators
      */
     Collection<UUID> getSpectators();
     
     /**
      * Returns the number of current spectators
+     * 
      * @return match spectators count
      */
     int getSpectatorCount();
     
     /**
-     * Returns the match participants (players having played or spectated the game).
-     * This method includes players already marked as winners or losers.
-     * @param returnSpectators {@code true} to return spectators not being active within the game, {@code false} to filter and only return players being active
+     * Returns the match participants (players having played or spectated the game). This method includes players already marked as winners or losers.
+     * 
+     * @param returnSpectators
+     *            {@code true} to return spectators not being active within the game, {@code false} to filter and only return players being active
      * @return match participants; player uuids
      */
     Collection<UUID> getParticipants(boolean returnSpectators);
     
     /**
      * Returns the number of remaining players
-     * @param returnSpectators {@code true} to return spectators not being active within the game, {@code false} to filter and only return players being active
+     * 
+     * @param returnSpectators
+     *            {@code true} to return spectators not being active within the game, {@code false} to filter and only return players being active
      * @return match participants count
      */
     int getParticipantCount(boolean returnSpectators);
     
     /**
      * Returns the winners
+     * 
      * @return match winners; player uuids
      */
     Collection<UUID> getWinners();
     
     /**
      * Returns the number of match winners
+     * 
      * @return match winner count
      */
     int getWinnerCount();
     
     /**
      * Returns the match losers
+     * 
      * @return mosers; player uuids
      */
     Collection<UUID> getLosers();
     
     /**
      * Returns the number of match loser players
+     * 
      * @return match loser count
      */
     int getLoserCount();
     
     /**
      * Returns the match results, first entry is the "first place".
+     * 
      * @return match results.
      */
     Collection<MatchResult> getResults();
     
     /**
      * Returns the result count
+     * 
      * @return count of match results or places
      */
     int getResultCount();
     
     /**
      * Returns the match results for given place
-     * @param place the place starting with 1 for the best winner
+     * 
+     * @param place
+     *            the place starting with 1 for the best winner
      * @return match result or {@code null} if place number is invalid
      */
     MatchResult getResult(int place);
@@ -267,6 +311,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the spawn for given player. Only works on pending games.
+     * 
      * @param uuid
      * @return player spawn.
      */
@@ -274,9 +319,11 @@ public interface ArenaMatchInterface
     
     /**
      * Selects the spawn for given player.
+     * 
      * @param player
      * @param spawn
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void selectSpawn(UUID player, ComponentIdInterface spawn) throws McException;
     
@@ -284,6 +331,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match statistic leader and statistic id.
+     * 
      * @param statistic
      * @param place
      * @param ascending
@@ -293,6 +341,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match statistic leader and statistic id.
+     * 
      * @param statistic
      * @param place
      * @param ascending
@@ -302,6 +351,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match statistic for given player and statistic id.
+     * 
      * @param player
      * @param statistic
      * @return statistics number
@@ -310,6 +360,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the match statistic for given team and statistic id.
+     * 
      * @param team
      * @param statistic
      * @return statistics number
@@ -318,64 +369,83 @@ public interface ArenaMatchInterface
     
     /**
      * Changes the match statistic for given player and statistic id.
+     * 
      * @param player
      * @param statistic
-     * @param value the new statistic value
-     * @throws McException thrown if match is not pending.
+     * @param value
+     *            the new statistic value
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void setStatistic(UUID player, MatchStatisticId statistic, int value) throws McException;
     
     /**
      * Changes the match statistic for given team and statistic id.
+     * 
      * @param team
      * @param statistic
-     * @param value the new statistic value
-     * @throws McException thrown if the current match is not a team match or if match is not pending.
+     * @param value
+     *            the new statistic value
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is not pending.
      */
     void setStatistic(TeamIdType team, MatchStatisticId statistic, int value) throws McException;
     
     /**
      * Adds the match statistic for given player and statistic id.
+     * 
      * @param player
      * @param statistic
-     * @param amount delta value
+     * @param amount
+     *            delta value
      * @return the new statistic value
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     int addStatistic(UUID player, MatchStatisticId statistic, int amount) throws McException;
     
     /**
      * Adds the match statistic for given team and statistic id.
+     * 
      * @param team
      * @param statistic
-     * @param amount delta value
+     * @param amount
+     *            delta value
      * @return the new statistic value
-     * @throws McException thrown if the current match is not a team match or if match is not pending.
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is not pending.
      */
     int addStatistic(TeamIdType team, MatchStatisticId statistic, int amount) throws McException;
     
     /**
      * Decrement the match statistic for given player and statistic id.
+     * 
      * @param player
      * @param statistic
-     * @param amount delta value
+     * @param amount
+     *            delta value
      * @return the new statistic value
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     int decStatistic(UUID player, MatchStatisticId statistic, int amount) throws McException;
     
     /**
      * Decrement the match statistic for given team and statistic id.
+     * 
      * @param team
      * @param statistic
-     * @param amount delta value
+     * @param amount
+     *            delta value
      * @return the new statistic value
-     * @throws McException thrown if the current match is not a team match or if match is not pending.
+     * @throws McException
+     *             thrown if the current match is not a team match or if match is not pending.
      */
     int decStatistic(TeamIdType team, MatchStatisticId statistic, int amount) throws McException;
     
     /**
      * Returns the play time of given player in milli seconds
+     * 
      * @param player
      * @return play time in milli seconds
      */
@@ -390,18 +460,21 @@ public interface ArenaMatchInterface
     {
         /**
          * UUId of the player that was damaged or killed
+         * 
          * @return player that was killed
          */
         UUID getPlayer();
         
         /**
          * The last damager
+         * 
          * @return last damager
          */
         UUID getLastDamager();
         
         /**
          * The timestamp the last damage was recorded
+         * 
          * @return last damage
          */
         LocalDateTime getDamageTimestamp();
@@ -409,6 +482,7 @@ public interface ArenaMatchInterface
     
     /**
      * Returns the killer tracking for given target player; only works on pending matches
+     * 
      * @param player
      * @return killer tracking or {@code null} if player is not registered in this arena match
      */
@@ -416,16 +490,22 @@ public interface ArenaMatchInterface
     
     /**
      * Resets the killer tracking for given target player
+     * 
      * @param player
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void resetKillerTracking(UUID player) throws McException;
     
     /**
      * Tracks last damage for killer detection
-     * @param targetPlayer the player that was hit
-     * @param damager the last damager
-     * @throws McException thrown if match is not pending.
+     * 
+     * @param targetPlayer
+     *            the player that was hit
+     * @param damager
+     *            the last damager
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void trackDamageForKill(UUID targetPlayer, UUID damager) throws McException;
     
@@ -433,30 +513,68 @@ public interface ArenaMatchInterface
     
     /**
      * Marks one or more players for losing the game
+     * 
      * @param players
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void setLoser(UUID... players) throws McException;
     
     /**
      * Marks one or more players for winning the game
+     * 
      * @param players
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void setWinner(UUID... players) throws McException;
     
     /**
      * Marks one or more teams for losing the game
+     * 
      * @param teams
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void setLoser(TeamIdType... teams) throws McException;
     
     /**
      * Marks one or more teams for winning the game
+     * 
      * @param teams
-     * @throws McException thrown if match is not pending.
+     * @throws McException
+     *             thrown if match is not pending.
      */
     void setWinner(TeamIdType... teams) throws McException;
+    
+    // classes
+    
+    /**
+     * Returns the class of given player.
+     * 
+     * @param player
+     *            player
+     * @return class or {@ode null} if player did not select any class.
+     */
+    ArenaClassInterface getClass(UUID player);
+    
+    /**
+     * Selects class for given player.
+     * 
+     * @param player
+     *            player
+     * @param clazz
+     *            class to choose
+     */
+    void selectClass(UUID player, ArenaClassInterface clazz);
+    
+    /**
+     * Returns the player having selected given class.
+     * 
+     * @param clazz
+     *            class
+     * @return list of players having this class
+     */
+    List<UUID> getPlayers(ArenaClassInterface clazz);
     
 }

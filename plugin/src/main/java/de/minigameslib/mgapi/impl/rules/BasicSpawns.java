@@ -153,7 +153,7 @@ public class BasicSpawns extends AbstractArenaRule implements BasicSpawnsRuleInt
             }
             catch (McException e)
             {
-                // TODO Logging
+                LOGGER.log(Level.WARNING, "Problems selecting spawns", e); //$NON-NLS-1$
             }
             if (this.currentSpawns.isEmpty())
             {

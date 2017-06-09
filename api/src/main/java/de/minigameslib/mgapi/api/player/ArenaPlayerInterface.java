@@ -56,13 +56,13 @@ public interface ArenaPlayerInterface
     }
     
     /**
-     * Returns the name of the player.
+     * Returns the display name of the player.
      * 
-     * @return name of the player.
+     * @return display name of the player.
      */
     default String getName()
     {
-        return this.getMcPlayer().getName();
+        return this.getMcPlayer().getDisplayName();
     }
     
     /**

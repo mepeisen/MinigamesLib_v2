@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.bukkit.entity.Player;
 
 import de.minigameslib.mclib.api.McException;
@@ -49,6 +52,9 @@ public class PointsForDamage extends AbstractZoneRule implements PointsForDamage
      * The number of points.
      */
     private float factor;
+    
+    /** logger. */
+    private static final Logger LOGGER    = Logger.getLogger(PointsForDamage.class.getName());
     
     /**
      * @param type
@@ -122,7 +128,7 @@ public class PointsForDamage extends AbstractZoneRule implements PointsForDamage
                     }
                     catch (McException e)
                     {
-                        // TODO logging
+                        LOGGER.log(Level.WARNING, "Problems setting points", e); //$NON-NLS-1$
                     }
                 }
             }

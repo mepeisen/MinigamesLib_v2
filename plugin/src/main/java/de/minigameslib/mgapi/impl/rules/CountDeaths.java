@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
@@ -38,6 +41,9 @@ import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
  */
 public class CountDeaths extends AbstractArenaRule
 {
+    
+    /** logger. */
+    private static final Logger LOGGER    = Logger.getLogger(CountDeaths.class.getName());
     
     /**
      * @param type
@@ -72,7 +78,7 @@ public class CountDeaths extends AbstractArenaRule
             }
             catch (McException e)
             {
-                // TODO logging
+                LOGGER.log(Level.WARNING, "Problems setting death statistics", e); //$NON-NLS-1$
             }
         }
     }

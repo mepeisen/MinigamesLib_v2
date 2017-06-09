@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.arena;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -80,6 +83,9 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
      * flag to control if player listener is installed.
      */
     private boolean                   listenerInstalled = false;
+    
+    /** logger instance. */
+    private final static Logger       LOGGER            = Logger.getLogger(ArenaPlayerImpl.class.getName());
     
     /**
      * Constructor
@@ -368,13 +374,11 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
             {
                 try
                 {
-                    this.getArena().getCurrentMatch().trackDamageForKill(
-                            evt.getBukkitEvent().getEntity().getUniqueId(),
-                            evt.getBukkitEvent().getDamager().getUniqueId());
+                    this.getArena().getCurrentMatch().trackDamageForKill(evt.getBukkitEvent().getEntity().getUniqueId(), evt.getBukkitEvent().getDamager().getUniqueId());
                 }
                 catch (McException e)
                 {
-                    // TODO logging
+                    LOGGER.log(Level.WARNING, "Problems while tracking dmg", e); //$NON-NLS-1$
                 }
             }
         }
@@ -414,7 +418,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
         }
         catch (McException e)
         {
-            // TODO logging
+            LOGGER.log(Level.WARNING, "Problems resetting killer tracking", e); //$NON-NLS-1$
         }
     }
     

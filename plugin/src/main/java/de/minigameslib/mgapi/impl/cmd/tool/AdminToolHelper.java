@@ -356,6 +356,7 @@ public class AdminToolHelper
      * @return sign supplier.
      * @throws McException 
      */
+    @SuppressWarnings("deprecation")
     public static McFunction<ArenaInterface, ArenaSignHandler> getSignSupplierFromEvent(McPlayerInteractEvent evt, McPlayerInterface player, SignTypeId type) throws McException
     {
         Block target = null;

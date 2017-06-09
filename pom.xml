@@ -49,6 +49,12 @@
 			<version>${mclib.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>de.minigameslib.mclib</groupId>
+			<artifactId>spigot-testsupport-api</artifactId>
+			<version>${mclib.version}</version>
+			<scope>test</scope>
+		</dependency>
 		
 		<dependency>
 			<groupId>de.minigameslib.mglib</groupId>

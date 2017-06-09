@@ -15,34 +15,26 @@
 
 package de.minigameslib.mgapi.api.test;
 
+import org.junit.Test;
+
+import de.minigameslib.mclib.spigottest.CommonTestUtil;
+import de.minigameslib.mgapi.api.MinigameMessages;
+
 /**
- * Some shared test utility.
+ * test case for {@link MinigameMessages}
  * 
  * @author mepeisen
  */
-public class SharedUtil
+public class MinigameMessagesTest
 {
     
     /**
-     * tests some things on enumerations to satisfy code coverage.
-     * 
-     * @param clazz
-     *            enum class to test
+     * Tests the enum
      */
-    public static void testEnumClass(Class<? extends Enum<?>> clazz)
+    @Test
+    public void enumTest()
     {
-        try
-        {
-            for (Object o : (Object[]) clazz.getMethod("values").invoke(null)) //$NON-NLS-1$
-            {
-                clazz.getMethod("valueOf", String.class).invoke(null, o.toString()); //$NON-NLS-1$
-            }
-        }
-        catch (Throwable e)
-        {
-            throw new RuntimeException(e);
-        }
-        
+        CommonTestUtil.testEnumClass(MinigameMessages.class);
     }
     
 }

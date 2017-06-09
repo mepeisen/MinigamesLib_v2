@@ -34,7 +34,7 @@ import de.minigameslib.mclib.api.config.ConfigurationValues;
  * 
  * @author mepeisen
  * 
- * @see BasicArenaRuleSets#PointsForDamage
+ * @see BasicZoneRuleSets#PointsForDamage
  */
 @ConfigurationValues(path = "core")
 public enum PointsForDamageConfig implements ConfigurationValueInterface

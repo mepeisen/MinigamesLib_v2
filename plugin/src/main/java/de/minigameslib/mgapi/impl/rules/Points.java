@@ -24,6 +24,9 @@
 
 package de.minigameslib.mgapi.impl.rules;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.event.McEventHandler;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
@@ -45,6 +48,9 @@ public class Points extends AbstractArenaRule implements PointsRuleInterface
      * The number of points to win.
      */
     private int points;
+    
+    /** logger. */
+    private static final Logger LOGGER    = Logger.getLogger(Points.class.getName());
     
     /**
      * @param type
@@ -111,7 +117,7 @@ public class Points extends AbstractArenaRule implements PointsRuleInterface
                 }
                 catch (McException e)
                 {
-                    // TODO logging
+                    LOGGER.log(Level.WARNING, "Problems letting the player win", e); //$NON-NLS-1$
                 }
             }
         }

@@ -944,7 +944,7 @@ public class MinigamesPlugin extends JavaPlugin implements MinigamesLibInterface
         }
         catch (McException e)
         {
-            // TODO Logging
+            this.getLogger().log(Level.WARNING, "Exception while building provider for type " + type, e); //$NON-NLS-1$
         }
         for (final ExtensionImpl ext : this.extensionsPerName.values())
         {

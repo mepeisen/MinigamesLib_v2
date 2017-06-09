@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
 
 import org.bukkit.plugin.Plugin;
 
@@ -43,7 +41,6 @@ import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaState;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.rules.AbstractRuleSetContainer;
-import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
 import de.minigameslib.mgapi.api.rules.RuleSetInterface;
 import de.minigameslib.mgapi.api.rules.RuleSetType;
 

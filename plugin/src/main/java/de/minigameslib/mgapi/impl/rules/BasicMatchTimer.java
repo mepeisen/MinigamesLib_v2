@@ -450,7 +450,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
                         }
                         catch (McException e)
                         {
-                            // TODO logging
+                            LOGGER.log(Level.WARNING, "Problems letting the player leave the arena", e); //$NON-NLS-1$
                         }
                         p.getMcPlayer().sendMessage(Messages.Abort);
                     });
@@ -461,7 +461,7 @@ public class BasicMatchTimer extends AbstractArenaRule implements BasicMatchTime
                         }
                         catch (McException e)
                         {
-                            // TODO logging
+                            LOGGER.log(Level.WARNING, "Problems letting the player leave the arena", e); //$NON-NLS-1$
                         }
                         p.getMcPlayer().sendMessage(Messages.Abort);
                     });

@@ -31,10 +31,12 @@ import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
 import de.minigameslib.mclib.api.objects.ComponentInterface;
 import de.minigameslib.mclib.api.objects.SignInterface;
 import de.minigameslib.mclib.api.objects.ZoneInterface;
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
 import de.minigameslib.mgapi.api.match.ArenaMatchInterface;
 import de.minigameslib.mgapi.api.rules.ArenaRuleSetType;
+import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
 import de.minigameslib.mgapi.api.rules.ComponentRuleSetType;
 import de.minigameslib.mgapi.api.rules.SignRuleSetType;
 import de.minigameslib.mgapi.api.rules.ZoneRuleSetType;
@@ -84,7 +86,7 @@ public interface ExtensionProvider
     LocalizedMessageInterface getManual();
     
     /**
-     * Processes a match after being played and overtake statistics to become persistent.
+     * Processes a match after being played and before persisting the statistics.
      * 
      * @param match
      *            finished arena match
@@ -146,6 +148,34 @@ public interface ExtensionProvider
      * @return all optional rule sets being available for this component.
      */
     default Set<ComponentRuleSetType> getOptionalRuleSets(ArenaInterface arena, ComponentInterface component)
+    {
+        return Collections.emptySet();
+    }
+    
+//    /**
+//     * Returns all optional rule sets for this type.
+//     * 
+//     * @param arena
+//     *            target arena
+//     * @param component
+//     *            target component
+//     * @return all optional rule sets being available for this entity.
+//     */
+//    default Set<EntityRuleSetType> getOptionalRuleSets(ArenaInterface arena, EntityInterface component)
+//    {
+//        return Collections.emptySet();
+//    }
+    
+    /**
+     * Returns all optional rule sets for this type.
+     * 
+     * @param arena
+     *            target arena
+     * @param component
+     *            target component
+     * @return all optional rule sets being available for this class.
+     */
+    default Set<ClassRuleSetType> getOptionalRuleSets(ArenaInterface arena, ArenaClassInterface component)
     {
         return Collections.emptySet();
     }

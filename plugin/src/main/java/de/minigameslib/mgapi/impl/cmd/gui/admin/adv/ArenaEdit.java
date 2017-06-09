@@ -26,6 +26,8 @@ package de.minigameslib.mgapi.impl.cmd.gui.admin.adv;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
@@ -68,6 +70,9 @@ public class ArenaEdit implements ClickGuiPageInterface
     
     /** previous page. */
     private ClickGuiPageInterface prevPage;
+    
+    /** logger instance. */
+    private static final Logger LOGGER = Logger.getLogger(ArenaEdit.class.getName());
 
     /**
      * @param arena
@@ -155,7 +160,7 @@ public class ArenaEdit implements ClickGuiPageInterface
                         }
                         catch (McException e)
                         {
-                            // TODO logging
+                            LOGGER.log(Level.WARNING, "Problems saving arena data", e); //$NON-NLS-1$
                         }
                     },
                     (c, s, g) -> s.setNewPage(this),
@@ -163,7 +168,7 @@ public class ArenaEdit implements ClickGuiPageInterface
         }
         catch (McException e)
         {
-            // TODO logging
+            LOGGER.log(Level.WARNING, "Problems creating gui editor item", e); //$NON-NLS-1$
             return null;
         }
     }
@@ -188,7 +193,7 @@ public class ArenaEdit implements ClickGuiPageInterface
                         }
                         catch (McException e)
                         {
-                            // TODO logging
+                            LOGGER.log(Level.WARNING, "Problems saving arena data", e); //$NON-NLS-1$
                         }
                     },
                     (c, s, g) -> s.setNewPage(this),
@@ -196,20 +201,20 @@ public class ArenaEdit implements ClickGuiPageInterface
         }
         catch (McException e)
         {
-            // TODO logging
+            LOGGER.log(Level.WARNING, "Problems creating gui editor item", e); //$NON-NLS-1$
             return null;
         }
     }
     
     /**
-     * entites
+     * security
      * @param player
      * @param session
      * @param gui
      */
     private void onSecurity(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui)
     {
-        // TODO gui edit entities
+        // TODO gui edit security
         player.sendMessage(Main.Messages.NotAvailable);
     }
     
