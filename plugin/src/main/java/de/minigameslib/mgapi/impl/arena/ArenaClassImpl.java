@@ -32,6 +32,7 @@ import de.minigameslib.mclib.api.locale.LocalizedConfigLine;
 import de.minigameslib.mclib.api.locale.LocalizedConfigString;
 import de.minigameslib.mclib.shared.api.com.AnnotatedDataFragment;
 import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
+import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.rules.ClassRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
 
@@ -251,6 +252,16 @@ public class ArenaClassImpl extends AnnotatedDataFragment implements ArenaClassI
     {
         // TODO Auto-generated method stub
         
+    }
+
+    /* (non-Javadoc)
+     * @see de.minigameslib.mgapi.api.arena.ArenaClassInterface#getArena()
+     */
+    @Override
+    public ArenaInterface getArena()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }
