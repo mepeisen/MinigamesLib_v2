@@ -26,6 +26,7 @@ package de.minigameslib.mgapi.api.rules;
 
 import java.util.Collection;
 
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 
@@ -38,10 +39,10 @@ public interface ClassRuleSetInterface extends RuleSetInterface<ClassRuleSetType
 {
     
     /**
-     * Returns the underlying player chosen this class.
-     * @return player
+     * Returns the underlying arena class.
+     * @return class
      */
-    ArenaPlayerInterface getPlayer();
+    ArenaClassInterface getArenaClass();
     
     /**
      * Check the arena setup and report errors, warnings or informational messages.

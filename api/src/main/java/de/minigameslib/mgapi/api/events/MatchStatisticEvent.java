@@ -35,26 +35,26 @@ import de.minigameslib.mclib.api.util.function.McOutgoingStubbing;
 import de.minigameslib.mclib.api.util.function.McPredicate;
 import de.minigameslib.mclib.api.util.function.TrueStub;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
-import de.minigameslib.mgapi.api.stat.MatchStatisticInterface;
-import de.minigameslib.mgapi.api.stat.StatisticServiceInterface;
+import de.minigameslib.mgapi.api.stat.MutableMatchStatisticInterface;
 
 /**
- * Event fired after statistic change within {@link StatisticServiceInterface}.
+ * Event fired after statistic calculation.
  * 
  * <p>
- * Actually this event is fired after a match ended and causes changes to statistics.
+ * Actually this event is fired after a match ended. It holds a mutable statistics
+ * to be manipulated before the statistics is persisted.
  * </p>
  * 
  * @author mepeisen
  */
-public class ArenaStatisticEvent extends Event implements MinecraftEvent<ArenaStatisticEvent, ArenaStatisticEvent>
+public class MatchStatisticEvent extends Event implements MinecraftEvent<MatchStatisticEvent, MatchStatisticEvent>
 {
     
     /** handlers list. */
     private static final HandlerList handlers = new HandlerList();
     
     /** the match. */
-    private final MatchStatisticInterface match;
+    private final MutableMatchStatisticInterface match;
     
     /** the arena. */
     private final ArenaInterface arena;
@@ -65,7 +65,7 @@ public class ArenaStatisticEvent extends Event implements MinecraftEvent<ArenaSt
      * @param match
      * @param arena
      */
-    public ArenaStatisticEvent(MatchStatisticInterface match, ArenaInterface arena)
+    public MatchStatisticEvent(MutableMatchStatisticInterface match, ArenaInterface arena)
     {
         this.match = match;
         this.arena = arena;
@@ -74,7 +74,7 @@ public class ArenaStatisticEvent extends Event implements MinecraftEvent<ArenaSt
     /**
      * @return the match statistics
      */
-    public MatchStatisticInterface getMatch()
+    public MutableMatchStatisticInterface getMatch()
     {
         return this.match;
     }
@@ -109,7 +109,7 @@ public class ArenaStatisticEvent extends Event implements MinecraftEvent<ArenaSt
     }
 
     @Override
-    public ArenaStatisticEvent getBukkitEvent()
+    public MatchStatisticEvent getBukkitEvent()
     {
         return this;
     }
@@ -121,7 +121,7 @@ public class ArenaStatisticEvent extends Event implements MinecraftEvent<ArenaSt
     }
 
     @Override
-    public McOutgoingStubbing<ArenaStatisticEvent> when(McPredicate<ArenaStatisticEvent> test) throws McException
+    public McOutgoingStubbing<MatchStatisticEvent> when(McPredicate<MatchStatisticEvent> test) throws McException
     {
         if (test.test(this))
         {

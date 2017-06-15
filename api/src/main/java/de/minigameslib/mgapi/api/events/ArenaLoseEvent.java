@@ -44,7 +44,13 @@ import de.minigameslib.mgapi.api.match.MatchResult;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 
 /**
- * One or more player were marked as loser
+ * One or more player were marked as loser.
+ * 
+ * <p>
+ * Notice: The place returned from {@code MatchResult#getPlace()} may not be the correct place returned
+ * at the end of the match. Because players winning or losing later will be moved before this place and
+ * thus the place number may be increased later on.
+ * </p>
  * 
  * @author mepeisen
  * 

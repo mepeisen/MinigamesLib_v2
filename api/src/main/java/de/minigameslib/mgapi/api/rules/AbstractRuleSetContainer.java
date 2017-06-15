@@ -140,7 +140,20 @@ public abstract class AbstractRuleSetContainer<T extends RuleSetType, Q extends 
     {
         for (final T ruleset : rulesets)
         {
-            this.fixedRuleSets.add(ruleset);
+            this.applyFixedRuleSet(ruleset);
+        }
+    }
+
+    /**
+     * Adds optional rule sets.
+     * @param rulesets
+     * @throws McException
+     */
+    public void applyOptionalRuleSets(@SuppressWarnings("unchecked") T... rulesets) throws McException
+    {
+        for (final T ruleset : rulesets)
+        {
+            this.applyOptionalRuleSet(ruleset);
         }
     }
     
@@ -148,15 +161,16 @@ public abstract class AbstractRuleSetContainer<T extends RuleSetType, Q extends 
      * Clears all rulesets
      * @throws McException
      */
+    @SuppressWarnings("unchecked")
     public void clearRuleSets() throws McException
     {
-        for (final T type : this.fixedRuleSets)
+        for (final Object type : this.fixedRuleSets.toArray())
         {
-            this.removeFixedRuleSet(type);
+            this.removeFixedRuleSet((T) type);
         }
-        for (final T type : this.optionalRuleSets)
+        for (final Object type : this.optionalRuleSets.toArray())
         {
-            this.removeOptionalRuleSet(type);
+            this.removeOptionalRuleSet((T) type);
         }
     }
 

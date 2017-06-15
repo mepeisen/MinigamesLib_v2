@@ -29,12 +29,11 @@ import java.util.Collection;
 
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.McLibInterface;
-import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.McRunnable;
 import de.minigameslib.mclib.api.util.function.McSupplier;
+import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.arena.CheckFailure;
-import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 
 /**
  * Abstract base class for rule sets
@@ -45,9 +44,9 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
 {
     
     /**
-     * the underlying player.
+     * the underlying arena class.
      */
-    protected final ArenaPlayerInterface   player;
+    protected final ArenaClassInterface   clazz;
     
     /**
      * rule set type.
@@ -56,14 +55,14 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     
     /**
      * @param type
-     * @param player
+     * @param clazz
      * @throws McException
      *             thrown if config is invalid
      */
-    public AbstractClassRule(ClassRuleSetType type, ArenaPlayerInterface player) throws McException
+    public AbstractClassRule(ClassRuleSetType type, ArenaClassInterface clazz) throws McException
     {
         this.type = type;
-        this.player = player;
+        this.clazz = clazz;
     }
     
     @Override
@@ -73,9 +72,9 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     }
     
     @Override
-    public ArenaPlayerInterface getPlayer()
+    public ArenaClassInterface getArenaClass()
     {
-        return this.player;
+        return this.clazz;
     }
     
     /**
@@ -89,9 +88,7 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     protected void runInNewContext(McRunnable runnable) throws McException
     {
         McLibInterface.instance().runInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.player.getArena());
-            McLibInterface.instance().setContext(McPlayerInterface.class, this.player.getMcPlayer());
-            McLibInterface.instance().setContext(ArenaPlayerInterface.class, this.player);
+            McLibInterface.instance().setContext(ArenaInterface.class, this.clazz.getArena());
             McLibInterface.instance().setContext(ClassRuleSetInterface.class, this);
             runnable.run();
         });
@@ -108,9 +105,7 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     protected void runInCopiedContext(McRunnable runnable) throws McException
     {
         McLibInterface.instance().runInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.player.getArena());
-            McLibInterface.instance().setContext(McPlayerInterface.class, this.player.getMcPlayer());
-            McLibInterface.instance().setContext(ArenaPlayerInterface.class, this.player);
+            McLibInterface.instance().setContext(ArenaInterface.class, this.clazz.getArena());
             McLibInterface.instance().setContext(ClassRuleSetInterface.class, this);
             runnable.run();
         });
@@ -130,9 +125,7 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     protected <T> T calculateInNewContext(McSupplier<T> runnable) throws McException
     {
         return McLibInterface.instance().calculateInNewContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.player.getArena());
-            McLibInterface.instance().setContext(McPlayerInterface.class, this.player.getMcPlayer());
-            McLibInterface.instance().setContext(ArenaPlayerInterface.class, this.player);
+            McLibInterface.instance().setContext(ArenaInterface.class, this.clazz.getArena());
             McLibInterface.instance().setContext(ClassRuleSetInterface.class, this);
             return runnable.get();
         });
@@ -152,9 +145,7 @@ public abstract class AbstractClassRule implements ClassRuleSetInterface
     protected <T> T calculateInCopiedContext(McSupplier<T> runnable) throws McException
     {
         return McLibInterface.instance().calculateInCopiedContext(() -> {
-            McLibInterface.instance().setContext(ArenaInterface.class, this.player.getArena());
-            McLibInterface.instance().setContext(McPlayerInterface.class, this.player.getMcPlayer());
-            McLibInterface.instance().setContext(ArenaPlayerInterface.class, this.player);
+            McLibInterface.instance().setContext(ArenaInterface.class, this.clazz.getArena());
             McLibInterface.instance().setContext(ClassRuleSetInterface.class, this);
             return runnable.get();
         });

@@ -108,6 +108,12 @@ public interface ArenaClassInterface extends RuleSetContainerInterface<ClassRule
      * @throws McException thrown if player does not have enough money.
      */
     void checkSelection(UUID player) throws McException;
+
+    /**
+     * Returns the owning arena.
+     * @return owning arena.
+     */
+    ArenaInterface getArena();
     
     
 }
