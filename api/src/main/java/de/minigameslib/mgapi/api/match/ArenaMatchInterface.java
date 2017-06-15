@@ -554,7 +554,7 @@ public interface ArenaMatchInterface
      * 
      * @param player
      *            player
-     * @return class or {@ode null} if player did not select any class.
+     * @return class or {@code null} if player did not select any class.
      */
     ArenaClassInterface getClass(UUID player);
     

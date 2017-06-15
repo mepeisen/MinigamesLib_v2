@@ -119,7 +119,7 @@ public interface StatisticInterface
      *            player
      * @param statistic
      * @param ascending
-     *            {@true} for returning the players with less points at first.
+     *            {@code true} for returning the players with less points at first.
      * @return place (starting with 1); -1 for unknown place
      * @throws McException thrown if there are problems fetching the data.
      */
@@ -135,7 +135,7 @@ public interface StatisticInterface
      * @param limit
      *            maximum limit to return
      * @param ascending
-     *            {@true} for returning the players with less points at first.
+     *            {@code true} for returning the players with less points at first.
      * @return player list in order
      * @throws McException thrown if there are problems fetching the data.
      */
@@ -189,7 +189,7 @@ public interface StatisticInterface
      *            team
      * @param statistic
      * @param ascending
-     *            {@true} for returning the teams with less points at first.
+     *            {@code true} for returning the teams with less points at first.
      * @return place (starting with 1); -1 for unknown place
      * @throws McException thrown if there are problems fetching the data.
      */
@@ -205,7 +205,7 @@ public interface StatisticInterface
      * @param limit
      *            maximum limit to return
      * @param ascending
-     *            {@true} for returning the teams with less points at first.
+     *            {@code true} for returning the teams with less points at first.
      * @return team list in order
      * @throws McException thrown if there are problems fetching the data.
      */
