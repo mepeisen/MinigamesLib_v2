@@ -39,6 +39,7 @@ import de.minigameslib.mclib.api.enums.EnumServiceInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
+import de.minigameslib.mclib.api.gui.GuiServiceInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.locale.LocalizedMessage;
 import de.minigameslib.mclib.api.locale.LocalizedMessageInterface;
@@ -49,7 +50,6 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.objects.SignTypeId;
 import de.minigameslib.mclib.api.util.function.McBiConsumer;
-import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaSignHandler;
 import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
@@ -179,12 +179,13 @@ public class SignsCreateChooseType extends AbstractPage<SignTypeId>
     {
         final String text = this.getFreeName(type.name().toLowerCase());
 
-        player.openAnvilGui(new QueryText(
+        GuiServiceInterface.instance().openTextEditor(
+                player,
                 text,
-                () -> {player.openClickGui(new Main(this.prev));},
+                () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, type, s),
-                player.encodeMessage(Messages.TextDescription),
-                true));
+                false,
+                Messages.TextDescription);
     }
     
     /**

@@ -38,6 +38,7 @@ import de.minigameslib.mclib.api.enums.EnumServiceInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
+import de.minigameslib.mclib.api.gui.GuiServiceInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.items.CommonItems;
 import de.minigameslib.mclib.api.items.ItemServiceInterface;
@@ -50,7 +51,6 @@ import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.ComponentTypeId;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.McBiConsumer;
-import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
 import de.minigameslib.mgapi.impl.cmd.gui.AbstractPage;
@@ -180,12 +180,13 @@ public class ComponentsCreateChooseType extends AbstractPage<ComponentTypeId>
     {
         final String text = this.getFreeName(type.name().toLowerCase());
 
-        player.openAnvilGui(new QueryText(
+        GuiServiceInterface.instance().openTextEditor(
+                player,
                 text,
-                () -> {player.openClickGui(new Main(this.prev));},
+                () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, type, s),
-                player.encodeMessage(Messages.TextDescription),
-                true));
+                false,
+                Messages.TextDescription);
     }
     
     /**

@@ -33,6 +33,7 @@ import de.minigameslib.mclib.api.McLibInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
+import de.minigameslib.mclib.api.gui.GuiServiceInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.items.CommonItems;
 import de.minigameslib.mclib.api.items.ItemServiceInterface;
@@ -43,7 +44,6 @@ import de.minigameslib.mclib.api.locale.LocalizedMessages;
 import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
-import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.MinigameMessages;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.obj.ArenaComponentHandler;
@@ -131,12 +131,13 @@ public class ComponentEdit implements ClickGuiPageInterface
      */
     private void onName(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
-        player.openAnvilGui(new QueryText(
+        GuiServiceInterface.instance().openTextEditor(
+                player,
                 this.component.getName(),
                 () -> {player.openClickGui(new Main(this));},
                 (s) -> this.onName(player, session, gui, s),
-                player.encodeMessage(Messages.NameDescription),
-                false));
+                false,
+                Messages.NameDescription);
     }
     
     /**

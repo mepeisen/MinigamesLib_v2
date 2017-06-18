@@ -36,6 +36,7 @@ import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
 import de.minigameslib.mclib.api.gui.ClickGuiPageInterface;
+import de.minigameslib.mclib.api.gui.GuiServiceInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.items.CommonItems;
 import de.minigameslib.mclib.api.items.ItemServiceInterface;
@@ -47,7 +48,6 @@ import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageComment.Argument;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.McBiConsumer;
-import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.MinigameInterface;
 import de.minigameslib.mgapi.api.MinigamesLibInterface;
 import de.minigameslib.mgapi.api.arena.ArenaTypeInterface;
@@ -170,13 +170,14 @@ public class ArenaCreateChooseArenaType extends AbstractPage<ArenaTypeInterface>
     private void onChoose(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui, ArenaTypeInterface type) throws McException
     {
         final String text = this.getFreeName(type.name().toLowerCase());
-
-        player.openAnvilGui(new QueryText(
+        
+        GuiServiceInterface.instance().openTextEditor(
+                player,
                 text,
                 () -> {player.openClickGui(new Main(this.prev));},
                 (s) -> this.onName(player, session, gui, type, s),
-                player.encodeMessage(Messages.TextDescription),
-                true));
+                true,
+                Messages.TextDescription);
     }
     
     /**

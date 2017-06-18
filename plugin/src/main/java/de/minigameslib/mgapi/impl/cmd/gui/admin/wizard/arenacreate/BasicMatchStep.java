@@ -27,6 +27,7 @@ package de.minigameslib.mgapi.impl.cmd.gui.admin.wizard.arenacreate;
 import de.minigameslib.mclib.api.McException;
 import de.minigameslib.mclib.api.gui.ClickGuiInterface;
 import de.minigameslib.mclib.api.gui.ClickGuiItem;
+import de.minigameslib.mclib.api.gui.GuiServiceInterface;
 import de.minigameslib.mclib.api.gui.GuiSessionInterface;
 import de.minigameslib.mclib.api.items.CommonItems;
 import de.minigameslib.mclib.api.items.ItemServiceInterface;
@@ -38,7 +39,6 @@ import de.minigameslib.mclib.api.locale.MessageComment;
 import de.minigameslib.mclib.api.locale.MessageSeverityType;
 import de.minigameslib.mclib.api.objects.McPlayerInterface;
 import de.minigameslib.mclib.api.util.function.McConsumer;
-import de.minigameslib.mclib.impl.gui.cfg.QueryText;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.rules.BasicArenaRuleSets;
 import de.minigameslib.mgapi.api.rules.BasicMatchRuleInterface;
@@ -95,7 +95,8 @@ public class BasicMatchStep implements WizardStepInterface<ArenaInterface>
      */
     private void onMinimumPlayers(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
-        player.nestAnvilGui(new QueryText(
+        GuiServiceInterface.instance().nestTextEditor(
+                player,
                 String.valueOf(this.minPlayer),
                 null,
                 s -> {
@@ -117,8 +118,8 @@ public class BasicMatchStep implements WizardStepInterface<ArenaInterface>
                         throw new McException(Messages.InvalidNumericFormat, ex);
                     }
                 },
-                player.encodeMessage(Messages.MinimumPlayersDescription),
-                true));
+                false,
+                Messages.MinimumPlayersDescription);
     }
 
     
@@ -131,7 +132,8 @@ public class BasicMatchStep implements WizardStepInterface<ArenaInterface>
      */
     private void onMaximumPlayers(McPlayerInterface player, GuiSessionInterface session, ClickGuiInterface gui) throws McException
     {
-        player.nestAnvilGui(new QueryText(
+        GuiServiceInterface.instance().nestTextEditor(
+                player,
                 String.valueOf(this.maxPlayer),
                 null,
                 s -> {
@@ -153,8 +155,8 @@ public class BasicMatchStep implements WizardStepInterface<ArenaInterface>
                         throw new McException(Messages.InvalidNumericFormat, ex);
                     }
                 },
-                player.encodeMessage(Messages.MaximumPlayersDescription),
-                true));
+                false,
+                Messages.MaximumPlayersDescription);
     }
     
     @Override
