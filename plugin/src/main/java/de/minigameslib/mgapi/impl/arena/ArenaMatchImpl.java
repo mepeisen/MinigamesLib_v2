@@ -303,6 +303,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         
         final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), t -> new MatchPlayer(this.arena, player));
+        this.removePlayerClass(player.getPlayerUUID(), this.classes.remove(player.getPlayerUUID()));
         
         if (mplayer.getTeam() == null)
         {
@@ -322,8 +323,6 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         else
         {
-            this.removePlayerClass(player.getPlayerUUID(), this.classes.get(player.getPlayerUUID()));
-            
             // player was playing within the match
             mplayer.setLeft(LocalDateTime.now());
             mplayer.setPlaying(false);
@@ -355,12 +354,11 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         ((ArenaPlayerImpl) player).resetPlayerData(player.isOnline());
         
         final MatchPlayer mplayer = this.players.get(player.getPlayerUUID());
+        this.removePlayerClass(player.getPlayerUUID(), this.classes.remove(player.getPlayerUUID()));
         if (mplayer != null)
         {
             if (mplayer.isPlaying() && this.started != null)
             {
-                this.removePlayerClass(player.getPlayerUUID(), this.classes.get(player.getPlayerUUID()));
-                
                 // match was started, mark player as loser
                 final MatchTeam losers = this.teams.get(CommonTeams.Losers);
                 
@@ -913,7 +911,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
             for (final UUID uuid : players)
             {
-                this.removePlayerClass(uuid, this.classes.get(uuid));
+                this.removePlayerClass(uuid, this.classes.remove(uuid));
                 
                 final MatchPlayer p = this.players.get(uuid);
                 if (p != null)
@@ -948,7 +946,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
             for (final UUID uuid : players)
             {
-                this.removePlayerClass(uuid, this.classes.get(uuid));
+                this.removePlayerClass(uuid, this.classes.remove(uuid));
                 
                 final MatchPlayer p = this.players.get(uuid);
                 if (p != null)
@@ -995,7 +993,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
                 for (final UUID uuid : playerSet)
                 {
-                    this.removePlayerClass(uuid, this.classes.get(uuid));
+                    this.removePlayerClass(uuid, this.classes.remove(uuid));
                     
                     final MatchPlayer p = this.players.get(uuid);
                     if (p != null)
@@ -1042,7 +1040,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 final MatchTeam spectators = this.teams.get(CommonTeams.Spectators);
                 for (final UUID uuid : playerSet)
                 {
-                    this.removePlayerClass(uuid, this.classes.get(uuid));
+                    this.removePlayerClass(uuid, this.classes.remove(uuid));
                     
                     final MatchPlayer p = this.players.get(uuid);
                     if (p != null)
@@ -1217,7 +1215,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
      */
     private void removePlayerClass(UUID player, ArenaClassInterface old)
     {
-        if (old != null)
+        if (old != null && this.started != null)
         {
             final ArenaPlayerInterface arenaPlayer = MinigamesLibInterface.instance().getPlayer(player);
             for (final ClassRuleSetType ruletype : old.getAppliedRuleSetTypes())
@@ -1238,7 +1236,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             final ArenaPlayerInterface arenaPlayer = MinigamesLibInterface.instance().getPlayer(player);
             for (final ClassRuleSetType ruletype : clazz.getAppliedRuleSetTypes())
             {
-                clazz.getRuleSet(ruletype).onRemove(arenaPlayer);
+                clazz.getRuleSet(ruletype).onChoose(arenaPlayer);
             }
         }
     }

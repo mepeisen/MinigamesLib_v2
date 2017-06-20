@@ -22,7 +22,7 @@
 
 */
 
-package de.minigameslib.mgapi.impl.test;
+package de.minigameslib.mgapi.impl.test.arenamatchimpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,7 +55,7 @@ import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.api.team.TeamIdType;
 import de.minigameslib.mgapi.impl.arena.ArenaMatchImpl;
-import de.minigameslib.mgapi.impl.arena.ArenaPlayerImpl;
+import de.minigameslib.mgapi.impl.test.MglibTestHelper;
 
 /**
  * Test case for {@link ArenaMatchImpl}
@@ -67,6 +67,17 @@ public class ArenaMatchImplTest
     
     /** plugin manager mock. */
     private PluginManager pluginManager;
+    
+    /**
+     * init surroundings.
+     * @throws ClassNotFoundException 
+     */
+    @Before
+    public void init() throws ClassNotFoundException
+    {
+        MglibTestHelper.initPlaceholdersDummy();
+        MglibTestHelper.initEnumServicesDummy();
+    }
 
     /**
      * Tests constructor defaults
@@ -192,10 +203,10 @@ public class ArenaMatchImplTest
         teamMatch.getOrCreate(CommonTeams.Aqua);
         teamMatch.getOrCreate(CommonTeams.Black);
         
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
-        final ArenaPlayerInterface player3 = this.createPlayer();
-        final ArenaPlayerInterface player4 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player4 = MglibTestHelper.createPlayer();
         
         assertNull(teamMatch.getTeam(player1.getPlayerUUID()));
         assertNull(teamMatch.getTeam(player2.getPlayerUUID()));
@@ -233,10 +244,10 @@ public class ArenaMatchImplTest
         TeamIdType team = teamMatch.getPreferredTeam();
         assertTrue(team == CommonTeams.Aqua || team == CommonTeams.Black);
         
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
-        final ArenaPlayerInterface player3 = this.createPlayer();
-        final ArenaPlayerInterface player4 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player4 = MglibTestHelper.createPlayer();
         
         teamMatch.join(player1, CommonTeams.Aqua);
         team = teamMatch.getPreferredTeam();
@@ -273,9 +284,9 @@ public class ArenaMatchImplTest
         assertEquals(0, teamMatch.getTeamMembers(CommonTeams.Black).size());
         assertEquals(0, teamMatch.getTeamMembers(CommonTeams.Blue).size());
         
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
-        final ArenaPlayerInterface player3 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer();
         
         teamMatch.join(player1, CommonTeams.Aqua);
         teamMatch.join(player2, CommonTeams.Black);
@@ -320,8 +331,8 @@ public class ArenaMatchImplTest
         spmatch.start();
         sleep(50);
         
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
         spmatch.join(player1, CommonTeams.Unknown);
         
         sleep(50);
@@ -355,16 +366,16 @@ public class ArenaMatchImplTest
     {
         final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         spmatch.start();
-        final ArenaPlayerInterface winner1 = this.createPlayer();
-        final ArenaPlayerInterface winner2a = this.createPlayer();
-        final ArenaPlayerInterface winner2b = this.createPlayer();
-        final ArenaPlayerInterface winner3 = this.createPlayer();
-        final ArenaPlayerInterface loser4 = this.createPlayer();
-        final ArenaPlayerInterface loser5a = this.createPlayer();
-        final ArenaPlayerInterface loser5b = this.createPlayer();
-        final ArenaPlayerInterface loser6 = this.createPlayer();
-        final ArenaPlayerInterface loser7a = this.createPlayer();
-        final ArenaPlayerInterface loser7b = this.createPlayer();
+        final ArenaPlayerInterface winner1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner2a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner2b = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner3 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser4 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser5a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser5b = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser6 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser7a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser7b = MglibTestHelper.createPlayer();
         spmatch.join(winner1, CommonTeams.Unknown);
         spmatch.join(winner2a, CommonTeams.Unknown);
         spmatch.join(winner2b, CommonTeams.Unknown);
@@ -460,16 +471,16 @@ public class ArenaMatchImplTest
     {
         final ArenaMatchImpl teamMatch = new ArenaMatchImpl(mock(ArenaInterface.class), true);
         teamMatch.start();
-        final ArenaPlayerInterface winner1 = this.createPlayer();
-        final ArenaPlayerInterface winner2a = this.createPlayer();
-        final ArenaPlayerInterface winner2b = this.createPlayer();
-        final ArenaPlayerInterface winner3 = this.createPlayer();
-        final ArenaPlayerInterface loser4 = this.createPlayer();
-        final ArenaPlayerInterface loser5a = this.createPlayer();
-        final ArenaPlayerInterface loser5b = this.createPlayer();
-        final ArenaPlayerInterface loser6 = this.createPlayer();
-        final ArenaPlayerInterface loser7a = this.createPlayer();
-        final ArenaPlayerInterface loser7b = this.createPlayer();
+        final ArenaPlayerInterface winner1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner2a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner2b = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface winner3 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser4 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser5a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser5b = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser6 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser7a = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface loser7b = MglibTestHelper.createPlayer();
         teamMatch.join(winner1, CommonTeams.Aqua);
         teamMatch.join(winner2a, CommonTeams.Black);
         teamMatch.join(winner2b, CommonTeams.Black);
@@ -635,9 +646,9 @@ public class ArenaMatchImplTest
     {
         final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
         spmatch.start();
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
-        final ArenaPlayerInterface player3 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer();
         spmatch.join(player1, CommonTeams.Unknown);
         spmatch.join(player2, CommonTeams.Unknown);
         
@@ -710,11 +721,11 @@ public class ArenaMatchImplTest
     {
         final ArenaInterface arena = mock(ArenaInterface.class);
         final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
-        final ArenaPlayerInterface player1 = this.createPlayer(); // joined before start
-        final ArenaPlayerInterface player2 = this.createPlayer(); // joined after start
-        final ArenaPlayerInterface player3 = this.createPlayer(); // spectator
-        final ArenaPlayerInterface player4 = this.createPlayer(); // unknown player
-        final ArenaPlayerInterface player5 = this.createPlayer(); // joined and left before start
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer(); // joined before start
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(); // joined after start
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer(); // spectator
+        final ArenaPlayerInterface player4 = MglibTestHelper.createPlayer(); // unknown player
+        final ArenaPlayerInterface player5 = MglibTestHelper.createPlayer(); // joined and left before start
         spmatch.join(player1, CommonTeams.Unknown);
         spmatch.join(player5, CommonTeams.Unknown);
         when(player5.getArena()).thenReturn(arena);
@@ -770,12 +781,12 @@ public class ArenaMatchImplTest
     public void testKillerTracking() throws McException
     {
         final ArenaMatchImpl spmatch = new ArenaMatchImpl(mock(ArenaInterface.class), false);
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
-        final ArenaPlayerInterface player3 = this.createPlayer();
-        final ArenaPlayerInterface player4 = this.createPlayer();
-        final ArenaPlayerInterface player5 = this.createPlayer();
-        final ArenaPlayerInterface player6 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player3 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player4 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player5 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player6 = MglibTestHelper.createPlayer();
         spmatch.start();
         spmatch.join(player1, CommonTeams.Unknown);
         spmatch.join(player2, CommonTeams.Unknown);
@@ -915,7 +926,7 @@ public class ArenaMatchImplTest
     public void failStatisticsAfterFinish4() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -938,7 +949,7 @@ public class ArenaMatchImplTest
     public void failStatisticsAfterFinish5() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -961,7 +972,7 @@ public class ArenaMatchImplTest
     public void failStatisticsAfterFinish6() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -984,8 +995,8 @@ public class ArenaMatchImplTest
     public void failJoinAfterFinish1() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player1);
@@ -1008,7 +1019,7 @@ public class ArenaMatchImplTest
     public void failJoinAfterFinish2() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1031,7 +1042,7 @@ public class ArenaMatchImplTest
     public void failSwitchAfterFinish() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.getOrCreate(CommonTeams.Aqua);
@@ -1056,7 +1067,7 @@ public class ArenaMatchImplTest
     public void failSpectateAfterFinish() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1079,7 +1090,7 @@ public class ArenaMatchImplTest
     public void failLeaveAfterFinish1() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1102,7 +1113,7 @@ public class ArenaMatchImplTest
     public void failLeaveAfterFinish2() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player, CommonTeams.Aqua);
@@ -1170,7 +1181,7 @@ public class ArenaMatchImplTest
     public void failResetKillerBeforeStart() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1191,8 +1202,8 @@ public class ArenaMatchImplTest
     public void failSetKillerBeforeStart() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player1 = this.createPlayer();
-        final ArenaPlayerInterface player2 = this.createPlayer();
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player1);
@@ -1214,7 +1225,7 @@ public class ArenaMatchImplTest
     public void failSetLoserBeforeStart1() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1235,7 +1246,7 @@ public class ArenaMatchImplTest
     public void failSetLoserBeforeStart2() throws McException
     {
         final ArenaMatchImpl teamMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             teamMatch.join(player, CommonTeams.Aqua);
@@ -1256,7 +1267,7 @@ public class ArenaMatchImplTest
     public void failSetWinnerBeforeStart1() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1277,7 +1288,7 @@ public class ArenaMatchImplTest
     public void failSetWinnerBeforeStart2() throws McException
     {
         final ArenaMatchImpl teamMatch = new ArenaMatchImpl(this.createDummyArena(), true);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             teamMatch.join(player, CommonTeams.Aqua);
@@ -1369,7 +1380,7 @@ public class ArenaMatchImplTest
     public void failTeamMethodOnSP5() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         spMatch.join(player, CommonTeams.Aqua);
     }
     
@@ -1381,7 +1392,7 @@ public class ArenaMatchImplTest
     public void failTeamMethodOnSP6() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1402,7 +1413,7 @@ public class ArenaMatchImplTest
     public void failTeamMethodOnSP7() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1423,7 +1434,7 @@ public class ArenaMatchImplTest
     public void failTeamMethodOnSP8() throws McException
     {
         final ArenaMatchImpl spMatch = new ArenaMatchImpl(this.createDummyArena(), false);
-        final ArenaPlayerInterface player = this.createPlayer();
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
         try
         {
             spMatch.join(player);
@@ -1484,17 +1495,6 @@ public class ArenaMatchImplTest
         namestring.setUserMessage(Locale.ENGLISH, name);
         when(arena.getDisplayName()).thenReturn(namestring);
         return arena;
-    }
-    
-    /**
-     * Creates a random arena player
-     * @return arena player
-     */
-    private ArenaPlayerInterface createPlayer()
-    {
-        final ArenaPlayerInterface result = mock(ArenaPlayerImpl.class);
-        when(result.getPlayerUUID()).thenReturn(UUID.randomUUID());
-        return result;
     }
 
     /**
