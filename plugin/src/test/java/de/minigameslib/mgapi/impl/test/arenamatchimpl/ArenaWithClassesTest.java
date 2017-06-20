@@ -43,6 +43,7 @@ import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.arena.ArenaInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.ClassRuleSetInterface;
+import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.impl.arena.ArenaMatchImpl;
 import de.minigameslib.mgapi.impl.test.MglibTestHelper;
 
@@ -166,6 +167,26 @@ public class ArenaWithClassesTest
 
     /**
      * get the classes.
+     * @throws McException 
+     */
+    @Test
+    public void selectDefaultClassForPlayer() throws McException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass();
+        when(arena.getDefaultArenaClass()).thenReturn(clazz1);
+        
+        spmatch.join(player1);
+        
+        assertEquals(clazz1, spmatch.getClass(player1.getPlayerUUID()));
+    }
+
+    /**
+     * get the classes.
      */
     @Test
     public void getClassForPlayer()
@@ -272,6 +293,108 @@ public class ArenaWithClassesTest
      * @throws ClassNotFoundException 
      */
     @Test
+    public void removeClassForWinners() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        spmatch.selectClass(player1.getPlayerUUID(), clazz1);
+        spmatch.join(player1);
+        when(player1.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.setWinner(player1.getPlayerUUID());
+        
+        verify(rule, times(1)).onChoose(player1);
+        verify(rule, times(1)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
+    public void removeClassForLosers() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        spmatch.selectClass(player1.getPlayerUUID(), clazz1);
+        spmatch.join(player1);
+        when(player1.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.setLoser(player1.getPlayerUUID());
+        
+        verify(rule, times(1)).onChoose(player1);
+        verify(rule, times(1)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
+    public void removeClassForWinnerTeams() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl teammatch = new ArenaMatchImpl(arena, true);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        teammatch.getOrCreate(CommonTeams.Aqua);
+        teammatch.selectClass(player1.getPlayerUUID(), clazz1);
+        teammatch.join(player1, CommonTeams.Aqua);
+        when(player1.getArena()).thenReturn(arena);
+        teammatch.start();
+        teammatch.setWinner(CommonTeams.Aqua);
+        
+        verify(rule, times(1)).onChoose(player1);
+        verify(rule, times(1)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
+    public void removeClassForLoserTeams() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl teammatch = new ArenaMatchImpl(arena, true);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        teammatch.getOrCreate(CommonTeams.Aqua);
+        teammatch.selectClass(player1.getPlayerUUID(), clazz1);
+        teammatch.join(player1, CommonTeams.Aqua);
+        when(player1.getArena()).thenReturn(arena);
+        teammatch.start();
+        teammatch.setLoser(CommonTeams.Aqua);
+        
+        verify(rule, times(1)).onChoose(player1);
+        verify(rule, times(1)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
     public void removeClassForLeavingInMatch() throws McException, ClassNotFoundException
     {
         final ArenaInterface arena = mock(ArenaInterface.class);
@@ -286,6 +409,57 @@ public class ArenaWithClassesTest
         when(player1.getArena()).thenReturn(arena);
         spmatch.start();
         spmatch.leave(player1);
+        
+        verify(rule, times(1)).onChoose(player1);
+        verify(rule, times(1)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
+    public void removeClassForSpectatingPreMatch() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        spmatch.selectClass(player1.getPlayerUUID(), clazz1);
+        spmatch.join(player1);
+        when(player1.getArena()).thenReturn(arena);
+        spmatch.spectate(player1);
+        
+        spmatch.start();
+        
+        verify(rule, times(0)).onChoose(player1);
+        verify(rule, times(0)).onRemove(player1);
+    }
+
+    /**
+     * remove the classes on leave.
+     * @throws McException 
+     * @throws ClassNotFoundException 
+     */
+    @Test
+    public void removeClassForSpectatingInMatch() throws McException, ClassNotFoundException
+    {
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        final ArenaPlayerInterface player1 = MglibTestHelper.createPlayer();
+        MglibTestHelper.createLib(player1);
+        final ClassRuleSetInterface rule = MglibTestHelper.createClassRule();
+        final ArenaClassInterface clazz1 = MglibTestHelper.createClass(rule);
+        
+        spmatch.selectClass(player1.getPlayerUUID(), clazz1);
+        spmatch.join(player1);
+        when(player1.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.spectate(player1);
         
         verify(rule, times(1)).onChoose(player1);
         verify(rule, times(1)).onRemove(player1);

@@ -47,6 +47,7 @@ import de.minigameslib.mgapi.api.arena.ArenaClassInterface;
 import de.minigameslib.mgapi.api.player.ArenaPlayerInterface;
 import de.minigameslib.mgapi.api.rules.ClassRuleSetInterface;
 import de.minigameslib.mgapi.api.rules.ClassRuleSetType;
+import de.minigameslib.mgapi.api.team.CommonTeams;
 import de.minigameslib.mgapi.impl.arena.ArenaPlayerImpl;
 
 /**
@@ -75,6 +76,9 @@ public class MglibTestHelper
             when(result.getPlayer(mcplayer)).thenReturn(player);
             when(result.getPlayer(uuid)).thenReturn(player);
         }
+        when(result.isSpecialTeam(CommonTeams.Losers)).thenReturn(true);
+        when(result.isSpecialTeam(CommonTeams.Spectators)).thenReturn(true);
+        when(result.isSpecialTeam(CommonTeams.Winners)).thenReturn(true);
         return result;
     }
     

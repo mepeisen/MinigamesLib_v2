@@ -470,6 +470,13 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         
         MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         });
+        
+        // TODO override by join event...
+        final ArenaClassInterface defClazz = this.getArena().getDefaultArenaClass();
+        if (defClazz != null)
+        {
+            this.selectClass(player.getPlayerUUID(), defClazz);
+        }
     }
     
     /**
