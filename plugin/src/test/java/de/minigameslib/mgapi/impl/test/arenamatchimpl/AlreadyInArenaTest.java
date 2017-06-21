@@ -51,14 +51,17 @@ public class AlreadyInArenaTest
     
     /**
      * Mock bukkit server
+     * @throws ClassNotFoundException 
      */
     @Before
-    public void mockServer()
+    public void mockServer() throws ClassNotFoundException
     {
         final Server server = mock(Server.class);
         Whitebox.setInternalState(Bukkit.class, "server", server); //$NON-NLS-1$
         final PluginManager pluginManager = mock(PluginManager.class);
         when(server.getPluginManager()).thenReturn(pluginManager);
+        
+        MglibTestHelper.initPlaceholdersDummy();
     }
     
     /**
@@ -121,6 +124,192 @@ public class AlreadyInArenaTest
         
         final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
         spmatch.spectate(player);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinBeforeMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.join(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinInMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+        spmatch.start();
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.join(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test(expected = McException.class)
+    public void testReJoinDuplicateInMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.join(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpec2BeforeMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.spectate(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpec2InMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.spectate(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+        spmatch.start();
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpec2DuplicateInMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.spectate(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpecBeforeMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpecInMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.leave(player);
+        spmatch.start();
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
+    }
+    
+    /**
+     * test me.
+     * @throws McException 
+     */
+    @Test
+    public void testReJoinSpecDuplicateInMatch() throws McException
+    {
+        final ArenaPlayerInterface player = MglibTestHelper.createPlayer();
+        final ArenaInterface arena = mock(ArenaInterface.class);
+        
+        final ArenaMatchImpl spmatch = new ArenaMatchImpl(arena, false);
+        spmatch.join(player);
+        when(player.inArena()).thenReturn(true);
+        when(player.getArena()).thenReturn(arena);
+        spmatch.start();
+        spmatch.leave(player);
+
+        final ArenaPlayerInterface player2 = MglibTestHelper.createPlayer(player.getPlayerUUID());
+        spmatch.spectate(player2);
     }
     
 }

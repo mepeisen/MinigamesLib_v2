@@ -88,8 +88,17 @@ public class MglibTestHelper
      */
     public static ArenaPlayerInterface createPlayer()
     {
+        return createPlayer(UUID.randomUUID());
+    }
+    
+    /**
+     * Creates a random arena player
+     * @param randomUUID
+     * @return arena player
+     */
+    public static ArenaPlayerInterface createPlayer(UUID randomUUID)
+    {
         final ArenaPlayerInterface result = mock(ArenaPlayerImpl.class);
-        final UUID randomUUID = UUID.randomUUID();
         when(result.getPlayerUUID()).thenReturn(randomUUID);
         final McPlayerInterface mcplayer = mock(McPlayerInterface.class);
         when(mcplayer.getPlayerUUID()).thenReturn(randomUUID);

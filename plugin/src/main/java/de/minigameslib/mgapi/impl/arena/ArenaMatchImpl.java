@@ -304,6 +304,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         
         final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), t -> new MatchPlayer(this.arena, player));
         this.removePlayerClass(player.getPlayerUUID(), this.classes.remove(player.getPlayerUUID()));
+        boolean playedBefore = false;
         
         if (mplayer.getTeam() == null)
         {
@@ -324,6 +325,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         else
         {
             // player was playing within the match
+            playedBefore = true;
             mplayer.setLeft(LocalDateTime.now());
             mplayer.setPlaying(false);
             mplayer.setSpec(true);
@@ -337,7 +339,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         }
         this.teams.get(CommonTeams.Spectators).getTeamMembers().add(player.getPlayerUUID());
         
-        final ArenaPlayerJoinedSpectatorsEvent joinEvent = new ArenaPlayerJoinedSpectatorsEvent(this.getArena(), player, mplayer.getTeam() != null);
+        final ArenaPlayerJoinedSpectatorsEvent joinEvent = new ArenaPlayerJoinedSpectatorsEvent(this.getArena(), player, playedBefore);
         Bukkit.getPluginManager().callEvent(joinEvent);
     }
     
@@ -357,7 +359,13 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         this.removePlayerClass(player.getPlayerUUID(), this.classes.remove(player.getPlayerUUID()));
         if (mplayer != null)
         {
-            if (mplayer.isPlaying() && this.started != null)
+            if (this.started == null)
+            {
+                // leave before match...
+                // drop data
+                this.players.remove(player.getPlayerUUID());
+            }
+            else if (mplayer.isPlaying() && this.started != null)
             {
                 // match was started, mark player as loser
                 final MatchTeam losers = this.teams.get(CommonTeams.Losers);
@@ -383,6 +391,7 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             }
             else if (mplayer.getLeft() == null)
             {
+                // non-playing (spectator) left
                 mplayer.setSpec(false);
                 mplayer.setPlaying(false);
                 mplayer.setLeft(LocalDateTime.now());
@@ -405,6 +414,8 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         else
         {
             // non playing users will leave silently
+            // drop data
+            this.players.remove(player.getPlayerUUID());
         }
     }
     
