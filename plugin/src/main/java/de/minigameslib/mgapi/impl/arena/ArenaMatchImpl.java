@@ -362,12 +362,15 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             if (this.started == null)
             {
                 // leave before match...
-                // drop data
+                final ArenaPlayerLeftEvent leftEvent = new ArenaPlayerLeftEvent(this.getArena(), player);
+                Bukkit.getPluginManager().callEvent(leftEvent);
+                
+                // drop player data
                 this.players.remove(player.getPlayerUUID());
             }
             else if (mplayer.isPlaying() && this.started != null)
             {
-                // match was started, mark player as loser
+                // match was started, mark player as loser...
                 final MatchTeam losers = this.teams.get(CommonTeams.Losers);
                 
                 mplayer.setTeam(CommonTeams.Losers);
@@ -389,34 +392,26 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 final ArenaLoseEvent loseEvent = new ArenaLoseEvent(this.getArena(), result);
                 Bukkit.getPluginManager().callEvent(loseEvent);
             }
-            else if (mplayer.getLeft() == null)
+            else
             {
-                // non-playing (spectator) left
+                // non-playing (spectator) left...
                 mplayer.setSpec(false);
                 mplayer.setPlaying(false);
                 mplayer.setLeft(LocalDateTime.now());
                 
-                if (mplayer.getTeam() == CommonTeams.Spectators)
-                {
-                    final ArenaPlayerLeftSpectatorsEvent leftEvent = new ArenaPlayerLeftSpectatorsEvent(this.getArena(), player);
-                    Bukkit.getPluginManager().callEvent(leftEvent);
-                }
-                else
+                if (mplayer.getTeam() != CommonTeams.Spectators)
                 {
                     final ArenaPlayerLeftEvent leftEvent = new ArenaPlayerLeftEvent(this.getArena(), player);
                     Bukkit.getPluginManager().callEvent(leftEvent);
                 }
+                final ArenaPlayerLeftSpectatorsEvent leftEvent2 = new ArenaPlayerLeftSpectatorsEvent(this.getArena(), player);
+                Bukkit.getPluginManager().callEvent(leftEvent2);
             }
             
             MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             });
         }
-        else
-        {
-            // non playing users will leave silently
-            // drop data
-            this.players.remove(player.getPlayerUUID());
-        }
+        // else: non playing and unknown users will leave silently
     }
     
     @Override
@@ -433,7 +428,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
         
         TeamIdType preTeam = this.isTeamMatch() ? this.getPreferredTeam() : CommonTeams.Unknown;
         if (preTeam == null)
+        {
             preTeam = CommonTeams.Unknown;
+        }
         
         final MatchPlayer mplayer = this.players.computeIfAbsent(player.getPlayerUUID(), t -> new MatchPlayer(this.arena, player));
         if (mplayer.getTeam() != null && mplayer.getTeam() != CommonTeams.Spectators)

@@ -79,6 +79,7 @@ public class MglibTestHelper
         when(result.isSpecialTeam(CommonTeams.Losers)).thenReturn(true);
         when(result.isSpecialTeam(CommonTeams.Spectators)).thenReturn(true);
         when(result.isSpecialTeam(CommonTeams.Winners)).thenReturn(true);
+        when(result.isSpecialTeam(CommonTeams.Unknown)).thenReturn(true);
         return result;
     }
     
