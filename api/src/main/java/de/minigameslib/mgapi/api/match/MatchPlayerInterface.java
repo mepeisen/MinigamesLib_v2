@@ -68,7 +68,8 @@ public interface MatchPlayerInterface extends KillerTracking
     TeamIdType getTeam();
 
     /**
-     * Checks if player is still playing the match
+     * Checks if player is still playing the match; in join phase every player within the lobby
+     * will return {@code true}.
      * @return {@code true} if player is still playing
      */
     boolean isPlaying();

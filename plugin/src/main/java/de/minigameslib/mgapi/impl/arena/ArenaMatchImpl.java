@@ -119,6 +119,10 @@ public class ArenaMatchImpl implements ArenaMatchInterface
      */
     private ArenaInterface                 arena;
     
+    // TODO Support for additional teams through api.
+    // Make join(Player, Team) more clear and maybe devide into twio methods:
+    // joinAdditionalTeam and switchPrimaryTeam etc.
+    
     /**
      * Constructor
      * 

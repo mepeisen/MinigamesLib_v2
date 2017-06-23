@@ -289,7 +289,7 @@ public class ArenaPlayerImpl extends AnnotatedDataFragment implements ArenaPlaye
      * @param arena
      * @param isSpectating
      */
-    void switchArenaOrMode(String arena, boolean isSpectating)
+    public void switchArenaOrMode(String arena, boolean isSpectating)
     {
         final ArenaPlayerPersistentData data = this.getData();
         data.setArenaName(arena);
