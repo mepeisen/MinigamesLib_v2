@@ -72,6 +72,7 @@ public class MatchPlayerTest
         when(server.getPluginManager()).thenReturn(this.pluginManager);
         
         MglibTestHelper.initPlaceholdersDummy();
+        MglibTestHelper.createLib();
     }
     
     /**
