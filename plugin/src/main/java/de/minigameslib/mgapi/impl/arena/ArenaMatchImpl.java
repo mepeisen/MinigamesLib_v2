@@ -334,6 +334,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             mplayer.setPlaying(false);
             mplayer.setSpec(true);
             
+            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
+            
             final ArenaPlayerJoinSpectatorsEvent joinEvent = new ArenaPlayerJoinSpectatorsEvent(this.getArena(), player, true);
             Bukkit.getPluginManager().callEvent(joinEvent);
             if (joinEvent.isCancelled())
@@ -952,6 +955,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             }
             final ArenaLoseEvent event = new ArenaLoseEvent(this.getArena(), result);
             Bukkit.getPluginManager().callEvent(event);
+            
+            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
         }
     }
     
@@ -988,6 +994,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
             this.firstLoser++;
             final ArenaWinEvent event = new ArenaWinEvent(this.getArena(), result);
             Bukkit.getPluginManager().callEvent(event);
+            
+            MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            });
         }
     }
     
@@ -1034,6 +1043,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 }
                 final ArenaLoseEvent event = new ArenaLoseEvent(this.getArena(), result);
                 Bukkit.getPluginManager().callEvent(event);
+                
+                MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                });
             }
         }
     }
@@ -1082,6 +1094,9 @@ public class ArenaMatchImpl implements ArenaMatchInterface
                 this.firstLoser++;
                 final ArenaWinEvent event = new ArenaWinEvent(this.getArena(), result);
                 Bukkit.getPluginManager().callEvent(event);
+                
+                MessageServiceInterface.instance().notifyPlaceholderChanges(new String[][] { { "mg2", "arena", "curplayers" }, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                });
             }
         }
     }

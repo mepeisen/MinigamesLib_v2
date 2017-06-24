@@ -25,6 +25,7 @@
 package de.minigameslib.mgapi.impl.test;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
+import org.mockito.AdditionalMatchers;
+import org.mockito.ArgumentMatcher;
 import org.powermock.reflect.Whitebox;
 
 import de.minigameslib.mclib.api.enums.EnumServiceInterface;
@@ -165,6 +168,122 @@ public class MglibTestHelper
         when(plugin.getName()).thenReturn("MinigamesLib"); //$NON-NLS-1$
         when(esi.getPlugin(any(EnumerationValue.class))).thenReturn(plugin);
         Whitebox.setInternalState(Class.forName("de.minigameslib.mclib.api.enums.EnumServiceCache"), "SERVICES", esi); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    /**
+     * Object array argument that contains given array, i.e. it has to
+     * have the same type, and every given element has to be contained.
+     * <p>
+     * See examples in javadoc for {@link AdditionalMatchers} class
+     * 
+     * @param <T>
+     *            the type of the array, it is passed through to prevent casts.
+     * @param value
+     *            the given array.
+     * @return <code>null</code>.
+     */
+    public static <T> T[][] phEq(T[][] value) {
+        return argThat(new ArgumentMatcher<T[][]>() {
+
+            @Override
+            public boolean matches(Object argument)
+            {
+                if (value == null)
+                {
+                    return argument == null;
+                }
+                if (argument != null && argument.getClass().isArray())
+                {
+                    final Object[] casted = (Object[]) argument;
+                    outer: for (int i = 0; i < value.length; i++)
+                    {
+                        boolean found = false;
+                        inner: for (int j = 0; j < casted.length; j++)
+                        {
+                            if (value[i] == null)
+                            {
+                                if (casted[j] != null)
+                                {
+                                    continue inner;
+                                }
+                                continue outer;
+                            }
+                            if (casted[j] == null || !casted[j].getClass().isArray())
+                            {
+                                continue inner;
+                            }
+                            if (!Arrays.equals((Object[]) casted[j], value[i]))
+                            {
+                                continue inner;
+                            }
+                            found = true;
+                            break inner;
+                        }
+                        if (!found)
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Object array argument that is equal to the given array, i.e. it has to
+     * have the same type, length, and each element has to be equal.
+     * <p>
+     * See examples in javadoc for {@link AdditionalMatchers} class
+     * 
+     * @param <T>
+     *            the type of the array, it is passed through to prevent casts.
+     * @param value
+     *            the given array.
+     * @return <code>null</code>.
+     */
+    public static <T> T[][] aryEq(T[][] value) {
+        return argThat(new ArgumentMatcher<T[][]>() {
+
+            @Override
+            public boolean matches(Object argument)
+            {
+                if (value == null)
+                {
+                    return argument == null;
+                }
+                if (argument != null && argument.getClass().isArray())
+                {
+                    final Object[] casted = (Object[]) argument;
+                    if (value.length != casted.length)
+                    {
+                        return false;
+                    }
+                    for (int i = 0; i < casted.length; i++)
+                    {
+                        if (value[i] == null)
+                        {
+                            if (casted[i] != null)
+                            {
+                                return false;
+                            }
+                            continue;
+                        }
+                        if (casted[i] == null || !casted[i].getClass().isArray())
+                        {
+                            return false;
+                        }
+                        if (!Arrays.equals((Object[]) casted[i], value[i]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
     }
     
 }
